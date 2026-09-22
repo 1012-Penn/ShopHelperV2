@@ -28,3 +28,19 @@ def test_extract_preserves_missing_fields_as_none():
     assert result.order_id is None
     assert result.request_type == "物流"
     assert result.expected_solution is None
+
+
+def test_extract_uses_function_calling_for_openai_compatible_models():
+    from app.services.after_sale import AfterSaleService
+
+    class FakeProvider:
+        def with_structured_output(self, schema, *, method):
+            assert method == "function_calling"
+            return type(
+                "FakeStructured",
+                (),
+                {"invoke": lambda self, messages: {"request_type": "其他"}},
+            )()
+
+    result = AfterSaleService(FakeProvider()).extract("我想投诉")
+    assert result.request_type == "其他"
