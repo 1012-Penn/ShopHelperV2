@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
@@ -13,6 +15,22 @@ def test_settings_maps_deepseek_key_and_defaults(monkeypatch):
     assert settings.model == "deepseek-chat"
     assert settings.api_key == "test-key"
     assert settings.max_history_tokens > 0
+
+
+def test_blank_api_key_does_not_hide_deepseek_key(tmp_path: Path):
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "MODEL=deepseek-chat\n"
+        "API_KEY=\n"
+        "DEEPSEEK_API_KEY=deep-key\n"
+        "BASE_URL=https://example.test/v1\n",
+        encoding="utf-8",
+    )
+
+    from app.config import Settings
+
+    settings = Settings(_env_file=env_file)
+    assert settings.api_key == "deep-key"
 
 
 def test_chat_request_rejects_empty_current_message():
