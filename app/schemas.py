@@ -2,7 +2,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-
 MessageRole = Literal["user", "assistant"]
 RequestType = Literal["退款", "退货", "换货", "维修", "物流", "其他"]
 
