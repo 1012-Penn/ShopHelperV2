@@ -9,7 +9,10 @@ from app.schemas import AfterSaleExtraction
 class AfterSaleService:
     def __init__(self, model: Any):
         self.model = (
-            model.with_structured_output(AfterSaleExtraction)
+            model.with_structured_output(
+                AfterSaleExtraction,
+                method="function_calling",
+            )
             if hasattr(model, "with_structured_output")
             else model
         )
