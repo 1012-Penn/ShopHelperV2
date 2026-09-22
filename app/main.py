@@ -4,7 +4,8 @@ from fastapi import Depends, FastAPI
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 
 from app.config import Settings
-from app.schemas import ChatRequest
+from app.schemas import AfterSaleExtraction, AfterSaleRequest, ChatRequest
+from app.services.after_sale import AfterSaleService
 from app.services.chat import ChatService, build_chat_model
 
 app = FastAPI(title="MewHelp")
@@ -13,6 +14,11 @@ app = FastAPI(title="MewHelp")
 def get_chat_service() -> ChatService:
     settings = Settings()
     return ChatService(model=build_chat_model(settings), settings=settings)
+
+
+def get_after_sale_service() -> AfterSaleService:
+    settings = Settings()
+    return AfterSaleService(model=build_chat_model(settings))
 
 
 @app.post("/api/v1/chat/stream", response_class=EventSourceResponse)
@@ -37,3 +43,11 @@ async def chat_stream(
         event="done",
         data={"conversation_id": request.conversation_id},
     )
+
+
+@app.post("/api/v1/after-sale/extract", response_model=AfterSaleExtraction)
+def extract_after_sale(
+    request: AfterSaleRequest,
+    service: AfterSaleService = Depends(get_after_sale_service),  # noqa: B008
+) -> AfterSaleExtraction:
+    return service.extract(request.text)

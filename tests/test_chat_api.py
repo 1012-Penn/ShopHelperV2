@@ -104,3 +104,29 @@ def test_chat_stream_rejects_blank_message(app_and_service):
     )
 
     assert response.status_code == 422
+
+
+def test_after_sale_extract_returns_fixed_json_fields(monkeypatch):
+    from app.main import app, get_after_sale_service
+
+    class FakeAfterSaleService:
+        def extract(self, text):
+            return {
+                "order_id": "123456",
+                "request_type": "换货",
+                "expected_solution": "尽快补发",
+            }
+
+    app.dependency_overrides[get_after_sale_service] = lambda: FakeAfterSaleService()
+    response = TestClient(app).post(
+        "/api/v1/after-sale/extract",
+        json={"text": "订单123456耳机坏了，想换货并尽快补发"},
+    )
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "order_id": "123456",
+        "request_type": "换货",
+        "expected_solution": "尽快补发",
+    }
