@@ -32,3 +32,4 @@ Task 4: Ruling: ChatService must pass registered tools to `bind_tools`, while th
 Task 4: complete (tests: `python3 -m pytest -q` → 19 passed; chat suite 5 passed).
 Task 5: complete (tests: `python3 -m pytest -q` → 21 passed; API suite 2 passed).
 Task 6: complete (UI Vibe Coding exception applied; `GET /` manually returned 200 text/html and page source includes SSE handling/tool status badges. Real-model browser run is blocked until MODEL/API credentials are configured; no UI test or separate UI review added).
+Task 7: complete (FAQ evaluation fixture red/green; `python3 -m pytest -q` → 22 passed; `docker compose config` passed; MySQL healthy, seed repeated twice, four tables and expected hit/miss counts verified. README and `dev-notes/ch02.md` record live-model credential prerequisite. Plan's fixture/chat manual test listing was adapted to the existing `tests/test_tools.py` and actual direct UI endpoint check; no UI-specific tests/review added per user exception).

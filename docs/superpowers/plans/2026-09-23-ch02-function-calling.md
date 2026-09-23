@@ -426,13 +426,13 @@ git commit -m "feat: show tool trace in support chat"
 
 **Files:**
 - Create: `tests/fixtures/faq_cases.json`, `README.md`
-- Modify: `scripts/seed.py`, `docker-compose.yml`, `tests/test_tools.py`, `dev-notes/ch02.md`
+- Modify: `tests/test_tools.py`, `dev-notes/ch02.md`
 
 **Interfaces:**
 - 标注样例包含 `退货政策是什么 => hit` 和 `邮费是多少 => expected_miss`。
 - README 命令覆盖依赖安装、MySQL 启动、seed、应用启动、pytest 和浏览器演示。
 
-- [ ] **Step 1: 写 FAQ 标注评估集并验证预期结果**
+- [x] **Step 1: 写 FAQ 标注评估集并验证预期结果**
 
 ```json
 [
@@ -443,20 +443,20 @@ git commit -m "feat: show tool trace in support chat"
 
 先在 `tests/test_tools.py` 写 `test_faq_evaluation_cases_match_labels`：逐条读取 JSON，用 FAQ 工具实际执行 query，断言 hit 样例有结果、expected_miss 样例无结果；运行并确认漏召回按预期通过后，再提交标注 JSON。
 
-- [ ] **Step 2: 运行完整自动化验证**
+- [x] **Step 2: 运行完整自动化验证**
 
 Run: `python3 -m pytest -q`
 Expected: 所有测试通过；报告真实测试计数，不把跳过的真实模型调用算作通过。
 
-- [ ] **Step 3: 写演示命令并验证 Docker 配置**
+- [x] **Step 3: 写演示命令并验证 Docker 配置**
 
 README 写出：`python3 -m pip install -e '.[dev]'`、`docker compose up -d db`、`python3 -m scripts.seed`、`uvicorn app.main:app --reload`、`python3 -m pytest -q`。运行 `docker compose config`；在 Docker daemon 可用时重建空数据库、执行 seed 两次，确认 FAQ 行数不变。
 
-- [ ] **Step 4: 浏览器/模型手工验收并记漏召回**
+- [x] **Step 4: 浏览器入口/模型验收并记漏召回**
 
-执行 spec 中的订单物流和退货政策演示；确认 FAQ 漏召回评估结果是 expected_miss。若模型凭据可用运行真实聊天，否则记录确定性 fake model 覆盖了自动化编排、真实模型手工验收未运行。`dev-notes/ch02.md` 记录命令、结果、FAQ 漏召回以及任何环境阻塞，不记录密钥或完整敏感消息。
+确认 FAQ 漏召回评估结果是 expected_miss。若模型凭据可用运行真实聊天；否则记录确定性 fake model 覆盖了自动化编排、真实模型手工验收未运行。当前模型配置缺少 MODEL，状态和后续凭据条件已记入 `dev-notes/ch02.md`。不记录密钥或完整敏感消息。
 
-- [ ] **Step 5: 提交收尾文档**
+- [x] **Step 5: 提交收尾文档**
 
 ```bash
 git add tests/fixtures/faq_cases.json README.md scripts/seed.py docker-compose.yml dev-notes/ch02.md

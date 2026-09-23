@@ -1,5 +1,6 @@
 import json
 import time
+from pathlib import Path
 
 import pytest
 from langchain.tools import tool
@@ -105,6 +106,16 @@ def test_query_faq_uses_literal_like_and_misses_postage(db_session, tools):
     assert matched["matched"] is True
     assert matched["items"][0]["answer"] == "商品签收后 7 天内可申请退货，商品需保持完好。"
     assert missed == {"matched": False, "message": "FAQ 未命中关键词：邮费是多少"}
+
+
+def test_faq_evaluation_cases_match_labels(db_session, tools):
+    seed_faq(db_session)
+    faq = ToolRegistry(tools).get("query_faq")
+    cases = json.loads((Path(__file__).parent / "fixtures" / "faq_cases.json").read_text())
+
+    for case in cases:
+        result = json.loads(faq.invoke({"query": case["query"]}))
+        assert bool(result["matched"]) is (case["expected"] == "hit"), case["query"]
 
 
 def test_invalid_tool_arguments_are_rejected_without_retry(runner_with_counted_order):

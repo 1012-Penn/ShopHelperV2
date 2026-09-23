@@ -1,0 +1,4 @@
+[
+  {"query": "退货政策是什么", "expected": "hit"},
+  {"query": "邮费是多少", "expected": "expected_miss"}
+]
