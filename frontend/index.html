@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ff5000" />
+    <title>喵助理 · 淘宝智能客服</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a class="brand" href="/" aria-label="喵助理首页"><span class="brand-mark">喵</span><span class="brand-copy"><strong>喵助理</strong><small>智能客服工作台</small></span></a>
+          <div class="search-box"><span class="search-icon">⌕</span><input id="global-search" type="search" placeholder="搜索订单、售后问题或帮助" /><button type="button" id="search-button">搜一下</button></div>
+          <div class="top-actions"><span class="status-dot"></span><span>在线服务中</span><button class="icon-button" type="button" title="消息">◌</button><button class="avatar" type="button" title="个人中心">M</button></div>
+        </div>
+        <nav class="nav-strip" aria-label="主导航"><div class="nav-inner"><a class="active" href="#chat">客服首页</a><a href="#after-sale">售后服务</a><a href="#faq">帮助中心</a><span class="nav-divider"></span><span class="nav-tip">今天也要认真解决每一个问题呀 ✨</span></div></nav>
+      </header>
+
+      <main class="workspace" id="chat">
+        <aside class="sidebar">
+          <section class="shop-card"><div class="shop-avatar">喵</div><div><div class="shop-name">喵喵生活旗舰店 <span class="verified">✓</span></div><div class="shop-meta">店铺客服 · 今日在线</div></div></section>
+          <div class="sidebar-label">服务导航</div>
+          <button class="side-item selected" type="button" data-target="chat"><span class="side-icon orange">◈</span><span>智能客服</span><span class="side-badge">在线</span></button>
+          <button class="side-item" type="button" data-target="after-sale"><span class="side-icon blue">↻</span><span>售后小帮手</span><span class="arrow">›</span></button>
+          <button class="side-item" type="button" data-target="faq"><span class="side-icon purple">?</span><span>常见问题</span><span class="arrow">›</span></button>
+          <div class="sidebar-label second">我的服务</div>
+          <div class="service-stats"><div><strong>24h</strong><span>全天响应</span></div><div><strong>98%</strong><span>问题解决率</span></div></div>
+          <div class="sidebar-note"><span>💡</span><p>描述得越清楚，喵助理就能越快帮到你哦</p></div>
+        </aside>
+
+        <section class="main-panel">
+          <div class="panel-heading"><div><div class="eyebrow"><span class="live-pill">LIVE</span> 实时客服</div><h1>你好，我是喵助理 <span>👋</span></h1><p>有什么购物、物流或售后问题，都可以问我</p></div><div class="heading-actions"><button class="outline-button" id="clear-chat" type="button">清空对话</button><button class="more-button" type="button" aria-label="更多操作">•••</button></div></div>
+          <div class="chat-card">
+            <div class="chat-toolbar"><span>对话助手</span><span class="toolbar-hint">内容仅保存在当前页面</span></div>
+            <div class="messages" id="messages" aria-live="polite"></div>
+            <div class="quick-replies" id="quick-replies"><span>猜你想问</span><button type="button">怎么查物流？</button><button type="button">申请退货</button><button type="button">我要开发票</button><button type="button">优惠活动咨询</button></div>
+            <form class="composer" id="chat-form"><textarea id="message-input" rows="1" placeholder="请输入你想咨询的问题，按 Enter 发送" aria-label="输入消息"></textarea><div class="composer-bottom"><div class="composer-tools"><button type="button" title="表情">☺</button><button type="button" title="图片">▧</button><span>支持多轮对话</span></div><button class="send-button" id="send-button" type="submit">发送 <span>↗</span></button></div></form>
+          </div>
+        </section>
+
+        <aside class="right-rail">
+          <section class="rail-card order-card"><div class="rail-title"><span>订单小助手</span><span class="rail-link">查看全部 ›</span></div><div class="order-empty"><div class="package-icon">▣</div><strong>还没有关联订单</strong><p>发送订单号，我可以帮你快速定位</p></div><button class="light-button" type="button" data-fill="我的订单还没收到">去查订单</button></section>
+          <section class="rail-card" id="after-sale"><div class="rail-title"><span>售后信息识别</span><span class="ai-label">AI</span></div><p class="rail-description">把售后情况告诉我，自动整理订单号、诉求和期望方案。</p><textarea id="after-sale-input" rows="4" placeholder="例如：订单 TEST-123 的耳机坏了，我想换货……"></textarea><button class="gradient-button" id="extract-button" type="button">智能识别售后信息 <span>✦</span></button><div class="extract-result" id="extract-result" hidden></div></section>
+          <section class="rail-card faq-card" id="faq"><div class="rail-title"><span>常见问题</span><span class="rail-link">更多 ›</span></div><button type="button" data-fill="退货需要满足什么条件？">退货需要满足什么条件？ <span>›</span></button><button type="button" data-fill="一般多久可以收到货？">一般多久可以收到货？ <span>›</span></button><button type="button" data-fill="可以修改收货地址吗？">可以修改收货地址吗？ <span>›</span></button></section>
+        </aside>
+      </main>
+      <footer class="footer"><span>喵喵生活旗舰店 · 智能客服工作台</span><span>服务时间：全天在线 · <a href="#faq">帮助中心</a></span></footer>
+    </div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

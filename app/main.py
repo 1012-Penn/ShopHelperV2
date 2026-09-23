@@ -1,7 +1,9 @@
 from collections.abc import AsyncIterable
+from pathlib import Path
 
 from fastapi import Depends, FastAPI
 from fastapi.sse import EventSourceResponse, ServerSentEvent
+from fastapi.staticfiles import StaticFiles
 
 from app.config import Settings
 from app.schemas import AfterSaleExtraction, AfterSaleRequest, ChatRequest
@@ -51,3 +53,10 @@ def extract_after_sale(
     service: AfterSaleService = Depends(get_after_sale_service),  # noqa: B008
 ) -> AfterSaleExtraction:
     return service.extract(request.text)
+
+
+app.mount(
+    "/",
+    StaticFiles(directory=Path(__file__).resolve().parent.parent / "frontend", html=True),
+    name="frontend",
+)
