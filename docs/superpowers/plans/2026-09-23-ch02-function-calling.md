@@ -187,7 +187,7 @@ git commit -m "feat: add mysql persistence models and faq seed"
 
 **Interfaces:**
 - Consumes ORM Session factory and `Settings.tool_timeout_seconds`、`Settings.tool_max_retries`。
-- Produces `build_tools(session_factory, conversation_id) -> list[BaseTool]`，恰好注册五个规定工具；`ToolRegistry(tools)`；`ToolRunner(registry, timeout_seconds, max_retries).run(name, args, tool_call_id) -> ToolResult`。
+- Produces `build_tools(session_factory, conversation_id) -> list[BaseTool]`，恰好注册五个规定工具；`ToolRegistry(tools)` 提供只读 `tools` 属性供模型绑定；`ToolRunner(registry, timeout_seconds, max_retries).run(name, args, tool_call_id) -> ToolResult`。
 - ToolResult 字段：`tool_name`、`tool_call_id`（由编排层传给 runner）、`content`、`is_error`。
 
 - [ ] **Step 1: 写 FAQ 命中/漏召回和 runner 校验失败测试**
@@ -268,48 +268,63 @@ git commit -m "feat: add registered business tools"
 ## Task 4: 单轮聊天编排、数据库消息流水与工具回灌
 
 **Files:**
-- Create: `app/prompts.py`, `app/services/__init__.py`, `app/services/chat.py`, `tests/test_chat.py`
-- Modify: `app/schemas.py`, `app/tools/registry.py`, `tests/conftest.py`, `dev-notes/ch02.md`
+- Create: `app/prompts.py`, `app/services/__init__.py`, `app/services/chat.py`, `app/schemas.py`, `tests/test_chat.py`
+- Modify: `app/tools/registry.py`, `dev-notes/ch02.md`
 
 **Interfaces:**
 - Produces `ChatRequest(conversation_id: str, message: str, user_id: str = "demo-user")`。
-- Produces `ChatService(session_factory, model_factory, tool_runner_factory).stream_events(request) -> Iterator[dict]`；事件为 tool_status、token、done、error。默认 model factory 用配置构造 `ChatOpenAI`，决策阶段调用 `model.bind_tools(tools).stream(messages)`，回灌阶段调用未绑定工具的 `model.stream(messages)`。
+- Produces `ChatService(session_factory, model_factory, tool_runner_factory).stream_events(request) -> Iterator[dict]`；事件为 tool_status、token、done、error。编排层以 `build_tools` 生成当前会话工具，用 `ToolRunner` factory 创建 runner，并调用 `model.bind_tools(tools).stream(messages)`；回灌阶段调用未绑定工具的 `model.stream(messages)`。FastAPI wiring 提供 `ChatOpenAI` model factory。
 - 初始绑定工具的流只允许 0 或 1 个 tool call；一个调用时 tool message 用同一 tool_call_id；回灌后的第二次模型流不绑定工具。
 
 - [ ] **Step 1: 写完整工具轮次与普通聊天的失败测试**
 
+在 `tests/test_chat.py` 中用真实 `AIMessageChunk` 构造来自模型的流，fake 只替代外部模型网络请求；定义 `FakeModel`、`make_tool_chunks` 和 `make_service(session_factory, fake_model, tool_runner=None)` 供下面测试使用。工具注册、校验、数据库和编排都使用真实实现。
+
 ```python
-def test_tool_round_persists_request_result_and_streams_final_tokens(chat_service, db_session):
-    events = list(chat_service.stream_events(ChatRequest(conversation_id="demo-1", message="订单 1001 的物流到哪了")))
-    assert [event["event"] for event in events] == ["tool_status", "token", "token", "done"]
-    messages = db_session.scalars(select(Message).order_by(Message.id)).all()
+def test_tool_round_persists_request_result_and_streams_final_tokens(db_session_factory):
+    model = FakeModel(make_tool_chunks({"name": "query_logistics", "args": {"order_id": "1001"}, "id": "call-1"}), [AIMessageChunk(content="物流在运输中。")])
+    events = list(make_service(db_session_factory, model).stream_events(ChatRequest(conversation_id="demo-1", message="订单 1001 的物流到哪了")))
+    assert [event["event"] for event in events] == ["tool_status", "token", "done"]
+    with db_session_factory() as session:
+        messages = session.scalars(select(Message).order_by(Message.id)).all()
     assert [message.role for message in messages] == ["user", "assistant", "tool", "assistant"]
-    assert messages[1].tool_calls[0]["id"] == messages[2].tool_call_id
+    assert messages[1].tool_calls[0]["id"] == messages[2].tool_call_id == "call-1"
 
 
-def test_multiple_tool_calls_are_rejected_without_execution(chat_service, tool_runner):
-    events = list(chat_service.stream_events(ChatRequest(conversation_id="demo-2", message="查订单和商品")))
+def test_multiple_tool_calls_are_rejected_without_execution(db_session_factory):
+    model = FakeModel(make_tool_chunks({"name": "query_order", "args": {"order_id": "1001"}, "id": "call-1"}, {"name": "query_product", "args": {"product_query": "耳机"}, "id": "call-2"}))
+    events = list(make_service(db_session_factory, model).stream_events(ChatRequest(conversation_id="demo-2", message="查订单和商品")))
     assert events[-1]["event"] == "error"
-    assert tool_runner.calls == []
 
 
-def test_no_tool_answer_streams_and_persists(chat_service, db_session):
-    events = list(chat_service.stream_events(ChatRequest(conversation_id="demo-3", message="你好")))
+def test_no_tool_answer_streams_and_persists(db_session_factory):
+    model = FakeModel([AIMessageChunk(content="你好"), AIMessageChunk(content="。")])
+    events = list(make_service(db_session_factory, model).stream_events(ChatRequest(conversation_id="demo-3", message="你好")))
     assert [event["event"] for event in events] == ["token", "token", "done"]
-    assert db_session.scalar(select(Message).where(Message.role == "assistant")).content == "你好。"
+    with db_session_factory() as session:
+        assert session.scalar(select(Message).where(Message.role == "assistant")).content == "你好。"
 
 
-def test_tool_error_is_replayed_as_matching_tool_message(chat_service, tool_runner, fake_model):
-    events = list(chat_service.stream_events(ChatRequest(conversation_id="demo-4", message="查物流")))
+def test_tool_error_is_replayed_as_matching_tool_message(db_session_factory):
+    @tool("query_logistics")
+    def failed_logistics(order_id: str) -> str:
+        """Always fail the logistics lookup."""
+        raise RuntimeError("private database detail")
+
+    error_runner = ToolRunner(ToolRegistry([failed_logistics]), timeout_seconds=0.2, max_retries=0)
+    model = FakeModel(make_tool_chunks({"name": "query_logistics", "args": {"order_id": "1001"}, "id": "call-error"}), [AIMessageChunk(content="暂时无法查询物流。")])
+    events = list(make_service(db_session_factory, model, error_runner).stream_events(ChatRequest(conversation_id="demo-4", message="查物流")))
+    tool_message = next(message for message in model.second_call_messages if isinstance(message, ToolMessage))
     assert events[-1]["event"] == "done"
-    assert fake_model.second_call_messages[-1].tool_call_id == tool_runner.last_result.tool_call_id
-    assert tool_runner.last_result.is_error is True
+    assert tool_message.tool_call_id == "call-error"
 
 
-def test_model_failure_emits_safe_error_and_keeps_user_message(chat_service, db_session):
-    events = list(chat_service.stream_events(ChatRequest(conversation_id="demo-5", message="查商品")))
+def test_model_failure_emits_safe_error_and_keeps_user_message(db_session_factory):
+    model = FakeModel([], first_error=True)
+    events = list(make_service(db_session_factory, model).stream_events(ChatRequest(conversation_id="demo-5", message="查商品")))
     assert events[-1] == {"event": "error", "data": {"message": "暂时无法处理，请稍后再试。"}}
-    assert db_session.scalar(select(Message).where(Message.role == "user")).content == "查商品"
+    with db_session_factory() as session:
+        assert session.scalar(select(Message).where(Message.role == "user")).content == "查商品"
 ```
 
 - [ ] **Step 2: 确认测试红灯**
@@ -331,7 +346,7 @@ Expected: 普通回答与工具最终回答保留 token 事件；工具模型调
 - [ ] **Step 5: 提交阶段产物**
 
 ```bash
-git add app/prompts.py app/services app/schemas.py app/tools/registry.py tests/test_chat.py tests/conftest.py dev-notes/ch02.md
+git add app/prompts.py app/services app/schemas.py app/tools/registry.py tests/test_chat.py dev-notes/ch02.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md
 git commit -m "feat: orchestrate persisted single tool chat"
 ```
 

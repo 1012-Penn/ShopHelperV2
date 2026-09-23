@@ -38,6 +38,10 @@ class ToolRegistry:
             raise UnknownToolError(f"Unknown tool: {name}") from error
 
     @property
+    def tools(self) -> list[BaseTool]:
+        return list(self._tools.values())
+
+    @property
     def names(self) -> frozenset[str]:
         return frozenset(self._tools)
 
