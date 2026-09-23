@@ -113,25 +113,50 @@ git commit -m "feat: scaffold customer support API"
 
 **Files:**
 - Create: `app/db/__init__.py`, `app/db/base.py`, `app/db/session.py`, `app/db/models.py`, `scripts/seed.py`, `docker-compose.yml`, `tests/conftest.py`, `tests/test_models.py`
-- Modify: `pyproject.toml`, `dev-notes/ch02.md`
+- Modify: `pyproject.toml`, `app/config.py`, `tests/test_config.py`, `dev-notes/ch02.md`
 
 **Interfaces:**
 - Consumes `Settings.database_url` from Task 1.
+- Produces `Settings.database_url_from_env(environ: Mapping[str, str] | None = None) -> str`, which reads the configured database URL without requiring model credentials; the seed CLI uses this entry point.
 - Produces `Base`、`make_engine(url: str)`、`make_session_factory(engine)`、`create_tables(engine)`。
 - Produces ORM `FAQ`、`Conversation`、`Message`、`Ticket`；conversation 主键为字符串 ID，message role 限制为 `user`、`assistant`、`tool`，tool_calls 为 JSON 可空列。
 - Produces幂等 seed 函数 `seed_faq(session)`，插入退货政策、配送时效、支付方式、退款处理等 FAQ；退货文案含完整关键词“退货政策是什么”。
 
-- [ ] **Step 1: 写四表和 seed 的失败测试**
+- [ ] **Step 1: 写数据库专用配置、四表和 seed 的失败测试**
 
 ```python
+def test_seed_can_read_database_url_without_model_credentials():
+    assert Settings.database_url_from_env({"DATABASE_URL": "sqlite:///seed.db"}) == "sqlite:///seed.db"
+
+
 def test_seed_is_idempotent_and_models_store_tool_calls(db_session):
     seed_faq(db_session)
     seed_faq(db_session)
     assert db_session.scalar(select(func.count()).select_from(FAQ)) == 4
+    db_session.add(Conversation(conversation_id="demo-1", user_id="demo-user", status="open"))
+    db_session.flush()
     message = Message(conversation_id="demo-1", role="assistant", content="", tool_calls=[{"id": "call-1"}])
     db_session.add(message)
     db_session.commit()
-    assert db_session.get(Message, message.id).tool_calls[0]["id"] == "call-1"
+    saved = db_session.get(Message, message.id)
+    assert saved.tool_calls[0]["id"] == "call-1"
+    assert saved.conversation.user_id == "demo-user"
+
+
+def test_ticket_is_linked_to_conversation(db_session):
+    db_session.add(Conversation(conversation_id="ticket-conv", user_id="demo-user", status="open"))
+    db_session.flush()
+    db_session.add(Ticket(ticket_no="T1001", conversation_id="ticket-conv", description="商品故障", ticket_type="退货", status="open"))
+    db_session.commit()
+    assert db_session.get(Ticket, "T1001").conversation.conversation_id == "ticket-conv"
+
+
+def test_mysql_faq_ddl_avoids_unique_index_on_text_question():
+    from sqlalchemy.dialects.mysql import dialect
+    from sqlalchemy.schema import CreateTable
+
+    ddl = str(CreateTable(FAQ.__table__).compile(dialect=dialect()))
+    assert "UNIQUE (question)" not in ddl
 ```
 
 - [ ] **Step 2: 确认测试红灯**
@@ -139,9 +164,9 @@ def test_seed_is_idempotent_and_models_store_tool_calls(db_session):
 Run: `python3 -m pytest tests/test_models.py::test_seed_is_idempotent_and_models_store_tool_calls -q`
 Expected: FAIL，因为 ORM 和 seed 尚不存在。
 
-- [ ] **Step 3: 实现四个 ORM 模型、SQLite test fixture 和 seed**
+- [ ] **Step 3: 实现数据库 URL 读取、四个 ORM 模型、SQLite test fixture 和 seed**
 
-FAQ 以 `(question, answer, category)` 为字段；Conversation 有 `user_id`、状态、创建时间和 messages 关系；Message 有会话外键、内容、JSON tool_calls、tool_call_id 和时间；Ticket 有工单号主键、会话外键、问题描述、类型、状态、创建时间。`create_tables(engine)` 调用 ORM metadata 建立四表。seed 用问题文本查询后再新增，使用能被“退货政策是什么”按 LIKE 命中的问题文案，且重复运行不重复插入。
+`database_url_from_env()` 只解析项目 `.env` 和环境映射里的数据库 URL，不验证 MODEL/API_KEY/BASE_URL；seed CLI 因此无需配置模型。FAQ 以 `(question, answer, category)` 为字段；Conversation 有 `user_id`、状态、创建时间和 messages 关系；Message 有会话外键、内容、JSON tool_calls、tool_call_id 和时间；Ticket 有工单号主键、会话外键、问题描述、类型、状态、创建时间。`create_tables(engine)` 调用 ORM metadata 建立四表。seed 用问题文本查询后再新增，使用能被“退货政策是什么”按 LIKE 命中的问题文案，且重复运行不重复插入。
 
 - [ ] **Step 4: 增加 MySQL Compose 并验证模型**
 
@@ -150,7 +175,7 @@ Compose 使用 MySQL 8，设置健康检查和本地演示库参数。运行 `py
 - [ ] **Step 5: 提交阶段产物**
 
 ```bash
-git add app/db scripts/seed.py docker-compose.yml tests/conftest.py tests/test_models.py pyproject.toml dev-notes/ch02.md
+git add app/db scripts/seed.py docker-compose.yml tests/conftest.py tests/test_models.py app/config.py tests/test_config.py pyproject.toml dev-notes/ch02.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md
 git commit -m "feat: add mysql persistence models and faq seed"
 ```
 

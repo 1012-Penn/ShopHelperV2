@@ -19,6 +19,18 @@ class Settings:
     tool_timeout_seconds: float = 5
     tool_max_retries: int = 2
 
+    @staticmethod
+    def database_url_from_env(environ: Mapping[str, str] | None = None) -> str:
+        if environ is None:
+            values = {key: value for key, value in dotenv_values(Path.cwd() / ".env").items() if value is not None}
+            values.update(os.environ)
+        else:
+            values = environ
+        database_url = values.get("DATABASE_URL", "").strip()
+        if not database_url:
+            raise ValueError("DATABASE_URL is required")
+        return database_url
+
     @classmethod
     def from_env(cls, environ: Mapping[str, str] | None = None) -> "Settings":
         if environ is None:

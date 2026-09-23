@@ -28,3 +28,7 @@ def test_health_endpoint_returns_ok():
     response = TestClient(app).get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+
+def test_seed_can_read_database_url_without_model_credentials():
+    assert Settings.database_url_from_env({"DATABASE_URL": "sqlite:///seed.db"}) == "sqlite:///seed.db"
