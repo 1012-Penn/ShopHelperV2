@@ -66,6 +66,25 @@ def test_tool_round_persists_request_result_and_streams_final_tokens(db_session_
     assert all(tool.name in {"query_order", "query_product", "query_logistics", "query_faq", "create_ticket"} for tool in model.bound_tools)
 
 
+def test_missing_model_tool_call_id_is_normalized_in_history(db_session_factory):
+    model = FakeModel(
+        [AIMessageChunk.model_construct(
+            content="",
+            tool_calls=[{"name": "query_logistics", "args": {"order_id": "1001"}, "id": None}],
+        )],
+        [AIMessageChunk(content="物流在运输中。")],
+    )
+    events = list(make_service(db_session_factory, model).stream_events(
+        ChatRequest(conversation_id="demo-missing-id", message="查物流")
+    ))
+
+    assert events[-1]["event"] == "done"
+    with db_session_factory() as session:
+        messages = session.scalars(select(Message).order_by(Message.id)).all()
+    assert messages[1].tool_calls[0]["id"]
+    assert messages[1].tool_calls[0]["id"] == messages[2].tool_call_id
+
+
 def test_multiple_tool_calls_are_rejected_without_execution(db_session_factory):
     model = FakeModel(make_tool_chunks(
         {"name": "query_order", "args": {"order_id": "1001"}, "id": "call-1"},

@@ -67,7 +67,27 @@ class ToolRunner:
                 content = future.result(timeout=self.timeout_seconds)
                 return ToolResult(name, tool_call_id, str(content), False)
             except TimeoutError:
-                future.cancel()
+                cancelled = future.cancel()
+                if name == "create_ticket" and not cancelled:
+                    # A running thread cannot be stopped safely. Reconcile its
+                    # database result briefly before reporting an unknown outcome.
+                    try:
+                        content = future.result(timeout=self.timeout_seconds)
+                        return ToolResult(name, tool_call_id, str(content), False)
+                    except TimeoutError:
+                        return ToolResult(
+                            name,
+                            tool_call_id,
+                            "工单提交结果暂未确认，请勿重复提交；请稍候查询或联系人工客服。",
+                            True,
+                        )
+                    except Exception:
+                        return ToolResult(
+                            name,
+                            tool_call_id,
+                            "工单提交结果暂未确认，请勿重复提交；请稍候查询或联系人工客服。",
+                            True,
+                        )
                 safe_error = "工具执行超时，请稍后再试。"
                 break
             except Exception:

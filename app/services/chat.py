@@ -59,6 +59,7 @@ class ChatService:
             call = tool_calls[0]
             tool_name = call["name"]
             tool_call_id = call.get("id") or str(uuid4())
+            call = {**call, "id": tool_call_id}
             args = call.get("args") or {}
             assistant_message = AIMessage(content=response.content or "", tool_calls=[call])
             self._persist_tool_request(request.conversation_id, assistant_message, tool_call_id)

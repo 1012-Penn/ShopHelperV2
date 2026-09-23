@@ -140,3 +140,40 @@ def test_runner_retries_timeout_and_returns_safe_error(runner_with_flaky_and_slo
     timed_out = slow.run("slow", {}, "call-2")
     assert timed_out.is_error is True
     assert "Traceback" not in timed_out.content
+
+
+def test_timed_out_ticket_waits_for_side_effect_outcome():
+    created = {"count": 0}
+
+    @tool("create_ticket")
+    def delayed_ticket(description: str, ticket_type: str) -> str:
+        """Simulate a ticket commit that finishes after its timeout."""
+        time.sleep(0.015)
+        created["count"] += 1
+        return "ticket-created"
+
+    runner = ToolRunner(ToolRegistry([delayed_ticket]), timeout_seconds=0.01, max_retries=2)
+
+    result = runner.run("create_ticket", {"description": "商品故障", "ticket_type": "售后"}, "call-ticket")
+
+    assert result.is_error is False
+    assert result.content == "ticket-created"
+    assert created["count"] == 1
+
+
+def test_unconfirmed_ticket_timeout_returns_bounded_unknown_outcome():
+    @tool("create_ticket")
+    def stalled_ticket(description: str, ticket_type: str) -> str:
+        """Simulate a ticket write blocked beyond the reconciliation window."""
+        time.sleep(0.2)
+        return "ticket-created"
+
+    runner = ToolRunner(ToolRegistry([stalled_ticket]), timeout_seconds=0.005, max_retries=2)
+
+    started = time.monotonic()
+    result = runner.run("create_ticket", {"description": "商品故障", "ticket_type": "售后"}, "call-stalled")
+
+    assert time.monotonic() - started < 0.1
+    assert result.is_error is True
+    assert "结果暂未确认" in result.content
+    assert "请勿重复提交" in result.content
