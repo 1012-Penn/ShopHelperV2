@@ -183,12 +183,12 @@ git commit -m "feat: add mysql persistence models and faq seed"
 
 **Files:**
 - Create: `app/tools/__init__.py`, `app/tools/business.py`, `app/tools/registry.py`, `tests/test_tools.py`
-- Modify: `app/config.py`, `tests/conftest.py`, `dev-notes/ch02.md`
+- Modify: `.gitignore`, `app/config.py`, `tests/conftest.py`, `dev-notes/ch02.md`
 
 **Interfaces:**
 - Consumes ORM Session factory and `Settings.tool_timeout_seconds`、`Settings.tool_max_retries`。
 - Produces `build_tools(session_factory, conversation_id) -> list[BaseTool]`，恰好注册五个规定工具；`ToolRegistry(tools)`；`ToolRunner(registry, timeout_seconds, max_retries).run(name, args, tool_call_id) -> ToolResult`。
-- ToolResult 字段：`tool_name`、`tool_call_id`（由编排层关联）、`content`、`is_error`。
+- ToolResult 字段：`tool_name`、`tool_call_id`（由编排层传给 runner）、`content`、`is_error`。
 
 - [ ] **Step 1: 写 FAQ 命中/漏召回和 runner 校验失败测试**
 
@@ -204,21 +204,25 @@ def test_demo_data_tools_return_labeled_sample_data(tools_by_name):
 
 
 def test_create_ticket_uses_bound_conversation(db_session, tools_by_name):
-    result = tools_by_name["create_ticket"].invoke({"description": "商品故障", "ticket_type": "退货"})
-    ticket = db_session.scalar(select(Ticket).where(Ticket.ticket_no == parse_ticket_no(result)))
+    result = json.loads(tools_by_name["create_ticket"].invoke({"description": "商品故障", "ticket_type": "退货"}))
+    ticket = db_session.get(Ticket, result["ticket_no"])
     assert ticket.conversation_id == "demo-tools"
 
 
 def test_query_faq_uses_literal_like_and_misses_postage(db_session, tools):
     registry = ToolRegistry(tools)
-    assert "命中" in registry.get("query_faq").invoke({"query": "退货政策是什么"})
-    assert "未命中" in registry.get("query_faq").invoke({"query": "邮费是多少"})
+    matched = json.loads(registry.get("query_faq").invoke({"query": "退货政策是什么"}))
+    missed = json.loads(registry.get("query_faq").invoke({"query": "邮费是多少"}))
+    assert matched["matched"] is True
+    assert matched["items"][0]["answer"] == "商品签收后 7 天内可申请退货，商品需保持完好。"
+    assert missed["matched"] is False
 
 
-def test_invalid_tool_arguments_are_rejected_without_retry(runner, runner_attempt_counter):
+def test_invalid_tool_arguments_are_rejected_without_retry(runner_with_counted_order):
+    runner, calls = runner_with_counted_order
     with pytest.raises(ToolInputError):
         runner.run("query_order", {"unexpected": True}, "call-invalid")
-    assert runner_attempt_counter["query_order"] == 0
+    assert calls["query_order"] == 0
 
 
 def test_runner_rejects_unknown_tool_without_execution(runner):
@@ -227,12 +231,12 @@ def test_runner_rejects_unknown_tool_without_execution(runner):
 
 
 def test_runner_retries_timeout_and_returns_safe_error(runner_with_flaky_and_slow_tools):
-    transient, always_fail, slow = runner_with_flaky_and_slow_tools
+    transient, always_fail, slow, calls = runner_with_flaky_and_slow_tools
     assert transient.run("flaky", {}, "call-1").is_error is False
-    assert transient.attempts == 2
+    assert calls["flaky"] == 2
     exhausted = always_fail.run("always_fail", {}, "call-exhausted")
     assert exhausted.is_error is True
-    assert always_fail.attempts == 1 + always_fail.max_retries
+    assert calls["always_fail"] == 3
     timed_out = slow.run("slow", {}, "call-2")
     assert timed_out.is_error is True
     assert "Traceback" not in timed_out.content
@@ -245,11 +249,11 @@ Expected: FAIL，因为工具和注册表尚未实现。
 
 - [ ] **Step 3: 实现五个 `@tool` 与显式注册表**
 
-实现 `tools_by_name` 和 `runner_attempt_counter` 测试夹具；前者绑定会话 ID `demo-tools`，后者记录工具函数实际执行次数，以便证明 Schema 校验错误发生在函数执行前。FAQ 用 SQLAlchemy 参数绑定表达式 `FAQ.question.like(f"%{query}%")`。演示订单、商品、物流各自返回含“模拟”标记的随机字段，输入分别为 `order_id`、`product_query`、`order_id`。create_ticket 闭包固定当前 conversation_id，仅接受 description 和 ticket_type，并返回带有 `ticket_no` 的 JSON。工具函数的类型标注定义模型可见输入 Schema。
+实现 `tools_by_name` 和 `runner_with_counted_order` 测试夹具；前者绑定会话 ID `demo-tools`，后者记录工具函数实际执行次数，以便证明 Schema 校验错误发生在函数执行前。FAQ 用 SQLAlchemy 参数绑定表达式 `FAQ.question.like(f"%{query}%")`。演示订单、商品、物流各自返回含“模拟”标记的随机字段，输入分别为 `order_id`、`product_query`、`order_id`。create_ticket 闭包固定当前 conversation_id，仅接受 description 和 ticket_type，并返回带有 `ticket_no` 的 JSON。工具函数的类型标注定义模型可见输入 Schema。
 
 - [ ] **Step 4: 实现执行错误、超时与有限重试并验证**
 
-Runner 执行前按注册表检查工具名，再以生成的 Pydantic Schema 校验 args。参数/未知工具错误不重试；临时异常按配置次数重试；超时和最终异常转换为不含堆栈的结构化 `ToolResult(is_error=True)`。对 Step 1 的失败测试最小实现，并补齐 Step 1 中 runner 执行次数恰为 `max_retries + 1`、无效 Schema 不重试的断言。
+Runner 执行前按注册表检查工具名，再以生成的 Pydantic Schema 校验 args。参数/未知工具错误不重试；临时异常按配置次数重试；超时和最终异常转换为不含堆栈的结构化 `ToolResult(is_error=True)`。Step 1 的失败测试已包含尝试次数与 Schema 不触发函数的断言，本步只实现代码并运行已有测试。
 
 Run: `python3 -m pytest tests/test_tools.py -q`
 Expected: 全部 PASS；重试耗尽时执行次数严格为 `max_retries + 1`。
@@ -257,7 +261,7 @@ Expected: 全部 PASS；重试耗尽时执行次数严格为 `max_retries + 1`�
 - [ ] **Step 5: 提交阶段产物**
 
 ```bash
-git add app/tools app/config.py tests/test_tools.py tests/conftest.py dev-notes/ch02.md
+git add .gitignore app/tools app/config.py tests/test_tools.py tests/conftest.py dev-notes/ch02.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md
 git commit -m "feat: add registered business tools"
 ```
 
