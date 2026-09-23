@@ -353,7 +353,7 @@ git commit -m "feat: orchestrate persisted single tool chat"
 ## Task 5: SSE API 与协议测试
 
 **Files:**
-- Modify: `app/main.py`, `app/schemas.py`
+- Modify: `app/main.py`
 - Create: `tests/test_api.py`
 - Modify: `dev-notes/ch02.md`
 
@@ -393,7 +393,7 @@ Expected: API 与此前各层测试全绿。
 - [ ] **Step 5: 提交阶段产物**
 
 ```bash
-git add app/main.py app/schemas.py tests/test_api.py dev-notes/ch02.md
+git add app/main.py tests/test_api.py dev-notes/ch02.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md
 git commit -m "feat: expose tool chat through sse"
 ```
 
