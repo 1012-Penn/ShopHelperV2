@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterator
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from langchain_openai import ChatOpenAI
 
 from app.config import Settings
@@ -46,6 +47,11 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
     @application.get("/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    @application.get("/", include_in_schema=False)
+    def chat_page() -> FileResponse:
+        page = Path(__file__).parent / "static" / "index.html"
+        return FileResponse(page)
 
     @application.post("/api/v1/chat/stream")
     def chat_stream(request: ChatRequest) -> StreamingResponse:

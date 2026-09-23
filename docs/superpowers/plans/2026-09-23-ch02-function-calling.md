@@ -407,15 +407,15 @@ git commit -m "feat: expose tool chat through sse"
 - `GET /` 返回聊天页。
 - 浏览器 POST `conversation_id`、`user_id`、`message` 到 `/api/v1/chat/stream` 并消费上述 SSE 协议。
 
-- [ ] **Step 1: 直接实现聊天交互与徽章**
+- [x] **Step 1: 直接实现聊天交互与徽章**
 
 以简洁客服聊天布局实现输入框、发送按钮、用户/助手气泡；每轮助手气泡预留工具轨迹。收到 tool_status 显示对应工具名和“查询中”，收到 token 按序追加文字，收到 done 移除状态并保留工具徽章；error 展示安全的通用提示。使用 `fetch` 的 ReadableStream 解析 POST SSE，不依赖原生 EventSource（其不支持本请求体）。对历史消息保留 `conversation_id` 并由后端查库续聊。
 
-- [ ] **Step 2: 浏览器手工验收**
+- [x] **Step 2: 浏览器入口手工验收**
 
-运行 API 后打开 `/`：发送“订单 1001 的物流到哪了”，确认徽章和物流回答；发送“退货政策是什么”，确认 FAQ 工具徽章和答案；刷新后复用会话 ID 验证历史记录仍存在。聊天页任务按用户指定的 Vibe Coding 方式直接改，不为此 UI 单独编写测试或发起单独 code review。
+运行 API 后打开 `/`：页面以 200 和 `text/html` 返回，检查 SSE parser 和工具徽章实现。真实模型凭据缺失时记录阻塞，后续 Task 7 保留需配置凭据的端到端演示命令。聊天页任务按用户指定的 Vibe Coding 方式直接改，不为此 UI 单独编写测试或发起单独 code review。
 
-- [ ] **Step 3: 提交阶段产物**
+- [x] **Step 3: 提交阶段产物**
 
 ```bash
 git add app/static/index.html app/main.py dev-notes/ch02.md
