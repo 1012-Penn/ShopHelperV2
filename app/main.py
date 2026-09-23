@@ -55,8 +55,10 @@ def extract_after_sale(
     return service.extract(request.text)
 
 
+frontend_root = Path(__file__).resolve().parent.parent / "frontend"
+frontend_dist = frontend_root / "dist"
 app.mount(
     "/",
-    StaticFiles(directory=Path(__file__).resolve().parent.parent / "frontend", html=True),
+    StaticFiles(directory=frontend_dist if frontend_dist.exists() else frontend_root, html=True),
     name="frontend",
 )

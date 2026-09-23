@@ -10,6 +10,15 @@
 python3 -m pip install -e '.[dev]'
 ```
 
+安装并构建 React 前端：
+
+```bash
+cd frontend
+npm install
+npm run build
+cd ..
+```
+
 复制 `.env.example` 为项目 `.env`，填写模型名和 OpenAI-compatible 地址：
 
 ```dotenv
@@ -26,7 +35,7 @@ MAX_HISTORY_TOKENS=1024
 uvicorn app.main:app --reload
 ```
 
-启动后打开 [http://127.0.0.1:8000/](http://127.0.0.1:8000/)，即可使用淘宝风格的客服工作台页面。页面由 FastAPI 直接托管，不需要单独启动前端开发服务器。
+启动后打开 [http://127.0.0.1:8000/](http://127.0.0.1:8000/)，即可使用现代风格的 React 客服工作台。开发前端时也可以运行 `cd frontend && npm run dev`，Vite 会把 `/api` 请求代理到 FastAPI。
 
 ## 验收命令
 
