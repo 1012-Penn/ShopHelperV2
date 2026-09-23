@@ -67,7 +67,7 @@
 - `pyproject.toml` 声明运行依赖 FastAPI、SQLAlchemy、PyMySQL、LangChain、langchain-openai、python-dotenv；开发依赖 pytest 和 httpx。
 - Produces FastAPI `app`，`GET /health` 返回 `{"status":"ok"}`。
 
-- [ ] **Step 1: 写缺配置、默认值和健康检查失败的测试**
+- [x] **Step 1: 写缺配置、默认值和健康检查失败的测试**
 
 ```python
 def test_settings_requires_model_key_and_base_url():
@@ -88,21 +88,21 @@ def test_health_endpoint_returns_ok():
     assert response.json() == {"status": "ok"}
 ```
 
-- [ ] **Step 2: 确认测试红灯**
+- [x] **Step 2: 确认测试红灯**
 
 Run: `python3 -m pytest tests/test_config.py -q`
 Expected: FAIL，因为 `app.config.Settings` 和 FastAPI `app` 尚未定义。
 
-- [ ] **Step 3: 写配置及健康检查的最小实现**
+- [x] **Step 3: 写配置及健康检查的最小实现**
 
 配置优先读取项目 `.env`；缺少密钥时仅回退读取 `/root/.env` 中的 `DEEPSEEK_API_KEY`，绝不打印密钥。读取 `MODEL`、`API_KEY`（兼容 `DEEPSEEK_API_KEY`）、`BASE_URL`、`DATABASE_URL`；模型配置缺项明确抛 `ValueError`。加默认的工具超时与重试上限。添加 `GET /health`。
 
-- [ ] **Step 4: 验证配置和 API**
+- [x] **Step 4: 验证配置和 API**
 
 Run: `python3 -m pytest tests/test_config.py -q`
 Expected: 必填配置缺失时报对应字段错误；完整环境映射产生正确 Settings。再运行 `python3 -m pytest -q`。
 
-- [ ] **Step 5: 提交阶段产物**
+- [x] **Step 5: 提交阶段产物**
 
 ```bash
 git add pyproject.toml .gitignore .env.example app tests/test_config.py dev-notes/ch02.md
@@ -122,7 +122,7 @@ git commit -m "feat: scaffold customer support API"
 - Produces ORM `FAQ`、`Conversation`、`Message`、`Ticket`；conversation 主键为字符串 ID，message role 限制为 `user`、`assistant`、`tool`，tool_calls 为 JSON 可空列。
 - Produces幂等 seed 函数 `seed_faq(session)`，插入退货政策、配送时效、支付方式、退款处理等 FAQ；退货文案含完整关键词“退货政策是什么”。
 
-- [ ] **Step 1: 写数据库专用配置、四表和 seed 的失败测试**
+- [x] **Step 1: 写数据库专用配置、四表和 seed 的失败测试**
 
 ```python
 def test_seed_can_read_database_url_without_model_credentials():
@@ -159,20 +159,20 @@ def test_mysql_faq_ddl_avoids_unique_index_on_text_question():
     assert "UNIQUE (question)" not in ddl
 ```
 
-- [ ] **Step 2: 确认测试红灯**
+- [x] **Step 2: 确认测试红灯**
 
 Run: `python3 -m pytest tests/test_models.py::test_seed_is_idempotent_and_models_store_tool_calls -q`
 Expected: FAIL，因为 ORM 和 seed 尚不存在。
 
-- [ ] **Step 3: 实现数据库 URL 读取、四个 ORM 模型、SQLite test fixture 和 seed**
+- [x] **Step 3: 实现数据库 URL 读取、四个 ORM 模型、SQLite test fixture 和 seed**
 
 `database_url_from_env()` 只解析项目 `.env` 和环境映射里的数据库 URL，不验证 MODEL/API_KEY/BASE_URL；seed CLI 因此无需配置模型。FAQ 以 `(question, answer, category)` 为字段；Conversation 有 `user_id`、状态、创建时间和 messages 关系；Message 有会话外键、内容、JSON tool_calls、tool_call_id 和时间；Ticket 有工单号主键、会话外键、问题描述、类型、状态、创建时间。`create_tables(engine)` 调用 ORM metadata 建立四表。seed 用问题文本查询后再新增，使用能被“退货政策是什么”按 LIKE 命中的问题文案，且重复运行不重复插入。
 
-- [ ] **Step 4: 增加 MySQL Compose 并验证模型**
+- [x] **Step 4: 增加 MySQL Compose 并验证模型**
 
 Compose 使用 MySQL 8，设置健康检查和本地演示库参数。运行 `python3 -m pytest tests/test_models.py -q`、`docker compose config`。若 Docker daemon 可用，运行 `docker compose up -d db` 后执行 seed 并查询四表。
 
-- [ ] **Step 5: 提交阶段产物**
+- [x] **Step 5: 提交阶段产物**
 
 ```bash
 git add app/db scripts/seed.py docker-compose.yml tests/conftest.py tests/test_models.py app/config.py tests/test_config.py pyproject.toml dev-notes/ch02.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md
@@ -190,7 +190,7 @@ git commit -m "feat: add mysql persistence models and faq seed"
 - Produces `build_tools(session_factory, conversation_id) -> list[BaseTool]`，恰好注册五个规定工具；`ToolRegistry(tools)` 提供只读 `tools` 属性供模型绑定；`ToolRunner(registry, timeout_seconds, max_retries).run(name, args, tool_call_id) -> ToolResult`。
 - ToolResult 字段：`tool_name`、`tool_call_id`（由编排层传给 runner）、`content`、`is_error`。
 
-- [ ] **Step 1: 写 FAQ 命中/漏召回和 runner 校验失败测试**
+- [x] **Step 1: 写 FAQ 命中/漏召回和 runner 校验失败测试**
 
 ```python
 def test_registry_contains_only_five_business_tools(tools):
@@ -242,23 +242,23 @@ def test_runner_retries_timeout_and_returns_safe_error(runner_with_flaky_and_slo
     assert "Traceback" not in timed_out.content
 ```
 
-- [ ] **Step 2: 确认测试红灯**
+- [x] **Step 2: 确认测试红灯**
 
 Run: `python3 -m pytest tests/test_tools.py -q`
 Expected: FAIL，因为工具和注册表尚未实现。
 
-- [ ] **Step 3: 实现五个 `@tool` 与显式注册表**
+- [x] **Step 3: 实现五个 `@tool` 与显式注册表**
 
 实现 `tools_by_name` 和 `runner_with_counted_order` 测试夹具；前者绑定会话 ID `demo-tools`，后者记录工具函数实际执行次数，以便证明 Schema 校验错误发生在函数执行前。FAQ 用 SQLAlchemy 参数绑定表达式 `FAQ.question.like(f"%{query}%")`。演示订单、商品、物流各自返回含“模拟”标记的随机字段，输入分别为 `order_id`、`product_query`、`order_id`。create_ticket 闭包固定当前 conversation_id，仅接受 description 和 ticket_type，并返回带有 `ticket_no` 的 JSON。工具函数的类型标注定义模型可见输入 Schema。
 
-- [ ] **Step 4: 实现执行错误、超时与有限重试并验证**
+- [x] **Step 4: 实现执行错误、超时与有限重试并验证**
 
 Runner 执行前按注册表检查工具名，再以生成的 Pydantic Schema 校验 args。参数/未知工具错误不重试；临时异常按配置次数重试；超时和最终异常转换为不含堆栈的结构化 `ToolResult(is_error=True)`。Step 1 的失败测试已包含尝试次数与 Schema 不触发函数的断言，本步只实现代码并运行已有测试。
 
 Run: `python3 -m pytest tests/test_tools.py -q`
 Expected: 全部 PASS；重试耗尽时执行次数严格为 `max_retries + 1`。
 
-- [ ] **Step 5: 提交阶段产物**
+- [x] **Step 5: 提交阶段产物**
 
 ```bash
 git add .gitignore app/tools app/config.py tests/test_tools.py tests/conftest.py dev-notes/ch02.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md
@@ -276,7 +276,7 @@ git commit -m "feat: add registered business tools"
 - Produces `ChatService(session_factory, model_factory, tool_runner_factory).stream_events(request) -> Iterator[dict]`；事件为 tool_status、token、done、error。编排层以 `build_tools` 生成当前会话工具，用 `ToolRunner` factory 创建 runner，并调用 `model.bind_tools(tools).stream(messages)`；回灌阶段调用未绑定工具的 `model.stream(messages)`。FastAPI wiring 提供 `ChatOpenAI` model factory。
 - 初始绑定工具的流只允许 0 或 1 个 tool call；一个调用时 tool message 用同一 tool_call_id；回灌后的第二次模型流不绑定工具。
 
-- [ ] **Step 1: 写完整工具轮次与普通聊天的失败测试**
+- [x] **Step 1: 写完整工具轮次与普通聊天的失败测试**
 
 在 `tests/test_chat.py` 中用真实 `AIMessageChunk` 构造来自模型的流，fake 只替代外部模型网络请求；定义 `FakeModel`、`make_tool_chunks` 和 `make_service(session_factory, fake_model, tool_runner=None)` 供下面测试使用。工具注册、校验、数据库和编排都使用真实实现。
 
@@ -327,23 +327,23 @@ def test_model_failure_emits_safe_error_and_keeps_user_message(db_session_factor
         assert session.scalar(select(Message).where(Message.role == "user")).content == "查商品"
 ```
 
-- [ ] **Step 2: 确认测试红灯**
+- [x] **Step 2: 确认测试红灯**
 
 Run: `python3 -m pytest tests/test_chat.py -q`
 Expected: FAIL，因为 ChatService 尚不存在。
 
-- [ ] **Step 3: 实现数据库持久化顺序和一次工具决策**
+- [x] **Step 3: 实现数据库持久化顺序和一次工具决策**
 
 先提交 conversation/user message；初始模型流不持有数据库事务。无工具时保存 assistant 文本。单一工具申请时先持久化 AIMessage 的原始 tool_calls，再发 tool_status、执行一次并持久化 tool role 结果，最后构造带匹配 tool_call_id 的 ToolMessage。
 
-- [ ] **Step 4: 回灌模型、流式保存并验证错误分支**
+- [x] **Step 4: 回灌模型、流式保存并验证错误分支**
 
 将 system、从数据库读取的会话消息、本轮 assistant tool-call 和 ToolMessage 交给未绑定工具的流式模型；每个文本增量产生 token 事件，完整回答聚合保存后才产生 done。工具错误作为 ToolMessage 回灌；模型/数据库错误产生通用 error。实现 Step 1 的无工具、工具错误和模型失败测试。
 
 Run: `python3 -m pytest tests/test_chat.py -q`
 Expected: 普通回答与工具最终回答保留 token 事件；工具模型调用最多两次（工具决策一次、结果收敛一次），工具 runner 每轮最多执行一次。
 
-- [ ] **Step 5: 提交阶段产物**
+- [x] **Step 5: 提交阶段产物**
 
 ```bash
 git add app/prompts.py app/services app/schemas.py app/tools/registry.py tests/test_chat.py dev-notes/ch02.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md
@@ -361,7 +361,7 @@ git commit -m "feat: orchestrate persisted single tool chat"
 - `POST /api/v1/chat/stream` 接收 `ChatRequest`，响应 `text/event-stream`。
 - SSE 格式为 `event: <type>\ndata: <JSON>\n\n`；事件类型为 `tool_status`、`token`、`done`、`error`。
 
-- [ ] **Step 1: 写 SSE 顺序和错误帧测试**
+- [x] **Step 1: 写 SSE 顺序和错误帧测试**
 
 ```python
 def test_chat_stream_returns_tool_status_tokens_and_done(client):
@@ -376,21 +376,21 @@ def test_chat_stream_turns_service_failure_into_error_event(client_with_failing_
     assert "Traceback" not in response.text
 ```
 
-- [ ] **Step 2: 确认测试红灯**
+- [x] **Step 2: 确认测试红灯**
 
 Run: `python3 -m pytest tests/test_api.py -q`
 Expected: FAIL，因为当前 API 尚无聊天路由。
 
-- [ ] **Step 3: 注入 ChatService 并编码 SSE**
+- [x] **Step 3: 注入 ChatService 并编码 SSE**
 
 创建 `create_app(chat_service=None)` 供测试注入；路由迭代服务事件并按 SSE wire format 编码 JSON data，设置 `Cache-Control: no-cache`。流开始后捕获异常并发送通用 error 帧。
 
-- [ ] **Step 4: 验证 API 成功和失败响应**
+- [x] **Step 4: 验证 API 成功和失败响应**
 
 实现 Step 1 的错误帧测试；断言完整 event/data 顺序和 done 中的 conversation_id。运行 `python3 -m pytest tests/test_api.py -q` 和 `python3 -m pytest -q`。
 Expected: API 与此前各层测试全绿。
 
-- [ ] **Step 5: 提交阶段产物**
+- [x] **Step 5: 提交阶段产物**
 
 ```bash
 git add app/main.py tests/test_api.py dev-notes/ch02.md docs/superpowers/plans/2026-09-23-ch02-function-calling.md
