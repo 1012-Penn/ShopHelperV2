@@ -171,7 +171,7 @@ def test_oversize_sentence_is_kept_whole_and_table_headers_repeat():
 - Test: `tests/test_models.py`
 
 **Interfaces:**
-- `KnowledgeRepository(session_factory)` provides `upsert_drafts(drafts: list[ChunkDraft]) -> list[int]`, `pending(limit: int) -> list[KnowledgeChunk]`, `mark_vectorized(chunk_id: int, vector_id: int) -> None`, `load_by_ids(ids: list[int]) -> list[KnowledgeChunk]`, `load_turns_after(last_message_id: int, limit: int) -> tuple[list[ConversationTurn], int]`, `stage_batch_and_advance(candidates: list[tuple[int, ExtractedCandidate]], last_message_id: int, run_id: str) -> None`, and `promote_staged(run_id: str) -> tuple[int, int]`。
+- `KnowledgeRepository(session_factory)` provides `upsert_drafts(drafts: list[ChunkDraft]) -> list[int]`, `pending(limit: int) -> list[KnowledgeChunk]`, `mark_vectorized(chunk_id: int, vector_id: int) -> None`, `load_by_ids(ids: list[int]) -> list[KnowledgeChunk]`, `load_turns_after(last_message_id: int, limit: int) -> tuple[list[ConversationTurn], int]`, `stage_batch_and_advance(candidates: list[tuple[ConversationTurn, ExtractedCandidate]], last_message_id: int, run_id: str) -> None`, and `promote_staged(run_id: str) -> tuple[int, int]`。
 - FAQ source mapping: `FAQ.id -> source_key=f"faq:{faq.id}"`, `questions=[faq.question]`, `answer=faq.answer`, `category=faq.category`, `content_type="product_faq"`.
 - Document source keys are stable for a source/section/block ordinal. Same source and same content is a no-op; changed body updates same row and marks it pending.
 
@@ -188,13 +188,13 @@ def test_same_source_update_resets_vector_state_and_keeps_primary_key(repository
     assert row.vector_status == "pending"
 ```
 
-- [ ] **Step 1: Write failing repository tests** for FAQ-to-draft mapping, unique source upsert, content update resetting vector state, pending ordering, stable neighbor pointers, and empty import idempotency.
-- [ ] **Step 2: Run red tests.** `python3 -m pytest tests/test_knowledge_indexer.py -q`; expected: repository import failure.
-- [ ] **Step 3: Implement deterministic content hash and source mapping** in `content.py`; normalize Unicode, whitespace, and punctuation only for fingerprints, not for stored answer text.
-- [ ] **Step 4: Implement transactional SQLAlchemy repository methods.** Commit source rows as pending in short transactions before any network request; use `session_factory.begin()`.
-- [ ] **Step 5: Link previous/next chunk IDs** after inserting the full source draft list; verify relationships remain null at list boundaries.
-- [ ] **Step 6: Run repository, model, and existing seed tests.** `python3 -m pytest tests/test_knowledge_indexer.py tests/test_models.py -q`; expected: all pass, including existing FAQ seed idempotency.
-- [ ] **Step 7: Commit.** `git add app/services/knowledge/content.py app/services/knowledge/repository.py app/services/knowledge/indexer.py tests/test_knowledge_indexer.py tests/test_models.py && git commit -m "feat: persist knowledge chunks idempotently"`.
+- [x] **Step 1: Write failing repository tests** for FAQ-to-draft mapping, unique source upsert, content update resetting vector state, pending ordering, stable neighbor pointers, and empty import idempotency.
+- [x] **Step 2: Run red tests.** `python3 -m pytest tests/test_knowledge_indexer.py -q`; expected: repository import failure.
+- [x] **Step 3: Implement deterministic content hash and source mapping** in `content.py`; normalize Unicode, whitespace, and punctuation only for fingerprints, not for stored answer text.
+- [x] **Step 4: Implement transactional SQLAlchemy repository methods.** Commit source rows as pending in short transactions before any network request; use `session_factory.begin()`.
+- [x] **Step 5: Link previous/next chunk IDs** after inserting the full source draft list; verify relationships remain null at list boundaries.
+- [x] **Step 6: Run repository, model, and existing seed tests.** `python3 -m pytest tests/test_knowledge_indexer.py tests/test_models.py -q`; expected: all pass, including existing FAQ seed idempotency.
+- [x] **Step 7: Commit.** `git add app/services/knowledge/content.py app/services/knowledge/repository.py app/services/knowledge/indexer.py tests/test_knowledge_indexer.py tests/test_models.py && git commit -m "feat: persist knowledge chunks idempotently"`.
 
 ## Task 5：SiliconFlow embeddings 与 Milvus pending 恢复
 

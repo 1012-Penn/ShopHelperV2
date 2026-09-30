@@ -134,6 +134,7 @@ def test_mysql_knowledge_ddl_uses_bounded_unique_keys():
     assert "UNIQUE (source_key)" in chunk_ddl
     assert "UNIQUE (fingerprint, source_user_message_id)" in stage_ddl
     assert "UNIQUE (answer)" not in chunk_ddl
+    assert any(index.name == "ix_knowledge_chunks_content_hash" for index in KnowledgeChunk.__table__.indexes)
 
 
 def test_knowledge_vector_status_rejects_unknown_values(db_session):
