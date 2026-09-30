@@ -14,6 +14,10 @@ from app.config import Settings
 from app.db.session import create_tables, make_engine, make_session_factory
 from app.schemas import ChatRequest
 from app.services.chat import ChatService
+from app.services.knowledge.embeddings import EmbeddingClient
+from app.services.knowledge.repository import KnowledgeRepository
+from app.services.knowledge.retriever import DenseSearcher, KnowledgeRetriever
+from app.services.knowledge.vector_store import MilvusKnowledgeStore
 from app.tools.registry import ToolRegistry, ToolRunner
 
 
@@ -28,9 +32,26 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
         nonlocal service
         if service is None:
             settings = Settings.from_env()
+            settings.require_knowledge()
             engine = make_engine(settings.database_url)
             create_tables(engine)
             session_factory = make_session_factory(engine)
+            embedding_client = EmbeddingClient(
+                api_key=settings.embedding_api_key,
+                base_url=settings.embedding_api_base,
+                model=settings.embedding_model,
+            )
+            vector_store = MilvusKnowledgeStore(
+                uri=settings.milvus_uri,
+                collection_name=settings.milvus_collection,
+            )
+            vector_store.ensure_collection()
+            faq_retriever = KnowledgeRetriever(
+                DenseSearcher(embedding_client, vector_store),
+                KnowledgeRepository(session_factory),
+                top_k=settings.faq_top_k,
+                min_similarity=settings.faq_min_similarity,
+            )
             model_factory = lambda: ChatOpenAI(
                 model=settings.model,
                 api_key=settings.api_key,
@@ -41,7 +62,7 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
                 timeout_seconds=settings.tool_timeout_seconds,
                 max_retries=settings.tool_max_retries,
             )
-            service = ChatService(session_factory, model_factory, runner_factory)
+            service = ChatService(session_factory, model_factory, runner_factory, faq_retriever=faq_retriever)
         return service
 
     @application.get("/health")

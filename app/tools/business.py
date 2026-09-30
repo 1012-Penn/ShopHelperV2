@@ -7,12 +7,11 @@ import secrets
 from random import choice, randint
 
 from langchain.tools import tool
-from sqlalchemy import select
 
-from app.db.models import FAQ, Ticket
+from app.db.models import Ticket
 
 
-def build_tools(session_factory, conversation_id: str):
+def build_tools(session_factory, conversation_id: str, faq_retriever=None):
     @tool
     def query_order(order_id: str) -> str:
         """查询订单的演示数据。输入订单号。"""
@@ -50,19 +49,16 @@ def build_tools(session_factory, conversation_id: str):
 
     @tool
     def query_faq(query: str) -> str:
-        """按常见问题原文关键词查询 FAQ。输入用户问题或关键词。"""
-        with session_factory() as session:
-            matches = session.scalars(
-                select(FAQ).where(FAQ.question.like(f"%{query}%")).limit(5)
-            ).all()
+        """查询电商商品、配送、退换货、支付或售后知识。输入用户问题。"""
+        matches = faq_retriever.search(query)[:5] if faq_retriever is not None else []
         if not matches:
             return json.dumps({"matched": False, "message": f"FAQ 未命中关键词：{query}"}, ensure_ascii=False)
         return json.dumps(
             {
                 "matched": True,
                 "items": [
-                    {"question": faq.question, "answer": faq.answer, "category": faq.category}
-                    for faq in matches
+                    {"question": hit.question, "answer": hit.answer, "category": hit.category}
+                    for hit in matches
                 ],
             },
             ensure_ascii=False,

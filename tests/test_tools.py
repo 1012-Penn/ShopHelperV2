@@ -6,16 +6,39 @@ import pytest
 from langchain.tools import tool
 from sqlalchemy import select
 
-from app.db.models import Conversation, FAQ, Ticket
+from app.db.models import Conversation, Ticket
+from app.services.knowledge.retriever import FAQHit
 from app.tools.business import build_tools
 from app.tools.registry import ToolInputError, ToolRegistry, ToolRunner, UnknownToolError
-from scripts.seed import seed_faq
+
+
+class FixtureFAQRetriever:
+    def search(self, query):
+        if "退货" in query or "退换货" in query:
+            return [
+                FAQHit(
+                    question="退换货条件",
+                    answer="退换货资格和期限以购买时适用的政策与订单详情为准。",
+                    category="退换货",
+                    score=0.91,
+                )
+            ]
+        if "邮费" in query or "运费" in query:
+            return [
+                FAQHit(
+                    question="运费计算",
+                    answer="请在结算页填写收货地址后查看当前订单运费。",
+                    category="配送",
+                    score=0.89,
+                )
+            ]
+        return []
 
 
 @pytest.fixture
 
 def tools(db_session_factory):
-    return build_tools(db_session_factory, "demo-tools")
+    return build_tools(db_session_factory, "demo-tools", FixtureFAQRetriever())
 
 
 @pytest.fixture
@@ -23,7 +46,10 @@ def tools(db_session_factory):
 def tools_by_name(db_session_factory):
     with db_session_factory.begin() as session:
         session.add(Conversation(conversation_id="demo-tools", user_id="demo-user", status="open"))
-    return {business_tool.name: business_tool for business_tool in build_tools(db_session_factory, "demo-tools")}
+    return {
+        business_tool.name: business_tool
+        for business_tool in build_tools(db_session_factory, "demo-tools", FixtureFAQRetriever())
+    }
 
 
 @pytest.fixture
@@ -98,24 +124,32 @@ def test_create_ticket_uses_bound_conversation(db_session, tools_by_name):
     assert ticket.conversation_id == "demo-tools"
 
 
-def test_query_faq_uses_literal_like_and_misses_postage(db_session, tools):
-    seed_faq(db_session)
+def test_query_faq_preserves_name_input_and_json_contract(tools):
     registry = ToolRegistry(tools)
-    matched = json.loads(registry.get("query_faq").invoke({"query": "退货政策是什么"}))
-    missed = json.loads(registry.get("query_faq").invoke({"query": "邮费是多少"}))
+    faq = registry.get("query_faq")
+    assert set(faq.get_input_schema().model_fields) == {"query"}
+    matched = json.loads(faq.invoke({"query": "邮费是多少"}))
+    missed = json.loads(faq.invoke({"query": "怎样给家里的猫梳毛"}))
     assert matched["matched"] is True
-    assert matched["items"][0]["answer"] == "商品签收后 7 天内可申请退货，商品需保持完好。"
-    assert missed == {"matched": False, "message": "FAQ 未命中关键词：邮费是多少"}
+    assert matched["items"] == [
+        {
+            "question": "运费计算",
+            "answer": "请在结算页填写收货地址后查看当前订单运费。",
+            "category": "配送",
+        }
+    ]
+    assert missed == {"matched": False, "message": "FAQ 未命中关键词：怎样给家里的猫梳毛"}
 
 
-def test_faq_evaluation_cases_match_labels(db_session, tools):
-    seed_faq(db_session)
+def test_faq_evaluation_cases_match_labels_and_answer_phrases(tools):
     faq = ToolRegistry(tools).get("query_faq")
     cases = json.loads((Path(__file__).parent / "fixtures" / "faq_cases.json").read_text())
 
     for case in cases:
         result = json.loads(faq.invoke({"query": case["query"]}))
         assert bool(result["matched"]) is (case["expected"] == "hit"), case["query"]
+        if case["expected"] == "hit":
+            assert case["answer_contains"] in result["items"][0]["answer"]
 
 
 def test_invalid_tool_arguments_are_rejected_without_retry(runner_with_counted_order):

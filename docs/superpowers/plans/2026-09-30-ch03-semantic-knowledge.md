@@ -302,14 +302,14 @@ def test_query_faq_preserves_tool_schema_and_json_contract(tools_by_name, fake_r
     }
 ```
 
-- [ ] **Step 1: Write failing retriever tests** for query embedding, ordered MySQL hydration, category/question mapping, Top-K cap, threshold filtering and dangling Milvus IDs.
-- [ ] **Step 2: Rewrite FAQ contract tests first.** Keep exact name and input schema; expect same JSON keys/types and no-match message while hits now come from injected retriever instead of `FAQ.question LIKE`.
-- [ ] **Step 3: Run red tests.** `python3 -m pytest tests/test_knowledge_retriever.py tests/test_tools.py -q`; expected: constructor signature/behavior mismatch and old LIKE assertion fails.
-- [ ] **Step 4: Implement retriever.** Embed the query, perform Milvus COSINE Top-K, discard hits below `min_similarity`, fetch MySQL rows by primary key, preserve vector ranking, ignore missing SQL rows, and return at most five items.
-- [ ] **Step 5: Inject runtime dependencies.** Build one embedding client/store/retriever in `app.main` and inject it into `ChatService` once; `ChatService` passes that instance into each `build_tools` call. Do not change tool descriptions to promise keyword behavior.
-- [ ] **Step 6: Update FAQ marked cases** with query, expected source, expected answer phrase and hit/miss label. Include “邮费是多少” and answer assertion against the generated delivery/fee document; include unrelated negative queries.
-- [ ] **Step 7: Run retriever, tools, chat, and API tests.** `python3 -m pytest tests/test_knowledge_retriever.py tests/test_tools.py tests/test_chat.py tests/test_api.py -q`; expected: full tool/API compatibility passes.
-- [ ] **Step 8: Commit.** `git add app/services/knowledge/retriever.py app/tools/business.py app/services/chat.py app/main.py tests/test_tools.py tests/test_knowledge_retriever.py tests/fixtures/faq_cases.json && git commit -m "feat: retrieve faq answers with dense vectors"`.
+- [x] **Step 1: Write failing retriever tests** for query embedding, ordered MySQL hydration, category/question mapping, Top-K cap, threshold filtering and dangling Milvus IDs.
+- [x] **Step 2: Rewrite FAQ contract tests first.** Keep exact name and input schema; expect same JSON keys/types and no-match message while hits now come from injected retriever instead of `FAQ.question LIKE`.
+- [x] **Step 3: Run red tests.** `python3 -m pytest tests/test_knowledge_retriever.py tests/test_tools.py -q`; expected: constructor signature/behavior mismatch and old LIKE assertion fails.
+- [x] **Step 4: Implement retriever.** Embed the query, perform Milvus COSINE Top-K, discard hits below `min_similarity`, fetch MySQL rows by primary key, preserve vector ranking, ignore missing SQL rows, and return at most five items.
+- [x] **Step 5: Inject runtime dependencies.** Build one embedding client/store/retriever in `app.main` and inject it into `ChatService` once; `ChatService` passes that instance into each `build_tools` call. Do not change tool descriptions to promise keyword behavior.
+- [x] **Step 6: Update FAQ marked cases** with query, expected source, expected answer phrase and hit/miss label. Include “邮费是多少” and answer assertion against the generated delivery/fee document; include unrelated negative queries.
+- [x] **Step 7: Run retriever, tools, chat, and API tests.** `python3 -m pytest tests/test_knowledge_retriever.py tests/test_tools.py tests/test_chat.py tests/test_api.py -q`; expected: full tool/API compatibility passes.
+- [x] **Step 8: Commit.** `git add app/services/knowledge/retriever.py app/tools/business.py app/services/chat.py app/main.py tests/test_tools.py tests/test_knowledge_retriever.py tests/fixtures/faq_cases.json && git commit -m "feat: retrieve faq answers with dense vectors"`.
 
 ## Task 8：CLI、运行手册、真实服务验收与最终评估
 

@@ -5,6 +5,7 @@ from sqlalchemy import select
 from app.db.models import Message
 from app.schemas import ChatRequest
 from app.services.chat import ChatService
+from app.services.knowledge.retriever import FAQHit
 from app.tools.registry import ToolRegistry, ToolRunner
 
 
@@ -64,6 +65,33 @@ def test_tool_round_persists_request_result_and_streams_final_tokens(db_session_
     assert messages[1].tool_calls[0]["id"] == messages[2].tool_call_id == "call-1"
     assert messages[3].content == "物流在运输中。"
     assert all(tool.name in {"query_order", "query_product", "query_logistics", "query_faq", "create_ticket"} for tool in model.bound_tools)
+
+
+def test_query_faq_uses_the_app_scoped_dense_retriever(db_session_factory):
+    class FakeRetriever:
+        def __init__(self):
+            self.queries = []
+
+        def search(self, query):
+            self.queries.append(query)
+            return [FAQHit("运费计算", "以结算页显示为准。", "配送", 0.9)]
+
+    retriever = FakeRetriever()
+    model = FakeModel(
+        make_tool_chunks({"name": "query_faq", "args": {"query": "邮费是多少"}, "id": "call-faq"}),
+        [AIMessageChunk(content="请查看结算页。")],
+    )
+    service = ChatService(
+        db_session_factory,
+        lambda: model,
+        lambda tools: ToolRunner(ToolRegistry(tools), timeout_seconds=0.2, max_retries=0),
+        faq_retriever=retriever,
+    )
+
+    events = list(service.stream_events(ChatRequest(conversation_id="semantic-faq", message="邮费是多少")))
+
+    assert events[-1]["event"] == "done"
+    assert retriever.queries == ["邮费是多少"]
 
 
 def test_missing_model_tool_call_id_is_normalized_in_history(db_session_factory):

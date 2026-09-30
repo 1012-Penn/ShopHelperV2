@@ -26,15 +26,17 @@ class ChatService:
         session_factory: sessionmaker[Session],
         model_factory: ModelFactory,
         tool_runner_factory: ToolRunnerFactory,
+        faq_retriever=None,
     ) -> None:
         self.session_factory = session_factory
         self.model_factory = model_factory
         self.tool_runner_factory = tool_runner_factory
+        self.faq_retriever = faq_retriever
 
     def stream_events(self, request: ChatRequest) -> Iterator[dict]:
         try:
             history = self._persist_user_and_load_history(request)
-            tools = build_tools(self.session_factory, request.conversation_id)
+            tools = build_tools(self.session_factory, request.conversation_id, self.faq_retriever)
             runner = self.tool_runner_factory(tools)
             model = self.model_factory()
             messages = [SystemMessage(content=SYSTEM_PROMPT), *history, HumanMessage(content=request.message)]
