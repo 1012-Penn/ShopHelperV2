@@ -17,7 +17,8 @@ class Evidence:
     category: str = ''
 
     def snapshot(self):
-        return asdict(self)
+        from app.services.quality.sources import source_url
+        return {**asdict(self), "source_url": source_url(self.source_key, self.section_path)}
 
 
 class QualityRetriever:
