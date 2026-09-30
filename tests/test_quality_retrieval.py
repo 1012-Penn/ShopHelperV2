@@ -40,3 +40,12 @@ def test_stale_hash_inactive_and_missing_hits_are_ignored(db_session_factory):
     retriever=QualityRetriever(db_session_factory,None,Store(),None,QueryNormalizer())
     assert retriever.hydrate([HybridHit(7,.8,'old'),HybridHit(999,.9,'new')])==[]
     assert retriever.hydrate([HybridHit(7,.8,'new')])[0].section_path==['耳机','接口']
+
+
+def test_normalization_reused_across_strategies():
+    calls=[]
+    def rewrite(raw):calls.append(raw);return raw
+    normalizer=QueryNormalizer(rewrite)
+    normalizer.normalize('邮费多少')
+    normalizer.normalize('邮费多少')
+    assert len(calls)==1

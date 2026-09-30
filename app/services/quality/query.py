@@ -1,5 +1,6 @@
 """Single-turn normalization preserving identifiers and negative conditions."""
 import re
+from functools import lru_cache
 from dataclasses import dataclass
 from pydantic import BaseModel
 
@@ -19,6 +20,7 @@ class QueryNormalizer:
     def __init__(self, rewrite=None):
         self.rewrite=rewrite
 
+    @lru_cache(maxsize=1024)
     def normalize(self, raw):
         canonical=raw.strip()
         if self.rewrite:

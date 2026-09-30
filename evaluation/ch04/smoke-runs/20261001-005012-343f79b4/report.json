@@ -1,0 +1,3558 @@
+{
+  "mode": "live",
+  "metadata": {
+    "cases": 3,
+    "strategies": [
+      "dense",
+      "bm25",
+      "hybrid",
+      "hybrid_rerank"
+    ],
+    "split": "all",
+    "dataset_sha256": "ef1d9a7063271b6563ebba2b448a6d342e2ec6f07ec821bc0bb1fe1ec4f86abb",
+    "corpus_sha256": "cd6f6e1f46cb15e3ff09f0ca56b74aed5cdc3827ed64bfed9f12b01e487087f5",
+    "generator_model": "deepseek-chat",
+    "judge_model": "deepseek-chat",
+    "reranker": "BAAI/bge-reranker-v2-m3",
+    "collection": "knowledge_ch04_eval",
+    "rerank_min_score": 0.0
+  },
+  "summary": {
+    "dense": {
+      "cases": 3,
+      "error_count": 0,
+      "faithfulness": 1.0,
+      "faithfulness_cases": 3,
+      "known_false_refusal_rate": 0.0,
+      "unknown_refusal_rate": null,
+      "candidate_recall@50": 1.0,
+      "mrr": 0.611111111111111,
+      "recall@1": 0.3333333333333333,
+      "recall@10": 1.0,
+      "recall@5": 1.0
+    },
+    "bm25": {
+      "cases": 3,
+      "error_count": 0,
+      "faithfulness": 1.0,
+      "faithfulness_cases": 3,
+      "known_false_refusal_rate": 0.0,
+      "unknown_refusal_rate": null,
+      "candidate_recall@50": 1.0,
+      "mrr": 0.6666666666666666,
+      "recall@1": 0.3333333333333333,
+      "recall@10": 1.0,
+      "recall@5": 1.0
+    },
+    "hybrid": {
+      "cases": 3,
+      "error_count": 0,
+      "faithfulness": 1.0,
+      "faithfulness_cases": 3,
+      "known_false_refusal_rate": 0.0,
+      "unknown_refusal_rate": null,
+      "candidate_recall@50": 1.0,
+      "mrr": 0.6666666666666666,
+      "recall@1": 0.3333333333333333,
+      "recall@10": 1.0,
+      "recall@5": 1.0
+    },
+    "hybrid_rerank": {
+      "cases": 3,
+      "error_count": 0,
+      "faithfulness": 1.0,
+      "faithfulness_cases": 3,
+      "known_false_refusal_rate": 0.0,
+      "unknown_refusal_rate": null,
+      "candidate_recall@50": 1.0,
+      "mrr": 0.8333333333333334,
+      "recall@1": 0.6666666666666666,
+      "recall@10": 1.0,
+      "recall@5": 1.0
+    }
+  },
+  "groups": {
+    "dense": {
+      "bucket": {
+        "A_policy": {
+          "cases": 3,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 3,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.611111111111111,
+          "recall@1": 0.3333333333333333,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        }
+      },
+      "difficulty": {
+        "easy": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 1.0,
+          "recall@1": 1.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "medium": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.3333333333333333,
+          "recall@1": 0.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "hard": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.5,
+          "recall@1": 0.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        }
+      },
+      "split": {
+        "calibration": {
+          "cases": 3,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 3,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.611111111111111,
+          "recall@1": 0.3333333333333333,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "test": {
+          "cases": 0,
+          "error_count": 0,
+          "faithfulness": null,
+          "faithfulness_cases": 0,
+          "known_false_refusal_rate": null,
+          "unknown_refusal_rate": null
+        }
+      }
+    },
+    "bm25": {
+      "bucket": {
+        "A_policy": {
+          "cases": 3,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 3,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.6666666666666666,
+          "recall@1": 0.3333333333333333,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        }
+      },
+      "difficulty": {
+        "easy": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 1.0,
+          "recall@1": 1.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "medium": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.5,
+          "recall@1": 0.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "hard": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.5,
+          "recall@1": 0.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        }
+      },
+      "split": {
+        "calibration": {
+          "cases": 3,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 3,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.6666666666666666,
+          "recall@1": 0.3333333333333333,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "test": {
+          "cases": 0,
+          "error_count": 0,
+          "faithfulness": null,
+          "faithfulness_cases": 0,
+          "known_false_refusal_rate": null,
+          "unknown_refusal_rate": null
+        }
+      }
+    },
+    "hybrid": {
+      "bucket": {
+        "A_policy": {
+          "cases": 3,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 3,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.6666666666666666,
+          "recall@1": 0.3333333333333333,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        }
+      },
+      "difficulty": {
+        "easy": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 1.0,
+          "recall@1": 1.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "medium": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.5,
+          "recall@1": 0.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "hard": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.5,
+          "recall@1": 0.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        }
+      },
+      "split": {
+        "calibration": {
+          "cases": 3,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 3,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.6666666666666666,
+          "recall@1": 0.3333333333333333,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "test": {
+          "cases": 0,
+          "error_count": 0,
+          "faithfulness": null,
+          "faithfulness_cases": 0,
+          "known_false_refusal_rate": null,
+          "unknown_refusal_rate": null
+        }
+      }
+    },
+    "hybrid_rerank": {
+      "bucket": {
+        "A_policy": {
+          "cases": 3,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 3,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.8333333333333334,
+          "recall@1": 0.6666666666666666,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        }
+      },
+      "difficulty": {
+        "easy": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 1.0,
+          "recall@1": 1.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "medium": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 1.0,
+          "recall@1": 1.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "hard": {
+          "cases": 1,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 1,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.5,
+          "recall@1": 0.0,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        }
+      },
+      "split": {
+        "calibration": {
+          "cases": 3,
+          "error_count": 0,
+          "faithfulness": 1.0,
+          "faithfulness_cases": 3,
+          "known_false_refusal_rate": 0.0,
+          "unknown_refusal_rate": null,
+          "candidate_recall@50": 1.0,
+          "mrr": 0.8333333333333334,
+          "recall@1": 0.6666666666666666,
+          "recall@10": 1.0,
+          "recall@5": 1.0
+        },
+        "test": {
+          "cases": 0,
+          "error_count": 0,
+          "faithfulness": null,
+          "faithfulness_cases": 0,
+          "known_false_refusal_rate": null,
+          "unknown_refusal_rate": null
+        }
+      }
+    }
+  },
+  "rows": [
+    {
+      "eval_id": "A001",
+      "bucket": "A_policy",
+      "difficulty": "easy",
+      "split": "calibration",
+      "query": "商品参数应该以什么信息为准？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "bm25",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，应以对应商品详情页和经商家确认的信息为准[1]。图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断[1]。具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准[4]。信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复[1]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 16.13589096069336,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 2,
+          "chunk_id": 13,
+          "section_path": [
+            "配送与运费",
+            "发货和物流",
+            "什么时候发货"
+          ],
+          "question": "什么时候发货",
+          "answer": "预计发货安排应以商品页面、活动说明、订单详情或商家发布的服务规则为准。 不同商品可能涉及预售、定制、分仓或供应情况差异。 客服查询订单后应区分“待处理”“待发货”和已交承运商等状态，不得把预计时间说成保证时限。",
+          "source_key": "doc:02-配送与运费.md:cf2775e4ba69a795",
+          "score": 12.504658699035645,
+          "category": "配送与运费 / 发货和物流"
+        },
+        {
+          "n": 3,
+          "chunk_id": 35,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "保修和维修范围"
+          ],
+          "question": "保修和维修范围",
+          "answer": "保修期限、覆盖部件、除外情形、维修方式和服务网点应以商品页面、随附文件、订单记录及商家确认的政策为准。 通用客服知识不能替代特定品牌或型号的保修承诺；信息不明确时应查询对应商品资料并记录确认来源。",
+          "source_key": "doc:04-支付与售后.md:6e186586d8ae8f58",
+          "score": 7.130947113037109,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 4,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 6.966682434082031,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 5,
+          "chunk_id": 17,
+          "section_path": [
+            "配送与运费",
+            "收货信息",
+            "修改收货地址"
+          ],
+          "question": "修改收货地址",
+          "answer": "能否修改取决于订单履约阶段。 请顾客尽快通过订单页面申请或联系在线客服；客服核对订单后再确认是否修改成功。 涉及已发出的包裹时，不应保证拦截或改址成功，应以承运商和商家实际反馈为准。",
+          "source_key": "doc:02-配送与运费.md:9e528c81e467e606",
+          "score": 6.548069477081299,
+          "category": "配送与运费 / 收货信息"
+        },
+        {
+          "n": 6,
+          "chunk_id": 33,
+          "section_path": [
+            "支付与售后",
+            "支付问题",
+            "发票申请"
+          ],
+          "question": "发票申请",
+          "answer": "发票类型、开具主体、申请入口、可开具内容和处理状态以店铺公示规则、订单页面及适用要求为准。 客服应先核对订单是否符合申请条件，再指导顾客通过官方入口提交必要的开票信息；不在非必要渠道传播个人或企业税务资料。",
+          "source_key": "doc:04-支付与售后.md:df3fc0007105de26",
+          "score": 6.457279682159424,
+          "category": "支付与售后 / 支付问题"
+        },
+        {
+          "n": 7,
+          "chunk_id": 22,
+          "section_path": [
+            "退换货与退款",
+            "退货和换货流程",
+            "如何申请退货"
+          ],
+          "question": "如何申请退货",
+          "answer": "顾客应在订单页面选择适用的售后类型并填写真实原因；页面无法操作时可联系在线客服。 客服核对申请资格和订单状态后说明需要的步骤、商品寄回要求及收件信息。 寄回前应以系统确认的地址和说明为准，并保留物流凭证；不要让顾客寄往未经核实的地址。",
+          "source_key": "doc:03-退换货与退款.md:d54be2981931436e",
+          "score": 6.26451301574707,
+          "category": "退换货与退款 / 退货和换货流程"
+        },
+        {
+          "n": 8,
+          "chunk_id": 2,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "库存和可售状态"
+          ],
+          "question": "库存和可售状态",
+          "answer": "页面展示的库存或可售状态可能随订单提交、仓库盘点和地区配送能力变化。 顾客应以提交订单时页面可选的规格、数量和配送地址为准；客服不能把页面之外的库存估计当作已锁定库存。 下单后如遇缺货、停售或无法履约，应通过订单通知说明可选处理方式，并按实际订单状态和适用规则处理。",
+          "source_key": "doc:01-商品与下单.md:4662e399db5b9303",
+          "score": 6.102082252502441,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 9,
+          "chunk_id": 15,
+          "section_path": [
+            "配送与运费",
+            "发货和物流",
+            "物流显示异常或一直未更新"
+          ],
+          "question": "物流显示异常或一直未更新",
+          "answer": "先核对订单号、发货状态、物流单号及最近一条轨迹。 信息不完整时请顾客补充订单页面截图或相关时间；确认承运后，可按内部流程联系仓库或承运商核查。 对包裹遗失、破损或投递异常的处理结果，以核查结果和适用政策为准，不要未经确认承诺赔付。",
+          "source_key": "doc:02-配送与运费.md:b51bed127c99607d",
+          "score": 5.8490447998046875,
+          "category": "配送与运费 / 发货和物流"
+        },
+        {
+          "n": 10,
+          "chunk_id": 29,
+          "section_path": [
+            "退换货与退款",
+            "退款处理",
+            "部分商品退款"
+          ],
+          "question": "部分商品退款",
+          "answer": "部分退款金额应根据售后核验、商品明细、优惠分摊、运费和适用规则计算，以系统审核结果为准。 客服应解释可核对的明细；如顾客对金额有异议，应提交订单和计算依据复核，不可手工承诺系统未确认的金额。",
+          "source_key": "doc:03-退换货与退款.md:33bbe4bdfb78f69c",
+          "score": 5.092985153198242,
+          "category": "退换货与退款 / 退款处理"
+        }
+      ],
+      "top_score": 16.13589096069336,
+      "candidate_ids": [
+        1,
+        13,
+        35,
+        5,
+        17,
+        33,
+        22,
+        2,
+        15,
+        29,
+        25,
+        8,
+        34,
+        10,
+        6,
+        9,
+        12,
+        19,
+        27,
+        30,
+        38,
+        3,
+        20,
+        14,
+        18,
+        4,
+        16,
+        39,
+        7,
+        37,
+        32,
+        31,
+        26,
+        40,
+        36,
+        24,
+        11,
+        23,
+        41,
+        43,
+        45,
+        47,
+        49,
+        51,
+        53,
+        55,
+        57,
+        59,
+        48,
+        50
+      ],
+      "final_ids": [
+        1,
+        13,
+        35,
+        5,
+        17,
+        33,
+        22,
+        2,
+        15,
+        29
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，应以对应商品详情页和经商家确认的信息为准。",
+          "supported": true,
+          "reason": "引用[1]原文明确列出这些参数并以商品详情页和经商家确认的信息为准。"
+        },
+        {
+          "claim": "图片可能受拍摄光线、屏幕显示和批次差异影响。",
+          "supported": true,
+          "reason": "引用[1]原文称图片可能受拍摄光线、屏幕显示和批次差异影响。"
+        },
+        {
+          "claim": "涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。",
+          "supported": true,
+          "reason": "引用[1]原文有相同表述。"
+        },
+        {
+          "claim": "具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准。",
+          "supported": true,
+          "reason": "引用[4]原文有相同表述。"
+        },
+        {
+          "claim": "信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "supported": true,
+          "reason": "引用[1]原文有相同表述。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 2.376295324000239
+    },
+    {
+      "eval_id": "A001",
+      "bucket": "A_policy",
+      "difficulty": "easy",
+      "split": "calibration",
+      "query": "商品参数应该以什么信息为准？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "dense",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准[1]。图片可能受拍摄光线、屏幕显示和批次差异影响，不能只凭外观推断[1]；具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准[2]。涉及型号适配或使用条件时，应先核对商品参数[1]；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认后再给出结论[4]。信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复[1]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 0.7198748588562012,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 2,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 0.6161063313484192,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 3,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 0.6042649745941162,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 4,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 0.5745384693145752,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 5,
+          "chunk_id": 2,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "库存和可售状态"
+          ],
+          "question": "库存和可售状态",
+          "answer": "页面展示的库存或可售状态可能随订单提交、仓库盘点和地区配送能力变化。 顾客应以提交订单时页面可选的规格、数量和配送地址为准；客服不能把页面之外的库存估计当作已锁定库存。 下单后如遇缺货、停售或无法履约，应通过订单通知说明可选处理方式，并按实际订单状态和适用规则处理。",
+          "source_key": "doc:01-商品与下单.md:4662e399db5b9303",
+          "score": 0.5707070231437683,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 6,
+          "chunk_id": 34,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "商品故障或质量问题"
+          ],
+          "question": "商品故障或质量问题",
+          "answer": "请顾客描述故障现象、发生时间、使用条件和商品型号，并提供与判断直接相关的照片或视频。 客服应先确认是否存在安全风险，必要时建议停止使用并升级处理；维修、换货、退货或其他方案以核查结果、保修约定和适用政策为准。",
+          "source_key": "doc:04-支付与售后.md:07de67522e943900",
+          "score": 0.5586495399475098,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 7,
+          "chunk_id": 6,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "提交订单与订单确认"
+          ],
+          "question": "提交订单与订单确认",
+          "answer": "提交订单前应核对商品、规格、数量、收货地址、联系人和结算页展示的费用。 订单是否成立、是否付款成功及当前履约状态，以订单详情页和支付结果为准。 客服不得仅凭顾客的付款截图确认订单已支付，应核对系统中的订单状态。",
+          "source_key": "doc:01-商品与下单.md:043d5af69748bc12",
+          "score": 0.5531386733055115,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 8,
+          "chunk_id": 9,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "促销和优惠"
+          ],
+          "question": "促销和优惠",
+          "answer": "优惠资格、适用商品、叠加条件、有效期及最终抵扣金额，以活动页面和结算页实际展示为准。 客服应核对顾客的订单和活动规则；如页面已显示优惠但订单金额不一致，应收集订单号并升级核查，不能自行承诺补差或补券。",
+          "source_key": "doc:01-商品与下单.md:5647ae6723c672da",
+          "score": 0.5529494285583496,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 9,
+          "chunk_id": 36,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "缺少配件或收到错发商品"
+          ],
+          "question": "缺少配件或收到错发商品",
+          "answer": "核对订单商品、规格、包裹清单和顾客实际收到的内容。 客服可请顾客提供必要的外包装及商品照片用于核查；确认后按商家适用流程补寄、换货或提供其他方案，不应在核实前承诺处理结果。",
+          "source_key": "doc:04-支付与售后.md:0a2826aa2e04a401",
+          "score": 0.5505486130714417,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 10,
+          "chunk_id": 40,
+          "section_path": [
+            "受控测试商品说明"
+          ],
+          "question": "受控测试商品说明",
+          "answer": "所有 XH 型号均为虚构评估商品，仅用于隔离验收，不能当作实际在售商品规格。",
+          "source_key": "doc:05-受控测试商品.md:6476c4303d69f582",
+          "score": 0.5503509640693665,
+          "category": "电商客服"
+        }
+      ],
+      "top_score": 0.7198748588562012,
+      "candidate_ids": [
+        1,
+        5,
+        3,
+        4,
+        2,
+        34,
+        6,
+        9,
+        36,
+        40,
+        35,
+        38,
+        20,
+        19,
+        14,
+        37,
+        7,
+        29,
+        13,
+        15,
+        30,
+        16,
+        25,
+        39,
+        33,
+        24,
+        23,
+        10,
+        22,
+        18,
+        21,
+        8,
+        17,
+        31,
+        11,
+        12,
+        41,
+        56,
+        59,
+        45,
+        27,
+        26,
+        46,
+        28,
+        60,
+        48,
+        42,
+        58,
+        49,
+        44
+      ],
+      "final_ids": [
+        1,
+        5,
+        3,
+        4,
+        2,
+        34,
+        6,
+        9,
+        36,
+        40
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。",
+          "supported": true,
+          "reason": "引用[1]明确写明“商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准”。"
+        },
+        {
+          "claim": "图片可能受拍摄光线、屏幕显示和批次差异影响，不能只凭外观推断。",
+          "supported": true,
+          "reason": "引用[1]写明“图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断”。"
+        },
+        {
+          "claim": "具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准。",
+          "supported": true,
+          "reason": "引用[2]写明“具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准”。"
+        },
+        {
+          "claim": "涉及型号适配或使用条件时，应先核对商品参数。",
+          "supported": true,
+          "reason": "引用[1]写明“涉及型号适配或使用条件时，应先核对商品参数”。"
+        },
+        {
+          "claim": "页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认后再给出结论。",
+          "supported": true,
+          "reason": "引用[4]写明“页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论”。"
+        },
+        {
+          "claim": "信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "supported": true,
+          "reason": "引用[1]写明“信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复”。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 4.6222439799967106
+    },
+    {
+      "eval_id": "A001",
+      "bucket": "A_policy",
+      "difficulty": "easy",
+      "split": "calibration",
+      "query": "商品参数应该以什么信息为准？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "hybrid",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准[1]。图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断[1]。信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复[1]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 0.032786883413791656,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 2,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 0.0317540317773819,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 3,
+          "chunk_id": 2,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "库存和可售状态"
+          ],
+          "question": "库存和可售状态",
+          "answer": "页面展示的库存或可售状态可能随订单提交、仓库盘点和地区配送能力变化。 顾客应以提交订单时页面可选的规格、数量和配送地址为准；客服不能把页面之外的库存估计当作已锁定库存。 下单后如遇缺货、停售或无法履约，应通过订单通知说明可选处理方式，并按实际订单状态和适用规则处理。",
+          "source_key": "doc:01-商品与下单.md:4662e399db5b9303",
+          "score": 0.03009049780666828,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 4,
+          "chunk_id": 35,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "保修和维修范围"
+          ],
+          "question": "保修和维修范围",
+          "answer": "保修期限、覆盖部件、除外情形、维修方式和服务网点应以商品页面、随附文件、订单记录及商家确认的政策为准。 通用客服知识不能替代特定品牌或型号的保修承诺；信息不明确时应查询对应商品资料并记录确认来源。",
+          "source_key": "doc:04-支付与售后.md:6e186586d8ae8f58",
+          "score": 0.029957523569464684,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 5,
+          "chunk_id": 34,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "商品故障或质量问题"
+          ],
+          "question": "商品故障或质量问题",
+          "answer": "请顾客描述故障现象、发生时间、使用条件和商品型号，并提供与判断直接相关的照片或视频。 客服应先确认是否存在安全风险，必要时建议停止使用并升级处理；维修、换货、退货或其他方案以核查结果、保修约定和适用政策为准。",
+          "source_key": "doc:04-支付与售后.md:07de67522e943900",
+          "score": 0.028850145637989044,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 6,
+          "chunk_id": 13,
+          "section_path": [
+            "配送与运费",
+            "发货和物流",
+            "什么时候发货"
+          ],
+          "question": "什么时候发货",
+          "answer": "预计发货安排应以商品页面、活动说明、订单详情或商家发布的服务规则为准。 不同商品可能涉及预售、定制、分仓或供应情况差异。 客服查询订单后应区分“待处理”“待发货”和已交承运商等状态，不得把预计时间说成保证时限。",
+          "source_key": "doc:02-配送与运费.md:cf2775e4ba69a795",
+          "score": 0.02878725901246071,
+          "category": "配送与运费 / 发货和物流"
+        },
+        {
+          "n": 7,
+          "chunk_id": 6,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "提交订单与订单确认"
+          ],
+          "question": "提交订单与订单确认",
+          "answer": "提交订单前应核对商品、规格、数量、收货地址、联系人和结算页展示的费用。 订单是否成立、是否付款成功及当前履约状态，以订单详情页和支付结果为准。 客服不得仅凭顾客的付款截图确认订单已支付，应核对系统中的订单状态。",
+          "source_key": "doc:01-商品与下单.md:043d5af69748bc12",
+          "score": 0.028258707374334335,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 8,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 0.028068138286471367,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 9,
+          "chunk_id": 9,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "促销和优惠"
+          ],
+          "question": "促销和优惠",
+          "answer": "优惠资格、适用商品、叠加条件、有效期及最终抵扣金额，以活动页面和结算页实际展示为准。 客服应核对顾客的订单和活动规则；如页面已显示优惠但订单金额不一致，应收集订单号并升级核查，不能自行承诺补差或补券。",
+          "source_key": "doc:01-商品与下单.md:5647ae6723c672da",
+          "score": 0.027863778173923492,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 10,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 0.027252906933426857,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        }
+      ],
+      "top_score": 0.032786883413791656,
+      "candidate_ids": [
+        1,
+        5,
+        2,
+        35,
+        34,
+        13,
+        6,
+        3,
+        9,
+        4,
+        29,
+        15,
+        33,
+        19,
+        38,
+        22,
+        17,
+        25,
+        20,
+        14,
+        36,
+        40,
+        10,
+        30,
+        8,
+        37,
+        7,
+        16,
+        12,
+        39,
+        18,
+        27,
+        24,
+        23,
+        31,
+        11,
+        26,
+        41,
+        45,
+        59,
+        49,
+        48,
+        21,
+        32,
+        56,
+        43,
+        47,
+        46,
+        28,
+        51
+      ],
+      "final_ids": [
+        1,
+        5,
+        2,
+        35,
+        34,
+        13,
+        6,
+        3,
+        9,
+        4
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。",
+          "supported": true,
+          "reason": "引用[1]原文明确列出这些参数并以商品详情页和经商家确认的信息为准。"
+        },
+        {
+          "claim": "图片可能受拍摄光线、屏幕显示和批次差异影响。",
+          "supported": true,
+          "reason": "引用[1]原文称图片可能受拍摄光线、屏幕显示和批次差异影响。"
+        },
+        {
+          "claim": "涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。",
+          "supported": true,
+          "reason": "引用[1]原文明确要求涉及型号适配或使用条件时应先核对商品参数，不能只凭外观推断。"
+        },
+        {
+          "claim": "信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "supported": true,
+          "reason": "引用[1]原文完整表述了该处理流程。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 2.9011314540039166
+    },
+    {
+      "eval_id": "A001",
+      "bucket": "A_policy",
+      "difficulty": "easy",
+      "split": "calibration",
+      "query": "商品参数应该以什么信息为准？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "hybrid_rerank",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准[1]。图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断[1]。信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复[1]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 0.9899778366088867,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 2,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 0.34943410754203796,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 3,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 0.1352398693561554,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 4,
+          "chunk_id": 35,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "保修和维修范围"
+          ],
+          "question": "保修和维修范围",
+          "answer": "保修期限、覆盖部件、除外情形、维修方式和服务网点应以商品页面、随附文件、订单记录及商家确认的政策为准。 通用客服知识不能替代特定品牌或型号的保修承诺；信息不明确时应查询对应商品资料并记录确认来源。",
+          "source_key": "doc:04-支付与售后.md:6e186586d8ae8f58",
+          "score": 0.11334332078695297,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 5,
+          "chunk_id": 6,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "提交订单与订单确认"
+          ],
+          "question": "提交订单与订单确认",
+          "answer": "提交订单前应核对商品、规格、数量、收货地址、联系人和结算页展示的费用。 订单是否成立、是否付款成功及当前履约状态，以订单详情页和支付结果为准。 客服不得仅凭顾客的付款截图确认订单已支付，应核对系统中的订单状态。",
+          "source_key": "doc:01-商品与下单.md:043d5af69748bc12",
+          "score": 0.11130276322364807,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 6,
+          "chunk_id": 9,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "促销和优惠"
+          ],
+          "question": "促销和优惠",
+          "answer": "优惠资格、适用商品、叠加条件、有效期及最终抵扣金额，以活动页面和结算页实际展示为准。 客服应核对顾客的订单和活动规则；如页面已显示优惠但订单金额不一致，应收集订单号并升级核查，不能自行承诺补差或补券。",
+          "source_key": "doc:01-商品与下单.md:5647ae6723c672da",
+          "score": 0.0422835610806942,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 7,
+          "chunk_id": 34,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "商品故障或质量问题"
+          ],
+          "question": "商品故障或质量问题",
+          "answer": "请顾客描述故障现象、发生时间、使用条件和商品型号，并提供与判断直接相关的照片或视频。 客服应先确认是否存在安全风险，必要时建议停止使用并升级处理；维修、换货、退货或其他方案以核查结果、保修约定和适用政策为准。",
+          "source_key": "doc:04-支付与售后.md:07de67522e943900",
+          "score": 0.0297984778881073,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 8,
+          "chunk_id": 19,
+          "section_path": [
+            "退换货与退款",
+            "申请前核对",
+            "退换货条件"
+          ],
+          "question": "退换货条件",
+          "answer": "退换货资格、申请期限、商品状态要求、配件和包装要求、费用承担及例外情况，以购买时适用的法律规定、店铺公示政策、商品页面和订单详情为准。 商品类别、定制属性、使用状态或活动条件可能影响处理方式。 客服应先核对订单、商品和申请原因，不得把通用说明替代适用于该订单的具体规则。",
+          "source_key": "doc:03-退换货与退款.md:560c620ffd6ca180",
+          "score": 0.02732487954199314,
+          "category": "退换货与退款 / 申请前核对"
+        },
+        {
+          "n": 9,
+          "chunk_id": 10,
+          "section_path": [
+            "配送与运费",
+            "运费与配送范围",
+            "运费计算"
+          ],
+          "question": "运费计算",
+          "answer": "运费可能受收货地区、商品类型、重量或体积、配送方式、活动条件及商家设置影响。 顾客应在填写收货地址后查看结算页中的运费、优惠和应付金额；当前订单的费用以该订单结算信息为准。 若结算页未显示费用或费用异常，请提供商品链接、收货地区和订单信息供客服核查，不要依据其他订单推算。",
+          "source_key": "doc:02-配送与运费.md:7726109d5bc20011",
+          "score": 0.020134337246418,
+          "category": "配送与运费 / 运费与配送范围"
+        },
+        {
+          "n": 10,
+          "chunk_id": 2,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "库存和可售状态"
+          ],
+          "question": "库存和可售状态",
+          "answer": "页面展示的库存或可售状态可能随订单提交、仓库盘点和地区配送能力变化。 顾客应以提交订单时页面可选的规格、数量和配送地址为准；客服不能把页面之外的库存估计当作已锁定库存。 下单后如遇缺货、停售或无法履约，应通过订单通知说明可选处理方式，并按实际订单状态和适用规则处理。",
+          "source_key": "doc:01-商品与下单.md:4662e399db5b9303",
+          "score": 0.013443436473608017,
+          "category": "商品与下单 / 商品信息与选购"
+        }
+      ],
+      "top_score": 0.9899778366088867,
+      "candidate_ids": [
+        1,
+        5,
+        2,
+        35,
+        34,
+        13,
+        6,
+        3,
+        9,
+        4,
+        29,
+        15,
+        33,
+        19,
+        38,
+        22,
+        17,
+        25,
+        20,
+        14,
+        36,
+        40,
+        10,
+        30,
+        8,
+        37,
+        7,
+        16,
+        12,
+        39,
+        18,
+        27,
+        24,
+        23,
+        31,
+        11,
+        26,
+        41,
+        45,
+        59,
+        49,
+        48,
+        21,
+        32,
+        56,
+        43,
+        47,
+        46,
+        28,
+        51
+      ],
+      "final_ids": [
+        1,
+        5,
+        3,
+        35,
+        6,
+        9,
+        34,
+        19,
+        10,
+        2
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。",
+          "supported": true,
+          "reason": "引用[1]原文完全一致，明确列出这些参数并以商品详情页和商家确认信息为准。"
+        },
+        {
+          "claim": "图片可能受拍摄光线、屏幕显示和批次差异影响。",
+          "supported": true,
+          "reason": "引用[1]原文称“图片可能受拍摄光线、屏幕显示和批次差异影响”，直接支持。"
+        },
+        {
+          "claim": "涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。",
+          "supported": true,
+          "reason": "引用[1]原文称“涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断”，直接支持。"
+        },
+        {
+          "claim": "信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "supported": true,
+          "reason": "引用[1]原文完全一致，直接支持。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 3.4208367360042757
+    },
+    {
+      "eval_id": "A002",
+      "bucket": "A_policy",
+      "difficulty": "medium",
+      "split": "calibration",
+      "query": "颜色图片看着一样就可以认定兼容吗？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "bm25",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 0.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "不能仅凭颜色图片看着一样就认定兼容。商品图片可能受拍摄光线、屏幕显示和生产批次影响，颜色名称、规格选项和商品描述应以当前详情页及实际下单规格为准[1]。涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断[2]；型号名称相近也不代表一定兼容，页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认后再给出结论[3]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 13.23984146118164,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 2,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 7.84459114074707,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 3,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 5.607671737670898,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 4,
+          "chunk_id": 24,
+          "section_path": [
+            "退换货与退款",
+            "退货和换货流程",
+            "商品已经使用还能退吗"
+          ],
+          "question": "商品已经使用还能退吗",
+          "answer": "能否退货取决于商品类别、使用或拆封情况、质量问题、适用法律和购买时公示的规则。 客服应根据具体订单核实，不应一概承诺可以退或拒绝受理；如涉及商品安全、质量或法定权利问题，应升级给负责团队。",
+          "source_key": "doc:03-退换货与退款.md:036212ec371f9cf6",
+          "score": 5.497172832489014,
+          "category": "退换货与退款 / 退货和换货流程"
+        },
+        {
+          "n": 5,
+          "chunk_id": 8,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "取消订单"
+          ],
+          "question": "取消订单",
+          "answer": "是否可以取消以订单页面提供的操作和当前履约状态为准。 若取消入口不可用，客服应先核实订单状态，再说明是否可以联系仓库拦截或需在签收后按适用退货政策申请；不得承诺未经系统确认的取消结果。",
+          "source_key": "doc:01-商品与下单.md:48662c07256cc38c",
+          "score": 4.456621170043945,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 6,
+          "chunk_id": 18,
+          "section_path": [
+            "配送与运费",
+            "收货信息",
+            "未收到货但显示已签收"
+          ],
+          "question": "未收到货但显示已签收",
+          "answer": "先让顾客核对收货地址、代收人、门卫或自提点信息，并确认物流轨迹和签收时间。 仍无法找到包裹时，客服应登记订单信息并按流程向承运商核查；在调查完成前不应直接认定丢失或拒绝处理。",
+          "source_key": "doc:02-配送与运费.md:73e3efba7a10f08b",
+          "score": 3.1729555130004883,
+          "category": "配送与运费 / 收货信息"
+        },
+        {
+          "n": 7,
+          "chunk_id": 30,
+          "section_path": [
+            "支付与售后",
+            "支付问题",
+            "支付是否成功"
+          ],
+          "question": "支付是否成功",
+          "answer": "应以订单详情和支付渠道返回的系统状态为准。 顾客收到扣款通知但订单仍未支付时，客服应核对订单号、支付时间和页面状态，并按支付渠道流程查询；不要仅凭截图或短信认定支付成功，也不要要求顾客提供密码、验证码或完整银行卡号。",
+          "source_key": "doc:04-支付与售后.md:4696fb21dac4c4af",
+          "score": 3.0073161125183105,
+          "category": "支付与售后 / 支付问题"
+        },
+        {
+          "n": 8,
+          "chunk_id": 25,
+          "section_path": [
+            "退换货与退款",
+            "退货和换货流程",
+            "退款前商家会检查商品吗"
+          ],
+          "question": "退款前商家会检查商品吗",
+          "answer": "退回商品可能需要验收，验收范围和结果以售后规则与实际核查为准。 客服应告知顾客保留寄回凭证和沟通记录，并在系统中跟踪收件、验收和退款状态；不能把尚未完成的验收说成已通过。",
+          "source_key": "doc:03-退换货与退款.md:ba9b3ce9cec4bbbe",
+          "score": 2.571444272994995,
+          "category": "退换货与退款 / 退货和换货流程"
+        }
+      ],
+      "top_score": 13.23984146118164,
+      "candidate_ids": [
+        5,
+        1,
+        4,
+        24,
+        8,
+        18,
+        30,
+        25
+      ],
+      "final_ids": [
+        5,
+        1,
+        4,
+        24,
+        8,
+        18,
+        30,
+        25
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "不能仅凭颜色图片看着一样就认定兼容。",
+          "supported": true,
+          "reason": "证据[1]说明商品图片可能造成视觉差异，具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；证据[2]说明涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。"
+        },
+        {
+          "claim": "商品图片可能受拍摄光线、屏幕显示和生产批次影响。",
+          "supported": true,
+          "reason": "证据[1]明确提到屏幕设置、拍摄光线和生产批次可能造成视觉差异；证据[2]也提到图片可能受拍摄光线、屏幕显示和批次差异影响。"
+        },
+        {
+          "claim": "颜色名称、规格选项和商品描述应以当前详情页及实际下单规格为准。",
+          "supported": true,
+          "reason": "证据[1]原文写明具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准。"
+        },
+        {
+          "claim": "涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。",
+          "supported": true,
+          "reason": "证据[2]原文写明涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。"
+        },
+        {
+          "claim": "型号名称相近也不代表一定兼容。",
+          "supported": true,
+          "reason": "证据[3]原文写明型号名称相近不代表一定兼容。"
+        },
+        {
+          "claim": "页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认后再给出结论。",
+          "supported": true,
+          "reason": "证据[3]原文写明页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 2.635745907005912
+    },
+    {
+      "eval_id": "A002",
+      "bucket": "A_policy",
+      "difficulty": "medium",
+      "split": "calibration",
+      "query": "颜色图片看着一样就可以认定兼容吗？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "dense",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 0.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.3333333333333333,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "不能仅凭颜色图片看着一样就认定兼容。图片可能受拍摄光线、屏幕显示和批次差异影响，涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断[3]。型号名称相近也不代表一定兼容；页面没有覆盖该型号时，应收集完整型号及使用场景并向商品负责人确认后再给出结论[2]。具体兼容范围以对应商品详情页和经商家确认的信息为准[3]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 0.6220869421958923,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 2,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 0.6060262322425842,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 3,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 0.5890100002288818,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 4,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 0.4768062233924866,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 5,
+          "chunk_id": 40,
+          "section_path": [
+            "受控测试商品说明"
+          ],
+          "question": "受控测试商品说明",
+          "answer": "所有 XH 型号均为虚构评估商品，仅用于隔离验收，不能当作实际在售商品规格。",
+          "source_key": "doc:05-受控测试商品.md:6476c4303d69f582",
+          "score": 0.4725791811943054,
+          "category": "电商客服"
+        },
+        {
+          "n": 6,
+          "chunk_id": 9,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "促销和优惠"
+          ],
+          "question": "促销和优惠",
+          "answer": "优惠资格、适用商品、叠加条件、有效期及最终抵扣金额，以活动页面和结算页实际展示为准。 客服应核对顾客的订单和活动规则；如页面已显示优惠但订单金额不一致，应收集订单号并升级核查，不能自行承诺补差或补券。",
+          "source_key": "doc:01-商品与下单.md:5647ae6723c672da",
+          "score": 0.452061265707016,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 7,
+          "chunk_id": 34,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "商品故障或质量问题"
+          ],
+          "question": "商品故障或质量问题",
+          "answer": "请顾客描述故障现象、发生时间、使用条件和商品型号，并提供与判断直接相关的照片或视频。 客服应先确认是否存在安全风险，必要时建议停止使用并升级处理；维修、换货、退货或其他方案以核查结果、保修约定和适用政策为准。",
+          "source_key": "doc:04-支付与售后.md:07de67522e943900",
+          "score": 0.44993504881858826,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 8,
+          "chunk_id": 23,
+          "section_path": [
+            "退换货与退款",
+            "退货和换货流程",
+            "如何申请换货"
+          ],
+          "question": "如何申请换货",
+          "answer": "换货是否可用取决于商品、库存、订单和店铺规则。 顾客可先从订单售后入口提交申请；客服应确认目标规格是否可供应、旧商品如何寄回以及后续订单处理方式。 无法换货时，应如实说明可选方案并按适用政策处理，不能虚构库存。",
+          "source_key": "doc:03-退换货与退款.md:28b924de238e61d6",
+          "score": 0.44848859310150146,
+          "category": "退换货与退款 / 退货和换货流程"
+        },
+        {
+          "n": 9,
+          "chunk_id": 36,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "缺少配件或收到错发商品"
+          ],
+          "question": "缺少配件或收到错发商品",
+          "answer": "核对订单商品、规格、包裹清单和顾客实际收到的内容。 客服可请顾客提供必要的外包装及商品照片用于核查；确认后按商家适用流程补寄、换货或提供其他方案，不应在核实前承诺处理结果。",
+          "source_key": "doc:04-支付与售后.md:0a2826aa2e04a401",
+          "score": 0.4459989666938782,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 10,
+          "chunk_id": 19,
+          "section_path": [
+            "退换货与退款",
+            "申请前核对",
+            "退换货条件"
+          ],
+          "question": "退换货条件",
+          "answer": "退换货资格、申请期限、商品状态要求、配件和包装要求、费用承担及例外情况，以购买时适用的法律规定、店铺公示政策、商品页面和订单详情为准。 商品类别、定制属性、使用状态或活动条件可能影响处理方式。 客服应先核对订单、商品和申请原因，不得把通用说明替代适用于该订单的具体规则。",
+          "source_key": "doc:03-退换货与退款.md:560c620ffd6ca180",
+          "score": 0.4422052204608917,
+          "category": "退换货与退款 / 申请前核对"
+        }
+      ],
+      "top_score": 0.6220869421958923,
+      "candidate_ids": [
+        5,
+        4,
+        1,
+        3,
+        40,
+        9,
+        34,
+        23,
+        36,
+        19,
+        49,
+        55,
+        2,
+        35,
+        51,
+        41,
+        47,
+        45,
+        57,
+        56,
+        12,
+        48,
+        37,
+        59,
+        42,
+        32,
+        6,
+        54,
+        20,
+        53,
+        44,
+        52,
+        50,
+        46,
+        43,
+        24,
+        15,
+        58,
+        30,
+        16,
+        60,
+        18,
+        7,
+        25,
+        17,
+        31,
+        39,
+        29,
+        8,
+        13
+      ],
+      "final_ids": [
+        5,
+        4,
+        1,
+        3,
+        40,
+        9,
+        34,
+        23,
+        36,
+        19
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "不能仅凭颜色图片看着一样就认定兼容。",
+          "supported": true,
+          "reason": "证据[3]明确说明涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。"
+        },
+        {
+          "claim": "图片可能受拍摄光线、屏幕显示和批次差异影响。",
+          "supported": true,
+          "reason": "证据[3]原文包含“图片可能受拍摄光线、屏幕显示和批次差异影响”。"
+        },
+        {
+          "claim": "涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。",
+          "supported": true,
+          "reason": "证据[3]原文直接包含该表述。"
+        },
+        {
+          "claim": "型号名称相近也不代表一定兼容。",
+          "supported": true,
+          "reason": "证据[2]原文包含“型号名称相近不代表一定兼容”。"
+        },
+        {
+          "claim": "页面没有覆盖该型号时，应收集完整型号及使用场景并向商品负责人确认后再给出结论。",
+          "supported": true,
+          "reason": "证据[2]原文包含“页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论”。"
+        },
+        {
+          "claim": "具体兼容范围以对应商品详情页和经商家确认的信息为准。",
+          "supported": true,
+          "reason": "证据[3]原文包含“商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准”。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 4.076134045004437
+    },
+    {
+      "eval_id": "A002",
+      "bucket": "A_policy",
+      "difficulty": "medium",
+      "split": "calibration",
+      "query": "颜色图片看着一样就可以认定兼容吗？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "hybrid",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 0.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "不能仅凭颜色图片看着一样就认定兼容。商品图片可能受拍摄光线、屏幕显示和批次差异影响，涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断[2]。型号名称相近也不代表一定兼容，需先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认后再给出结论[3]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 0.032786883413791656,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 2,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 0.0320020467042923,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 3,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 0.0320020467042923,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 4,
+          "chunk_id": 24,
+          "section_path": [
+            "退换货与退款",
+            "退货和换货流程",
+            "商品已经使用还能退吗"
+          ],
+          "question": "商品已经使用还能退吗",
+          "answer": "能否退货取决于商品类别、使用或拆封情况、质量问题、适用法律和购买时公示的规则。 客服应根据具体订单核实，不应一概承诺可以退或拒绝受理；如涉及商品安全、质量或法定权利问题，应升级给负责团队。",
+          "source_key": "doc:03-退换货与退款.md:036212ec371f9cf6",
+          "score": 0.0260416679084301,
+          "category": "退换货与退款 / 退货和换货流程"
+        },
+        {
+          "n": 5,
+          "chunk_id": 30,
+          "section_path": [
+            "支付与售后",
+            "支付问题",
+            "支付是否成功"
+          ],
+          "question": "支付是否成功",
+          "answer": "应以订单详情和支付渠道返回的系统状态为准。 顾客收到扣款通知但订单仍未支付时，客服应核对订单号、支付时间和页面状态，并按支付渠道流程查询；不要仅凭截图或短信认定支付成功，也不要要求顾客提供密码、验证码或完整银行卡号。",
+          "source_key": "doc:04-支付与售后.md:4696fb21dac4c4af",
+          "score": 0.025026382878422737,
+          "category": "支付与售后 / 支付问题"
+        },
+        {
+          "n": 6,
+          "chunk_id": 18,
+          "section_path": [
+            "配送与运费",
+            "收货信息",
+            "未收到货但显示已签收"
+          ],
+          "question": "未收到货但显示已签收",
+          "answer": "先让顾客核对收货地址、代收人、门卫或自提点信息，并确认物流轨迹和签收时间。 仍无法找到包裹时，客服应登记订单信息并按流程向承运商核查；在调查完成前不应直接认定丢失或拒绝处理。",
+          "source_key": "doc:02-配送与运费.md:73e3efba7a10f08b",
+          "score": 0.02495543658733368,
+          "category": "配送与运费 / 收货信息"
+        },
+        {
+          "n": 7,
+          "chunk_id": 8,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "取消订单"
+          ],
+          "question": "取消订单",
+          "answer": "是否可以取消以订单页面提供的操作和当前履约状态为准。 若取消入口不可用，客服应先核实订单状态，再说明是否可以联系仓库拦截或需在签收后按适用退货政策申请；不得承诺未经系统确认的取消结果。",
+          "source_key": "doc:01-商品与下单.md:48662c07256cc38c",
+          "score": 0.02455892786383629,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 8,
+          "chunk_id": 25,
+          "section_path": [
+            "退换货与退款",
+            "退货和换货流程",
+            "退款前商家会检查商品吗"
+          ],
+          "question": "退款前商家会检查商品吗",
+          "answer": "退回商品可能需要验收，验收范围和结果以售后规则与实际核查为准。 客服应告知顾客保留寄回凭证和沟通记录，并在系统中跟踪收件、验收和退款状态；不能把尚未完成的验收说成已通过。",
+          "source_key": "doc:03-退换货与退款.md:ba9b3ce9cec4bbbe",
+          "score": 0.024321267381310463,
+          "category": "退换货与退款 / 退货和换货流程"
+        },
+        {
+          "n": 9,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 0.015625,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 10,
+          "chunk_id": 40,
+          "section_path": [
+            "受控测试商品说明"
+          ],
+          "question": "受控测试商品说明",
+          "answer": "所有 XH 型号均为虚构评估商品，仅用于隔离验收，不能当作实际在售商品规格。",
+          "source_key": "doc:05-受控测试商品.md:6476c4303d69f582",
+          "score": 0.015384615398943424,
+          "category": "电商客服"
+        }
+      ],
+      "top_score": 0.032786883413791656,
+      "candidate_ids": [
+        5,
+        1,
+        4,
+        24,
+        30,
+        18,
+        8,
+        25,
+        3,
+        40,
+        9,
+        34,
+        23,
+        36,
+        19,
+        49,
+        55,
+        2,
+        35,
+        51,
+        41,
+        47,
+        45,
+        57,
+        56,
+        12,
+        48,
+        37,
+        59,
+        42,
+        32,
+        6,
+        54,
+        20,
+        53,
+        44,
+        52,
+        50,
+        46,
+        43,
+        15,
+        58,
+        16,
+        60,
+        7,
+        17,
+        31,
+        39,
+        29,
+        13
+      ],
+      "final_ids": [
+        5,
+        1,
+        4,
+        24,
+        30,
+        18,
+        8,
+        25,
+        3,
+        40
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "不能仅凭颜色图片看着一样就认定兼容。",
+          "supported": true,
+          "reason": "证据[2]明确说明图片可能受拍摄光线、屏幕显示和批次差异影响，涉及型号适配或使用条件时应先核对商品参数，不能只凭外观推断。"
+        },
+        {
+          "claim": "商品图片可能受拍摄光线、屏幕显示和批次差异影响。",
+          "supported": true,
+          "reason": "证据[2]原文包含此表述。"
+        },
+        {
+          "claim": "涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。",
+          "supported": true,
+          "reason": "证据[2]原文包含此表述。"
+        },
+        {
+          "claim": "型号名称相近也不代表一定兼容。",
+          "supported": true,
+          "reason": "证据[3]原文为“型号名称相近不代表一定兼容”，与答案表述一致。"
+        },
+        {
+          "claim": "需先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。",
+          "supported": true,
+          "reason": "证据[3]原文包含此表述。"
+        },
+        {
+          "claim": "页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认后再给出结论。",
+          "supported": true,
+          "reason": "证据[3]原文包含此表述。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 3.2793150919969776
+    },
+    {
+      "eval_id": "A002",
+      "bucket": "A_policy",
+      "difficulty": "medium",
+      "split": "calibration",
+      "query": "颜色图片看着一样就可以认定兼容吗？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "hybrid_rerank",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "不能仅凭颜色图片看着一样就认定兼容。商品规格、材质、尺寸、颜色、功能、兼容范围等应以对应商品详情页和经商家确认的信息为准；图片可能受拍摄光线、屏幕显示和批次差异影响，涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断[1]。确认适配时，请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件；型号名称相近不代表一定兼容，页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认后再给出结论[2]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 0.10287963598966599,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 2,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 0.07540644705295563,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 3,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 0.0444500707089901,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 4,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 0.0018908053170889616,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 5,
+          "chunk_id": 40,
+          "section_path": [
+            "受控测试商品说明"
+          ],
+          "question": "受控测试商品说明",
+          "answer": "所有 XH 型号均为虚构评估商品，仅用于隔离验收，不能当作实际在售商品规格。",
+          "source_key": "doc:05-受控测试商品.md:6476c4303d69f582",
+          "score": 0.0008344236994162202,
+          "category": "电商客服"
+        },
+        {
+          "n": 6,
+          "chunk_id": 34,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "商品故障或质量问题"
+          ],
+          "question": "商品故障或质量问题",
+          "answer": "请顾客描述故障现象、发生时间、使用条件和商品型号，并提供与判断直接相关的照片或视频。 客服应先确认是否存在安全风险，必要时建议停止使用并升级处理；维修、换货、退货或其他方案以核查结果、保修约定和适用政策为准。",
+          "source_key": "doc:04-支付与售后.md:07de67522e943900",
+          "score": 0.0002781004295684397,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 7,
+          "chunk_id": 30,
+          "section_path": [
+            "支付与售后",
+            "支付问题",
+            "支付是否成功"
+          ],
+          "question": "支付是否成功",
+          "answer": "应以订单详情和支付渠道返回的系统状态为准。 顾客收到扣款通知但订单仍未支付时，客服应核对订单号、支付时间和页面状态，并按支付渠道流程查询；不要仅凭截图或短信认定支付成功，也不要要求顾客提供密码、验证码或完整银行卡号。",
+          "source_key": "doc:04-支付与售后.md:4696fb21dac4c4af",
+          "score": 0.0002479020331520587,
+          "category": "支付与售后 / 支付问题"
+        },
+        {
+          "n": 8,
+          "chunk_id": 9,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "促销和优惠"
+          ],
+          "question": "促销和优惠",
+          "answer": "优惠资格、适用商品、叠加条件、有效期及最终抵扣金额，以活动页面和结算页实际展示为准。 客服应核对顾客的订单和活动规则；如页面已显示优惠但订单金额不一致，应收集订单号并升级核查，不能自行承诺补差或补券。",
+          "source_key": "doc:01-商品与下单.md:5647ae6723c672da",
+          "score": 0.0002137460687663406,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 9,
+          "chunk_id": 19,
+          "section_path": [
+            "退换货与退款",
+            "申请前核对",
+            "退换货条件"
+          ],
+          "question": "退换货条件",
+          "answer": "退换货资格、申请期限、商品状态要求、配件和包装要求、费用承担及例外情况，以购买时适用的法律规定、店铺公示政策、商品页面和订单详情为准。 商品类别、定制属性、使用状态或活动条件可能影响处理方式。 客服应先核对订单、商品和申请原因，不得把通用说明替代适用于该订单的具体规则。",
+          "source_key": "doc:03-退换货与退款.md:560c620ffd6ca180",
+          "score": 0.00018428151088301092,
+          "category": "退换货与退款 / 申请前核对"
+        },
+        {
+          "n": 10,
+          "chunk_id": 20,
+          "section_path": [
+            "退换货与退款",
+            "申请前核对",
+            "哪些情况需要先联系商家"
+          ],
+          "question": "哪些情况需要先联系商家",
+          "answer": "商品存在质量问题、收到商品与订单不符、运输损坏、缺少配件或申请页面无法提交时，建议顾客先联系在线客服并保留商品、包装、订单和问题照片等必要信息。 客服应按核查需要收集最少材料，并在系统记录处理进展；不能要求顾客提供与问题无关的敏感信息。",
+          "source_key": "doc:03-退换货与退款.md:e6e39139ca6c59ec",
+          "score": 0.0001305045880144462,
+          "category": "退换货与退款 / 申请前核对"
+        }
+      ],
+      "top_score": 0.10287963598966599,
+      "candidate_ids": [
+        5,
+        1,
+        4,
+        24,
+        30,
+        18,
+        8,
+        25,
+        3,
+        40,
+        9,
+        34,
+        23,
+        36,
+        19,
+        49,
+        55,
+        2,
+        35,
+        51,
+        41,
+        47,
+        57,
+        45,
+        56,
+        12,
+        48,
+        42,
+        37,
+        59,
+        32,
+        6,
+        54,
+        20,
+        53,
+        44,
+        52,
+        50,
+        46,
+        43,
+        15,
+        58,
+        16,
+        60,
+        7,
+        17,
+        31,
+        39,
+        29,
+        13
+      ],
+      "final_ids": [
+        1,
+        4,
+        5,
+        3,
+        40,
+        34,
+        30,
+        9,
+        19,
+        20
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "不能仅凭颜色图片看着一样就认定兼容。",
+          "supported": true,
+          "reason": "证据[1]明确说明涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断；证据[2]说明型号名称相近不代表一定兼容，需核对适配条件。"
+        },
+        {
+          "claim": "商品规格、材质、尺寸、颜色、功能、兼容范围等应以对应商品详情页和经商家确认的信息为准。",
+          "supported": true,
+          "reason": "证据[1]原文：商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。"
+        },
+        {
+          "claim": "图片可能受拍摄光线、屏幕显示和批次差异影响。",
+          "supported": true,
+          "reason": "证据[1]原文：图片可能受拍摄光线、屏幕显示和批次差异影响。"
+        },
+        {
+          "claim": "涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。",
+          "supported": true,
+          "reason": "证据[1]原文：涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。"
+        },
+        {
+          "claim": "确认适配时，请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。",
+          "supported": true,
+          "reason": "证据[2]原文：请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。"
+        },
+        {
+          "claim": "型号名称相近不代表一定兼容。",
+          "supported": true,
+          "reason": "证据[2]原文：型号名称相近不代表一定兼容。"
+        },
+        {
+          "claim": "页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认后再给出结论。",
+          "supported": true,
+          "reason": "证据[2]原文：页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 4.572755573004542
+    },
+    {
+      "eval_id": "A003",
+      "bucket": "A_policy",
+      "difficulty": "hard",
+      "split": "calibration",
+      "query": "详情页规格互相矛盾又没写我的型号，能直接确认适配吗？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "bm25",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 0.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "不能直接确认适配。详情页规格相互矛盾且未覆盖您的型号时，应先核对商品链接、完整型号及使用场景，并向商品负责人核实后再答复，不应自行推测是否适配[1][2][4]。型号名称相近也不代表一定兼容[1]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 19.23000144958496,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 2,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 15.17995834350586,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 3,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 10.107301712036133,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 4,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 8.674485206604004,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 5,
+          "chunk_id": 6,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "提交订单与订单确认"
+          ],
+          "question": "提交订单与订单确认",
+          "answer": "提交订单前应核对商品、规格、数量、收货地址、联系人和结算页展示的费用。 订单是否成立、是否付款成功及当前履约状态，以订单详情页和支付结果为准。 客服不得仅凭顾客的付款截图确认订单已支付，应核对系统中的订单状态。",
+          "source_key": "doc:01-商品与下单.md:043d5af69748bc12",
+          "score": 8.238503456115723,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 6,
+          "chunk_id": 34,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "商品故障或质量问题"
+          ],
+          "question": "商品故障或质量问题",
+          "answer": "请顾客描述故障现象、发生时间、使用条件和商品型号，并提供与判断直接相关的照片或视频。 客服应先确认是否存在安全风险，必要时建议停止使用并升级处理；维修、换货、退货或其他方案以核查结果、保修约定和适用政策为准。",
+          "source_key": "doc:04-支付与售后.md:07de67522e943900",
+          "score": 6.96415376663208,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 7,
+          "chunk_id": 24,
+          "section_path": [
+            "退换货与退款",
+            "退货和换货流程",
+            "商品已经使用还能退吗"
+          ],
+          "question": "商品已经使用还能退吗",
+          "answer": "能否退货取决于商品类别、使用或拆封情况、质量问题、适用法律和购买时公示的规则。 客服应根据具体订单核实，不应一概承诺可以退或拒绝受理；如涉及商品安全、质量或法定权利问题，应升级给负责团队。",
+          "source_key": "doc:03-退换货与退款.md:036212ec371f9cf6",
+          "score": 5.983804702758789,
+          "category": "退换货与退款 / 退货和换货流程"
+        },
+        {
+          "n": 8,
+          "chunk_id": 40,
+          "section_path": [
+            "受控测试商品说明"
+          ],
+          "question": "受控测试商品说明",
+          "answer": "所有 XH 型号均为虚构评估商品，仅用于隔离验收，不能当作实际在售商品规格。",
+          "source_key": "doc:05-受控测试商品.md:6476c4303d69f582",
+          "score": 5.77987003326416,
+          "category": "电商客服"
+        },
+        {
+          "n": 9,
+          "chunk_id": 7,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "修改订单信息"
+          ],
+          "question": "修改订单信息",
+          "answer": "订单地址、规格或数量能否修改取决于订单状态和仓库处理进度。 建议顾客尽快从订单页面发起修改或联系在线客服；如果订单已经进入拣货、发货或其他不可变更阶段，应说明可用的后续选项，不承诺一定能拦截或修改。",
+          "source_key": "doc:01-商品与下单.md:f91b2677847d97fc",
+          "score": 5.640505313873291,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 10,
+          "chunk_id": 35,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "保修和维修范围"
+          ],
+          "question": "保修和维修范围",
+          "answer": "保修期限、覆盖部件、除外情形、维修方式和服务网点应以商品页面、随附文件、订单记录及商家确认的政策为准。 通用客服知识不能替代特定品牌或型号的保修承诺；信息不明确时应查询对应商品资料并记录确认来源。",
+          "source_key": "doc:04-支付与售后.md:6e186586d8ae8f58",
+          "score": 4.585063457489014,
+          "category": "支付与售后 / 商品售后"
+        }
+      ],
+      "top_score": 19.23000144958496,
+      "candidate_ids": [
+        4,
+        1,
+        5,
+        3,
+        6,
+        34,
+        24,
+        40,
+        7,
+        35,
+        18,
+        36,
+        12,
+        14,
+        25,
+        23,
+        2,
+        37,
+        13,
+        27,
+        19,
+        30,
+        15,
+        8,
+        22,
+        29,
+        31,
+        26,
+        17,
+        28,
+        21,
+        39,
+        38,
+        10,
+        11,
+        32,
+        33,
+        16,
+        9,
+        20
+      ],
+      "final_ids": [
+        4,
+        1,
+        5,
+        3,
+        6,
+        34,
+        24,
+        40,
+        7,
+        35
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "不能直接确认适配。",
+          "supported": true,
+          "reason": "证据[1]明确：页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论；证据[2]也要求信息缺失或相互矛盾时先核实后答复。"
+        },
+        {
+          "claim": "详情页规格相互矛盾且未覆盖您的型号时，应先核对商品链接、完整型号及使用场景，并向商品负责人核实后再答复。",
+          "supported": true,
+          "reason": "证据[2]明确：信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复；证据[1]也要求收集完整型号及使用场景并向商品负责人确认。"
+        },
+        {
+          "claim": "不应自行推测是否适配。",
+          "supported": true,
+          "reason": "证据[4]明确：页面未说明测量口径或不同页面信息不一致时，由客服核实后再答复，不应自行推测商品是否适配。"
+        },
+        {
+          "claim": "型号名称相近也不代表一定兼容。",
+          "supported": true,
+          "reason": "证据[1]原文：型号名称相近不代表一定兼容。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 2.2805305369984126
+    },
+    {
+      "eval_id": "A003",
+      "bucket": "A_policy",
+      "difficulty": "hard",
+      "split": "calibration",
+      "query": "详情页规格互相矛盾又没写我的型号，能直接确认适配吗？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "dense",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 0.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "不能直接确认适配。型号名称相近不代表一定兼容；页面没有覆盖您的型号时，需要先收集完整型号及使用场景，并向商品负责人确认后再给出结论[1]。若详情页信息缺失或相互矛盾，也应先确认商品链接、型号和您的使用场景，再向商品负责人核实后答复，不应自行推测商品是否适配[2][3]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 0.7524080276489258,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 2,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 0.6679964661598206,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 3,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 0.6522953510284424,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 4,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 0.6354291439056396,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 5,
+          "chunk_id": 36,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "缺少配件或收到错发商品"
+          ],
+          "question": "缺少配件或收到错发商品",
+          "answer": "核对订单商品、规格、包裹清单和顾客实际收到的内容。 客服可请顾客提供必要的外包装及商品照片用于核查；确认后按商家适用流程补寄、换货或提供其他方案，不应在核实前承诺处理结果。",
+          "source_key": "doc:04-支付与售后.md:0a2826aa2e04a401",
+          "score": 0.6172681450843811,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 6,
+          "chunk_id": 37,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "如何升级复杂售后问题"
+          ],
+          "question": "如何升级复杂售后问题",
+          "answer": "涉及人身或财产安全、重复失败、政策争议、重大支付异常、疑似数据泄露或无法由一线客服确认的承诺时，应保留必要的订单与问题摘要，转交对应的售后、支付或安全负责人。 仅记录解决问题所必需的信息，并告知顾客已提交核查及可确认的后续联系渠道。",
+          "source_key": "doc:04-支付与售后.md:e9bfc24945c5210d",
+          "score": 0.5831689834594727,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 7,
+          "chunk_id": 34,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "商品故障或质量问题"
+          ],
+          "question": "商品故障或质量问题",
+          "answer": "请顾客描述故障现象、发生时间、使用条件和商品型号，并提供与判断直接相关的照片或视频。 客服应先确认是否存在安全风险，必要时建议停止使用并升级处理；维修、换货、退货或其他方案以核查结果、保修约定和适用政策为准。",
+          "source_key": "doc:04-支付与售后.md:07de67522e943900",
+          "score": 0.5805699229240417,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 8,
+          "chunk_id": 35,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "保修和维修范围"
+          ],
+          "question": "保修和维修范围",
+          "answer": "保修期限、覆盖部件、除外情形、维修方式和服务网点应以商品页面、随附文件、订单记录及商家确认的政策为准。 通用客服知识不能替代特定品牌或型号的保修承诺；信息不明确时应查询对应商品资料并记录确认来源。",
+          "source_key": "doc:04-支付与售后.md:6e186586d8ae8f58",
+          "score": 0.5763699412345886,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 9,
+          "chunk_id": 40,
+          "section_path": [
+            "受控测试商品说明"
+          ],
+          "question": "受控测试商品说明",
+          "answer": "所有 XH 型号均为虚构评估商品，仅用于隔离验收，不能当作实际在售商品规格。",
+          "source_key": "doc:05-受控测试商品.md:6476c4303d69f582",
+          "score": 0.5761509537696838,
+          "category": "电商客服"
+        },
+        {
+          "n": 10,
+          "chunk_id": 20,
+          "section_path": [
+            "退换货与退款",
+            "申请前核对",
+            "哪些情况需要先联系商家"
+          ],
+          "question": "哪些情况需要先联系商家",
+          "answer": "商品存在质量问题、收到商品与订单不符、运输损坏、缺少配件或申请页面无法提交时，建议顾客先联系在线客服并保留商品、包装、订单和问题照片等必要信息。 客服应按核查需要收集最少材料，并在系统记录处理进展；不能要求顾客提供与问题无关的敏感信息。",
+          "source_key": "doc:03-退换货与退款.md:e6e39139ca6c59ec",
+          "score": 0.5756648778915405,
+          "category": "退换货与退款 / 申请前核对"
+        }
+      ],
+      "top_score": 0.7524080276489258,
+      "candidate_ids": [
+        4,
+        1,
+        3,
+        5,
+        36,
+        37,
+        34,
+        35,
+        40,
+        20,
+        9,
+        39,
+        7,
+        15,
+        19,
+        32,
+        6,
+        31,
+        33,
+        23,
+        16,
+        22,
+        2,
+        30,
+        17,
+        29,
+        38,
+        12,
+        18,
+        8,
+        25,
+        24,
+        58,
+        28,
+        46,
+        59,
+        56,
+        54,
+        48,
+        21,
+        44,
+        51,
+        47,
+        53,
+        60,
+        50,
+        57,
+        43,
+        13,
+        49
+      ],
+      "final_ids": [
+        4,
+        1,
+        3,
+        5,
+        36,
+        37,
+        34,
+        35,
+        40,
+        20
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "不能直接确认适配。",
+          "supported": true,
+          "reason": "证据[1]明确：页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论；证据[2]也要求信息缺失或矛盾时先核实后答复，不应自行推测。"
+        },
+        {
+          "claim": "型号名称相近不代表一定兼容。",
+          "supported": true,
+          "reason": "证据[1]原文：型号名称相近不代表一定兼容。"
+        },
+        {
+          "claim": "页面没有覆盖您的型号时，需要先收集完整型号及使用场景，并向商品负责人确认后再给出结论。",
+          "supported": true,
+          "reason": "证据[1]原文：页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。"
+        },
+        {
+          "claim": "若详情页信息缺失或相互矛盾，也应先确认商品链接、型号和您的使用场景，再向商品负责人核实后答复。",
+          "supported": true,
+          "reason": "证据[2]原文：信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。"
+        },
+        {
+          "claim": "不应自行推测商品是否适配。",
+          "supported": true,
+          "reason": "证据[3]原文：不应自行推测商品是否适配；证据[2]也要求不能只凭外观推断。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 4.274366819998249
+    },
+    {
+      "eval_id": "A003",
+      "bucket": "A_policy",
+      "difficulty": "hard",
+      "split": "calibration",
+      "query": "详情页规格互相矛盾又没写我的型号，能直接确认适配吗？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "hybrid",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 0.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "不能直接确认适配。详情页规格相互矛盾且未覆盖您的型号时，型号名称相近也不代表一定兼容；应先核对详情页列出的品牌、型号、接口、系统版本等适配条件[1]，并确认商品链接、型号和您的使用场景后，向商品负责人核实再给出结论[2]。页面信息不一致时，不应自行推测商品是否适配[3]。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 0.032786883413791656,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 2,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 0.032258063554763794,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 3,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 0.0314980149269104,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 4,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 0.0314980149269104,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 5,
+          "chunk_id": 34,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "商品故障或质量问题"
+          ],
+          "question": "商品故障或质量问题",
+          "answer": "请顾客描述故障现象、发生时间、使用条件和商品型号，并提供与判断直接相关的照片或视频。 客服应先确认是否存在安全风险，必要时建议停止使用并升级处理；维修、换货、退货或其他方案以核查结果、保修约定和适用政策为准。",
+          "source_key": "doc:04-支付与售后.md:07de67522e943900",
+          "score": 0.03007688745856285,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 6,
+          "chunk_id": 36,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "缺少配件或收到错发商品"
+          ],
+          "question": "缺少配件或收到错发商品",
+          "answer": "核对订单商品、规格、包裹清单和顾客实际收到的内容。 客服可请顾客提供必要的外包装及商品照片用于核查；确认后按商家适用流程补寄、换货或提供其他方案，不应在核实前承诺处理结果。",
+          "source_key": "doc:04-支付与售后.md:0a2826aa2e04a401",
+          "score": 0.0292735043913126,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 7,
+          "chunk_id": 40,
+          "section_path": [
+            "受控测试商品说明"
+          ],
+          "question": "受控测试商品说明",
+          "answer": "所有 XH 型号均为虚构评估商品，仅用于隔离验收，不能当作实际在售商品规格。",
+          "source_key": "doc:05-受控测试商品.md:6476c4303d69f582",
+          "score": 0.02919863536953926,
+          "category": "电商客服"
+        },
+        {
+          "n": 8,
+          "chunk_id": 35,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "保修和维修范围"
+          ],
+          "question": "保修和维修范围",
+          "answer": "保修期限、覆盖部件、除外情形、维修方式和服务网点应以商品页面、随附文件、订单记录及商家确认的政策为准。 通用客服知识不能替代特定品牌或型号的保修承诺；信息不明确时应查询对应商品资料并记录确认来源。",
+          "source_key": "doc:04-支付与售后.md:6e186586d8ae8f58",
+          "score": 0.028991596773266792,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 9,
+          "chunk_id": 6,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "提交订单与订单确认"
+          ],
+          "question": "提交订单与订单确认",
+          "answer": "提交订单前应核对商品、规格、数量、收货地址、联系人和结算页展示的费用。 订单是否成立、是否付款成功及当前履约状态，以订单详情页和支付结果为准。 客服不得仅凭顾客的付款截图确认订单已支付，应核对系统中的订单状态。",
+          "source_key": "doc:01-商品与下单.md:043d5af69748bc12",
+          "score": 0.028371628373861313,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 10,
+          "chunk_id": 7,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "修改订单信息"
+          ],
+          "question": "修改订单信息",
+          "answer": "订单地址、规格或数量能否修改取决于订单状态和仓库处理进度。 建议顾客尽快从订单页面发起修改或联系在线客服；如果订单已经进入拣货、发货或其他不可变更阶段，应说明可用的后续选项，不承诺一定能拦截或修改。",
+          "source_key": "doc:01-商品与下单.md:f91b2677847d97fc",
+          "score": 0.02819138392806053,
+          "category": "商品与下单 / 订单处理"
+        }
+      ],
+      "top_score": 0.032786883413791656,
+      "candidate_ids": [
+        4,
+        1,
+        3,
+        5,
+        34,
+        36,
+        40,
+        35,
+        6,
+        7,
+        37,
+        24,
+        19,
+        23,
+        15,
+        18,
+        12,
+        2,
+        39,
+        25,
+        31,
+        20,
+        9,
+        30,
+        22,
+        32,
+        29,
+        8,
+        17,
+        33,
+        16,
+        38,
+        13,
+        28,
+        21,
+        14,
+        27,
+        26,
+        58,
+        10,
+        11,
+        46,
+        59,
+        56,
+        54,
+        48,
+        44,
+        51,
+        47,
+        53
+      ],
+      "final_ids": [
+        4,
+        1,
+        3,
+        5,
+        34,
+        36,
+        40,
+        35,
+        6,
+        7
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "不能直接确认适配。",
+          "supported": true,
+          "reason": "证据[1]指出型号名称相近不代表一定兼容，页面没有覆盖该型号时需收集完整型号及使用场景并向商品负责人确认再给出结论；证据[2]指出信息缺失或相互矛盾时应先确认商品链接、型号和顾客使用场景，再向商品负责人核实后答复。"
+        },
+        {
+          "claim": "详情页规格相互矛盾且未覆盖您的型号时，型号名称相近也不代表一定兼容。",
+          "supported": true,
+          "reason": "证据[1]明确：型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。"
+        },
+        {
+          "claim": "应先核对详情页列出的品牌、型号、接口、系统版本等适配条件。",
+          "supported": true,
+          "reason": "证据[1]明确：请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。"
+        },
+        {
+          "claim": "并确认商品链接、型号和您的使用场景后，向商品负责人核实再给出结论。",
+          "supported": true,
+          "reason": "证据[2]明确：信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复；证据[1]也要求收集完整型号及使用场景并向商品负责人确认再给出结论。"
+        },
+        {
+          "claim": "页面信息不一致时，不应自行推测商品是否适配。",
+          "supported": true,
+          "reason": "证据[3]明确：若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 3.3713676309998846
+    },
+    {
+      "eval_id": "A003",
+      "bucket": "A_policy",
+      "difficulty": "hard",
+      "split": "calibration",
+      "query": "详情页规格互相矛盾又没写我的型号，能直接确认适配吗？",
+      "category": null,
+      "relevant_source_keys": [
+        "doc:01-商品与下单.md:183796d3e9e1dfb9"
+      ],
+      "required_facts": [
+        "以详情页和确认的信息为准"
+      ],
+      "should_refuse": false,
+      "topic_id": "A_policy:0",
+      "strategy": "hybrid_rerank",
+      "error": null,
+      "refused": false,
+      "faithfulness": 1.0,
+      "metrics": {
+        "recall@1": 0.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5,
+        "candidate_recall@50": 1.0
+      },
+      "answer": "不能直接确认适配。请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件；型号名称相近不代表一定兼容[1]。商品规格、兼容范围等以对应商品详情页和经商家确认的信息为准，涉及型号适配时应先核对商品参数，不能只凭外观推断；信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复[2]。若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配[3]。因此，在您提供完整型号、商品链接及使用场景并由客服向商品负责人核实前，无法直接确认适配。",
+      "citations": [
+        {
+          "n": 1,
+          "chunk_id": 4,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "这个商品适配我的设备吗？"
+          ],
+          "question": "这个商品适配我的设备吗？",
+          "answer": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。 型号名称相近不代表一定兼容；页面没有覆盖该型号时，客服应收集完整型号及使用场景并向商品负责人确认，再给出结论。",
+          "source_key": "doc:01-商品与下单.md:ffaac15321280e22",
+          "score": 0.905784010887146,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 2,
+          "chunk_id": 1,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品参数和适用范围"
+          ],
+          "question": "商品参数和适用范围",
+          "answer": "商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。 图片可能受拍摄光线、屏幕显示和批次差异影响；涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。 信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "source_key": "doc:01-商品与下单.md:183796d3e9e1dfb9",
+          "score": 0.8342396020889282,
+          "category": "商品与下单 / 商品信息与选购"
+        },
+        {
+          "n": 3,
+          "chunk_id": 3,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "如何确认商品尺寸？"
+          ],
+          "question": "如何确认商品尺寸？",
+          "answer": "请查看商品详情页中的尺寸表、测量方式和适用建议，并结合实际使用位置核对。 若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "source_key": "doc:01-商品与下单.md:a4ac87045d723715",
+          "score": 0.821581244468689,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 4,
+          "chunk_id": 36,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "缺少配件或收到错发商品"
+          ],
+          "question": "缺少配件或收到错发商品",
+          "answer": "核对订单商品、规格、包裹清单和顾客实际收到的内容。 客服可请顾客提供必要的外包装及商品照片用于核查；确认后按商家适用流程补寄、换货或提供其他方案，不应在核实前承诺处理结果。",
+          "source_key": "doc:04-支付与售后.md:0a2826aa2e04a401",
+          "score": 0.033270951360464096,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 5,
+          "chunk_id": 5,
+          "section_path": [
+            "商品与下单",
+            "商品信息与选购",
+            "商品 FAQ",
+            "商品页面的颜色和实物会完全一样吗？"
+          ],
+          "question": "商品页面的颜色和实物会完全一样吗？",
+          "answer": "商品图片用于展示外观，屏幕设置、拍摄光线和生产批次可能造成视觉差异。 具体颜色名称、规格选项和商品描述以当前详情页及实际下单规格为准；若收到的商品与订单规格不符，应按订单售后流程核查。",
+          "source_key": "doc:01-商品与下单.md:8dfa61cfc62050f4",
+          "score": 0.03068169392645359,
+          "category": "商品与下单 / 商品信息与选购 / 商品 FAQ"
+        },
+        {
+          "n": 6,
+          "chunk_id": 6,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "提交订单与订单确认"
+          ],
+          "question": "提交订单与订单确认",
+          "answer": "提交订单前应核对商品、规格、数量、收货地址、联系人和结算页展示的费用。 订单是否成立、是否付款成功及当前履约状态，以订单详情页和支付结果为准。 客服不得仅凭顾客的付款截图确认订单已支付，应核对系统中的订单状态。",
+          "source_key": "doc:01-商品与下单.md:043d5af69748bc12",
+          "score": 0.014328696765005589,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 7,
+          "chunk_id": 40,
+          "section_path": [
+            "受控测试商品说明"
+          ],
+          "question": "受控测试商品说明",
+          "answer": "所有 XH 型号均为虚构评估商品，仅用于隔离验收，不能当作实际在售商品规格。",
+          "source_key": "doc:05-受控测试商品.md:6476c4303d69f582",
+          "score": 0.009529702365398407,
+          "category": "电商客服"
+        },
+        {
+          "n": 8,
+          "chunk_id": 34,
+          "section_path": [
+            "支付与售后",
+            "商品售后",
+            "商品故障或质量问题"
+          ],
+          "question": "商品故障或质量问题",
+          "answer": "请顾客描述故障现象、发生时间、使用条件和商品型号，并提供与判断直接相关的照片或视频。 客服应先确认是否存在安全风险，必要时建议停止使用并升级处理；维修、换货、退货或其他方案以核查结果、保修约定和适用政策为准。",
+          "source_key": "doc:04-支付与售后.md:07de67522e943900",
+          "score": 0.007237631361931562,
+          "category": "支付与售后 / 商品售后"
+        },
+        {
+          "n": 9,
+          "chunk_id": 7,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "修改订单信息"
+          ],
+          "question": "修改订单信息",
+          "answer": "订单地址、规格或数量能否修改取决于订单状态和仓库处理进度。 建议顾客尽快从订单页面发起修改或联系在线客服；如果订单已经进入拣货、发货或其他不可变更阶段，应说明可用的后续选项，不承诺一定能拦截或修改。",
+          "source_key": "doc:01-商品与下单.md:f91b2677847d97fc",
+          "score": 0.002752788132056594,
+          "category": "商品与下单 / 订单处理"
+        },
+        {
+          "n": 10,
+          "chunk_id": 9,
+          "section_path": [
+            "商品与下单",
+            "订单处理",
+            "促销和优惠"
+          ],
+          "question": "促销和优惠",
+          "answer": "优惠资格、适用商品、叠加条件、有效期及最终抵扣金额，以活动页面和结算页实际展示为准。 客服应核对顾客的订单和活动规则；如页面已显示优惠但订单金额不一致，应收集订单号并升级核查，不能自行承诺补差或补券。",
+          "source_key": "doc:01-商品与下单.md:5647ae6723c672da",
+          "score": 0.0025785667821764946,
+          "category": "商品与下单 / 订单处理"
+        }
+      ],
+      "top_score": 0.905784010887146,
+      "candidate_ids": [
+        4,
+        1,
+        3,
+        5,
+        34,
+        36,
+        40,
+        35,
+        6,
+        7,
+        37,
+        24,
+        19,
+        23,
+        15,
+        18,
+        12,
+        2,
+        39,
+        25,
+        31,
+        20,
+        9,
+        30,
+        22,
+        32,
+        29,
+        8,
+        17,
+        33,
+        16,
+        38,
+        13,
+        28,
+        21,
+        14,
+        27,
+        26,
+        58,
+        10,
+        11,
+        46,
+        59,
+        56,
+        54,
+        48,
+        44,
+        51,
+        47,
+        53
+      ],
+      "final_ids": [
+        4,
+        1,
+        3,
+        36,
+        5,
+        6,
+        40,
+        34,
+        7,
+        9
+      ],
+      "refusal_reason": "",
+      "judge_reason": "",
+      "claims": [
+        {
+          "claim": "不能直接确认适配。",
+          "supported": true,
+          "reason": "引用[1]明确要求先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件，页面没有覆盖该型号时需收集完整型号及使用场景并向商品负责人确认后再给出结论；引用[2]也要求信息缺失或相互矛盾时先核实后答复。"
+        },
+        {
+          "claim": "请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。",
+          "supported": true,
+          "reason": "引用[1]原文即为“请先核对详情页列出的品牌、型号、接口、系统版本或其他适配条件。”"
+        },
+        {
+          "claim": "型号名称相近不代表一定兼容。",
+          "supported": true,
+          "reason": "引用[1]原文即为“型号名称相近不代表一定兼容”。"
+        },
+        {
+          "claim": "商品规格、兼容范围等以对应商品详情页和经商家确认的信息为准。",
+          "supported": true,
+          "reason": "引用[2]原文为“商品规格、材质、尺寸、颜色、功能、兼容范围及包装清单，以对应商品详情页和经商家确认的信息为准。”"
+        },
+        {
+          "claim": "涉及型号适配时应先核对商品参数，不能只凭外观推断。",
+          "supported": true,
+          "reason": "引用[2]原文为“涉及型号适配或使用条件时，应先核对商品参数，不能只凭外观推断。”"
+        },
+        {
+          "claim": "信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。",
+          "supported": true,
+          "reason": "引用[2]原文即为“信息缺失或相互矛盾时，客服应先确认商品链接、型号和顾客的使用场景，再向商品负责人核实后答复。”"
+        },
+        {
+          "claim": "若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。",
+          "supported": true,
+          "reason": "引用[3]原文即为“若页面未说明测量口径或不同页面信息不一致，请提供商品链接和需要确认的尺寸，由客服核实后再答复，不应自行推测商品是否适配。”"
+        },
+        {
+          "claim": "在您提供完整型号、商品链接及使用场景并由客服向商品负责人核实前，无法直接确认适配。",
+          "supported": true,
+          "reason": "引用[1]要求页面没有覆盖该型号时收集完整型号及使用场景并向商品负责人确认后再给出结论；引用[2]要求信息缺失或矛盾时先确认商品链接、型号和使用场景再向商品负责人核实后答复；引用[3]要求提供商品链接和需确认尺寸由客服核实后再答复。综合支持该结论。"
+        }
+      ],
+      "judge_model": "deepseek-chat",
+      "latency_seconds": 4.759054317000846
+    }
+  ]
+}
