@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from typing import Any
 
@@ -88,7 +89,7 @@ class KnowledgeRepository:
                 )
                 session.add(chunk)
             else:
-                if chunk.embedding_text != embedding_text:
+                if chunk.embedding_text != embedding_text or not chunk.is_active:
                     chunk.embedding_text = embedding_text
                     chunk.vector_status = "pending"
                     chunk.vector_id = None
@@ -98,6 +99,7 @@ class KnowledgeRepository:
                 chunk.chapter_path = draft.chapter_path
                 chunk.content_type = draft.content_type
                 chunk.is_critical = draft.is_critical
+                chunk.is_active = True
                 chunk.content_hash = content_hash
             rows[draft.source_key] = chunk
         session.flush()
@@ -131,7 +133,7 @@ class KnowledgeRepository:
             return list(
                 session.scalars(
                     select(KnowledgeChunk)
-                    .where(KnowledgeChunk.vector_status == "pending")
+                    .where(KnowledgeChunk.vector_status == "pending", KnowledgeChunk.is_active.is_(True))
                     .order_by(KnowledgeChunk.id)
                     .limit(limit)
                 )
@@ -149,23 +151,61 @@ class KnowledgeRepository:
         if not ids:
             return []
         with self.session_factory() as session:
-            rows = list(session.scalars(select(KnowledgeChunk).where(KnowledgeChunk.id.in_(set(ids)))))
+            rows = list(
+                session.scalars(
+                    select(KnowledgeChunk).where(
+                        KnowledgeChunk.id.in_(set(ids)), KnowledgeChunk.is_active.is_(True)
+                    )
+                )
+            )
             return sorted(rows, key=lambda row: ids.index(row.id))
 
-    def load_turns_after(self, last_message_id: int, limit: int) -> tuple[list[ConversationTurn], int]:
+    def deactivate_missing_documents(
+        self, active_sources: list[str], retained_source_keys: list[str]
+    ) -> list[tuple[int, int]]:
+        active = set(active_sources)
+        retained = set(retained_source_keys)
+        with self.session_factory.begin() as session:
+            document_chunks = list(
+                session.scalars(select(KnowledgeChunk).where(KnowledgeChunk.source_key.startswith("doc:")))
+            )
+            for chunk in document_chunks:
+                source = chunk.source_key[4:].rsplit(":", 1)[0]
+                if source not in active or chunk.source_key not in retained:
+                    chunk.is_active = False
+            return [
+                (chunk.id, chunk.vector_id)
+                for chunk in document_chunks
+                if not chunk.is_active and chunk.vector_id is not None
+            ]
+
+    def clear_deleted_vector_ids(self, chunk_ids: list[int]) -> None:
+        if not chunk_ids:
+            return
+        with self.session_factory.begin() as session:
+            rows = list(session.scalars(select(KnowledgeChunk).where(KnowledgeChunk.id.in_(set(chunk_ids)))))
+            for row in rows:
+                if not row.is_active:
+                    row.vector_id = None
+
+    def load_turns_after(
+        self, last_message_id: int, limit: int, conversation_id: str
+    ) -> tuple[list[ConversationTurn], int]:
         if limit < 1:
             return [], last_message_id
         with self.session_factory() as session:
-            users = list(
-                session.scalars(
-                    select(Message)
-                    .where(Message.id > last_message_id, Message.role == "user")
-                    .order_by(Message.id)
-                    .limit(limit)
-                )
+            user_query = select(Message).where(
+                Message.id > last_message_id,
+                Message.role == "user",
+                Message.conversation_id == conversation_id,
             )
+            users = list(session.scalars(user_query.order_by(Message.id).limit(limit)))
             if not users:
-                latest_id = session.scalar(select(func.max(Message.id)).where(Message.id > last_message_id))
+                latest_query = select(func.max(Message.id)).where(
+                    Message.id > last_message_id,
+                    Message.conversation_id == conversation_id,
+                )
+                latest_id = session.scalar(latest_query)
                 return [], latest_id or last_message_id
             next_cursor = last_message_id
             turns: list[ConversationTurn] = []
@@ -211,29 +251,66 @@ class KnowledgeRepository:
                 return [], last_message_id
             return turns, next_cursor
 
-    def extraction_cursor(self) -> int:
+    def extraction_cursor(self, conversation_id: str | None = None) -> int:
+        cursor_name = (
+            "conversation_knowledge"
+            if conversation_id is None
+            else self._conversation_cursor_name(conversation_id)
+        )
         with self.session_factory() as session:
-            cursor = session.get(KnowledgeExtractionCursor, "conversation_knowledge")
+            cursor = session.get(KnowledgeExtractionCursor, cursor_name)
             return cursor.last_message_id if cursor else 0
 
-    def count_messages_between(self, after_id: int, through_id: int) -> int:
-        if through_id <= after_id:
-            return 0
-        with self.session_factory() as session:
-            return session.scalar(
-                select(func.count()).select_from(Message).where(
-                    Message.id > after_id,
-                    Message.id <= through_id,
-                )
-            ) or 0
+    @staticmethod
+    def _conversation_cursor_name(conversation_id: str) -> str:
+        return hashlib.sha256(f"conversation:{conversation_id}".encode()).hexdigest()
 
-    def count_skipped_tool_messages(self, after_id: int, through_id: int) -> int:
+    def conversations_with_pending_turns(self) -> list[tuple[str, int]]:
+        with self.session_factory() as session:
+            latest_user_ids = list(
+                session.execute(
+                    select(Message.conversation_id, func.max(Message.id))
+                    .where(Message.role == "user")
+                    .group_by(Message.conversation_id)
+                    .order_by(func.max(Message.id))
+                )
+            )
+            cursor_names = {
+                conversation_id: self._conversation_cursor_name(conversation_id)
+                for conversation_id, _ in latest_user_ids
+            }
+            stored_cursors = {
+                cursor_name: last_message_id
+                for cursor_name, last_message_id in session.execute(
+                    select(KnowledgeExtractionCursor.cursor_name, KnowledgeExtractionCursor.last_message_id)
+                )
+            }
+            return [
+                (conversation_id, stored_cursors.get(cursor_names[conversation_id], 0))
+                for conversation_id, latest_user_id in latest_user_ids
+                if latest_user_id > stored_cursors.get(cursor_names[conversation_id], 0)
+            ]
+
+    def count_messages_between(self, after_id: int, through_id: int, conversation_id: str) -> int:
         if through_id <= after_id:
             return 0
         with self.session_factory() as session:
-            messages = list(
-                session.scalars(select(Message).where(Message.id > after_id, Message.id <= through_id))
+            query = select(func.count()).select_from(Message).where(
+                Message.id > after_id,
+                Message.id <= through_id,
             )
+            query = query.where(Message.conversation_id == conversation_id)
+            return session.scalar(query) or 0
+
+    def count_skipped_tool_messages(
+        self, after_id: int, through_id: int, conversation_id: str
+    ) -> int:
+        if through_id <= after_id:
+            return 0
+        with self.session_factory() as session:
+            query = select(Message).where(Message.id > after_id, Message.id <= through_id)
+            query = query.where(Message.conversation_id == conversation_id)
+            messages = list(session.scalars(query))
             return sum(message.role == "tool" or bool(message.tool_calls) for message in messages)
 
     def stage_batch_and_advance(
@@ -241,6 +318,7 @@ class KnowledgeRepository:
         candidates: list[tuple[ConversationTurn, Any]],
         last_message_id: int,
         run_id: str,
+        conversation_id: str,
     ) -> None:
         with self.session_factory.begin() as session:
             seen: set[tuple[str, int]] = set()
@@ -270,10 +348,11 @@ class KnowledgeRepository:
                         run_id=run_id,
                     )
                 )
-            cursor = session.get(KnowledgeExtractionCursor, "conversation_knowledge")
+            cursor_name = self._conversation_cursor_name(conversation_id)
+            cursor = session.get(KnowledgeExtractionCursor, cursor_name)
             if cursor is None:
                 session.add(
-                    KnowledgeExtractionCursor(cursor_name="conversation_knowledge", last_message_id=last_message_id)
+                    KnowledgeExtractionCursor(cursor_name=cursor_name, last_message_id=last_message_id)
                 )
             elif last_message_id > cursor.last_message_id:
                 cursor.last_message_id = last_message_id
@@ -292,7 +371,9 @@ class KnowledgeRepository:
             fingerprints = {row.fingerprint for row in staged}
             existing = set(
                 session.scalars(
-                    select(KnowledgeChunk.content_hash).where(KnowledgeChunk.content_hash.in_(fingerprints))
+                    select(KnowledgeChunk.content_hash)
+                    .where(KnowledgeChunk.content_hash.in_(fingerprints))
+                    .where(KnowledgeChunk.is_active.is_(True))
                 )
             )
             seen = set(existing)

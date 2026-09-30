@@ -90,3 +90,33 @@ def test_empty_import_is_a_no_op(db_session_factory):
     assert repository.upsert_drafts([]) == []
     assert KnowledgeIndexer(repository).import_faqs() == []
     assert repository.pending(limit=10) == []
+
+
+def test_markdown_rebuild_retires_removed_chunks_and_deletes_their_vectors(db_session_factory):
+    repository = KnowledgeRepository(db_session_factory)
+
+    class VectorStore:
+        def __init__(self):
+            self.deleted = []
+
+        def delete(self, ids):
+            self.deleted.extend(ids)
+
+    vectors = VectorStore()
+    indexer = KnowledgeIndexer(repository, embeddings=object(), vector_store=vectors)
+    drafts = [
+        _draft("doc:shipping.md:0", "第一条运费政策。", next_source_key="doc:shipping.md:1"),
+        _draft("doc:shipping.md:1", "已移除的旧规则。", previous_source_key="doc:shipping.md:0"),
+    ]
+    old_ids = indexer.import_drafts(drafts)
+    for chunk_id in old_ids:
+        repository.mark_vectorized(chunk_id, chunk_id)
+
+    indexer.import_markdown([drafts[0]], active_sources=["shipping.md"])
+
+    assert vectors.deleted == [old_ids[1]]
+    assert repository.load_by_ids([old_ids[1]]) == []
+    assert repository.pending(10) == []
+    with db_session_factory() as session:
+        retired = session.get(KnowledgeChunk, old_ids[1])
+        assert retired.is_active is False and retired.vector_id is None

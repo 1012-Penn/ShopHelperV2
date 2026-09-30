@@ -89,6 +89,7 @@ class KnowledgeChunk(Base):
     chapter_path: Mapped[list[str]] = mapped_column(JSON, nullable=False)
     content_type: Mapped[str] = mapped_column(String(64), nullable=False)
     is_critical: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, index=True)
     previous_chunk_id: Mapped[int | None] = mapped_column(
         ForeignKey("knowledge_chunks.id", ondelete="SET NULL"), nullable=True
     )

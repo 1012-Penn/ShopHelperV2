@@ -46,6 +46,9 @@ def main(argv: list[str] | None = None) -> int:
             print("knowledge build failed: source directory is unavailable")
             return 1
         documents = sorted(source_dir.glob("*.md"))
+        if not documents:
+            print("knowledge build failed: source directory contains no Markdown documents")
+            return 1
         drafts = []
         for path in documents:
             drafts.extend(
@@ -56,7 +59,7 @@ def main(argv: list[str] | None = None) -> int:
                     overlap_chars=indexer.settings.knowledge_overlap_chars,
                 )
             )
-        chunk_ids = indexer.import_drafts(drafts)
+        chunk_ids = indexer.import_markdown(drafts, [path.name for path in documents])
         faq_ids = indexer.import_faqs()
         pending, vectorized, failed = _sync_all(indexer, batch_size)
         print(

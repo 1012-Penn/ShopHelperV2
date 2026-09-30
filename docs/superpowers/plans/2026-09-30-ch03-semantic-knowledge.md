@@ -37,7 +37,7 @@
 - `app/db/models.py`、`app/db/session.py`：知识块、暂存问答和抽取游标 ORM；沿用现有 `create_all` 增量建表方式。
 - `app/services/knowledge/chunking.py`：Markdown 层级解析、递归分块和表格处理。
 - `app/services/knowledge/content.py`：知识草稿类型、embedding 文本和稳定指纹。
-- `app/services/knowledge/repository.py`：MySQL 知识块、暂存候选和 checkpoint 操作；`load_turns_after(last_message_id: int, limit: int) -> tuple[list[ConversationTurn], int]`、`stage_batch_and_advance(candidates: list[tuple[int, ExtractedCandidate]], last_message_id: int, run_id: str) -> None`、`promote_staged(run_id: str) -> tuple[int, int]`（去重数、新增数）。
+- `app/services/knowledge/repository.py`：MySQL 知识块、暂存候选和按 conversation checkpoint 操作；`load_turns_after(last_message_id: int, limit: int, conversation_id: str) -> tuple[list[ConversationTurn], int]`、`stage_batch_and_advance(candidates: list[tuple[ConversationTurn, ExtractedCandidate]], last_message_id: int, run_id: str, conversation_id: str) -> None`、`promote_staged() -> tuple[int, int]`（去重数、新增数）；文档重建时停用缺失块并清理对应向量。
 - `app/services/knowledge/embeddings.py`：OpenAI Python client 封装；`embed_documents(texts: list[str]) -> list[list[float]]`、`embed_query(text: str) -> list[float]`。
 - `app/services/knowledge/vector_store.py`：PyMilvus adapter；`ensure_collection() -> None`、`upsert(rows: list[VectorRow]) -> list[int]`、`search(vector: list[float], limit: int) -> list[VectorHit]`、`delete(ids: list[int]) -> None`。
 - `app/services/knowledge/indexer.py`：原文先入 MySQL pending，后生成 embedding/upsert/backfill；`sync_pending(batch_size: int) -> SyncSummary`。
@@ -96,7 +96,7 @@ def test_knowledge_settings_validate_chunking_and_retrieval_limits():
 - Test: `tests/test_models.py`
 
 **Interfaces:**
-- `KnowledgeChunk`: `id`, unique `source_key`, `category`, JSON `questions`, `answer`, `embedding_text`, JSON `chapter_path`, `content_type`, `is_critical`, nullable self-FKs `previous_chunk_id`/`next_chunk_id`, nullable `vector_id`, `vector_status`, `content_hash`, timestamps.
+- `KnowledgeChunk`: `id`, unique `source_key`, `category`, JSON `questions`, `answer`, `embedding_text`, JSON `chapter_path`, `content_type`, `is_critical`, `is_active`, nullable self-FKs `previous_chunk_id`/`next_chunk_id`, nullable `vector_id`, `vector_status`, `content_hash`, timestamps. `is_active` keeps retired source chunks out of retrieval while their old vector IDs are cleaned up.
 - `KnowledgeQAStaging`: source user/assistant message IDs, category, JSON questions, answer, canonical fingerprint, run ID, created time; unique fingerprint/source guard.
 - `KnowledgeExtractionCursor`: named cursor primary key, `last_message_id`, updated time.
 - Status strings are exactly `pending` and `vectorized`; failure diagnostics do not expose API credentials.
@@ -154,7 +154,7 @@ def test_oversize_sentence_is_kept_whole_and_table_headers_repeat():
     assert all("|---|---|" in chunk for chunk in table_chunks)
 ```
 
-- [x] **Step 1: Write failing chunking tests** for nested heading path and parent category, product FAQ question preservation, a paragraph exceeding the target, a single sentence longer than target, Chinese/English sentence marks, overlap ending only at a complete sentence, table rows split with header/separator repeated, code fences kept balanced, deterministic source keys, and embedding text excluding metadata.
+- [x] **Step 1: Write failing chunking tests** for nested heading path and parent category, product FAQ question preservation without leaking into sibling headings, a paragraph exceeding the target, a single sentence longer than target, Chinese/English sentence marks, overlap ending only at a complete sentence, table rows split with header/separator repeated, code fences kept balanced, deterministic source keys, and embedding text excluding metadata.
 - [x] **Step 2: Run red tests.** `python3 -m pytest tests/test_knowledge_chunking.py -q`; expected: `split_markdown` and `ChunkDraft` are unavailable.
 - [x] **Step 3: Implement structural Markdown parsing** with heading stack and typed segments for prose/tables/fenced code. Do not split a sentence or table row solely to meet the soft char target.
 - [x] **Step 4: Implement recursive splitting and sentence-safe overlap.** Target `max_chars=1200`, overlap goal `200`; choose the nearest preceding complete sentence boundary; include at least one prior whole sentence when available, never cut mid-sentence.
@@ -171,9 +171,10 @@ def test_oversize_sentence_is_kept_whole_and_table_headers_repeat():
 - Test: `tests/test_models.py`
 
 **Interfaces:**
-- `KnowledgeRepository(session_factory)` provides `upsert_drafts(drafts: list[ChunkDraft]) -> list[int]`, `pending(limit: int) -> list[KnowledgeChunk]`, `mark_vectorized(chunk_id: int, vector_id: int) -> None`, `load_by_ids(ids: list[int]) -> list[KnowledgeChunk]`, `load_turns_after(last_message_id: int, limit: int) -> tuple[list[ConversationTurn], int]`, `stage_batch_and_advance(candidates: list[tuple[ConversationTurn, ExtractedCandidate]], last_message_id: int, run_id: str) -> None`, and `promote_staged() -> tuple[int, int]` for every unpromoted staging row.
+- `KnowledgeRepository(session_factory)` provides `upsert_drafts(drafts: list[ChunkDraft]) -> list[int]`, `pending(limit: int) -> list[KnowledgeChunk]`, `mark_vectorized(chunk_id: int, vector_id: int) -> None`, `load_by_ids(ids: list[int]) -> list[KnowledgeChunk]`, `load_turns_after(last_message_id: int, limit: int, conversation_id: str) -> tuple[list[ConversationTurn], int]`, `stage_batch_and_advance(candidates: list[tuple[ConversationTurn, ExtractedCandidate]], last_message_id: int, run_id: str, conversation_id: str) -> None`, and `promote_staged() -> tuple[int, int]` for every unpromoted staging row. Each conversation has an independent checkpoint.
 - FAQ source mapping: `FAQ.id -> source_key=f"faq:{faq.id}"`, `questions=[faq.question]`, `answer=faq.answer`, `category=faq.category`, `content_type="product_faq"`.
-- Document source keys are stable for a source/section/block ordinal. Same source and same content is a no-op; changed body updates same row and marks it pending.
+- Document source keys are stable for a source/section/block ordinal. Same source and same content is a no-op; changed body updates same row and marks it pending. A source rebuild retires keys no longer present from active retrieval and retries deletion of their Milvus vectors.
+- `KnowledgeIndexer.import_markdown(drafts, active_sources)` retires stale/missing markdown chunks, deletes their vectors, clears deleted vector IDs for retry safety, then upserts the current draft set.
 
 **Test case:**
 
@@ -267,7 +268,7 @@ def test_extractor_redacts_contact_data_and_skips_tool_messages(extractor, fake_
 - [x] **Step 2: Write failing checkpoint/staging tests** for two batches, repeat run idempotency, exception without cursor advancement, duplicate Q&A across batches, duplicate against existing `knowledge_chunks`, and recovery after staging commits but promotion fails.
 - [x] **Step 3: Run red tests.** `python3 -m pytest tests/test_knowledge_conversations.py -q`; expected: missing extractor/privacy functions.
 - [x] **Step 4: Implement pure privacy redaction** and assert sanitized text is the only text passed to the fake/external extractor; store extracted generic content, never raw transcript in staging answer fields.
-- [x] **Step 5: Implement message batching by `Message.id`** using a durable cursor. Pair each user message with the next assistant final answer only if it occurs before another user message; skip unmatched turns and assistant tool-call requests. Include stable per-batch `source_turn_index` values in the prompt, validate indexes are in range, and map selected candidates back to local user/assistant IDs. Advance cursor only after all candidates for that batch commit into staging (also advance when valid pairs produce zero candidates).
+- [x] **Step 5: Implement message batching by `Message.id`** using a durable cursor per conversation. Pair each user message with the next assistant final answer only if it occurs before another user message; skip unmatched turns and assistant tool-call requests. Include stable per-batch `source_turn_index` values in the prompt, validate indexes are in range, and map selected candidates back to local user/assistant IDs. Advance only that conversation's cursor after its candidates commit into staging (also advance when valid pairs produce zero candidates).
 - [x] **Step 6: Implement structured extraction adapter** using documented LangChain `with_structured_output` and strict empty/invalid candidate validation; on parse/provider error leave checkpoint unchanged.
 - [x] **Step 7: Implement stage-level and global canonical deduplication.** Normalize category/question list/answer, hash deterministically, compare current run plus existing knowledge, then create only unseen pending `KnowledgeChunk` rows.
 - [x] **Step 8: Run dialogue tests and all existing chat/model tests.** `python3 -m pytest tests/test_knowledge_conversations.py tests/test_chat.py tests/test_models.py -q`; expected: all pass and no source message contents appear in logs.

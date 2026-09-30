@@ -30,6 +30,8 @@ def evaluate_cases(cases: list[dict[str, Any]], searcher: Any, repository: Any, 
     metrics: dict[float, dict[str, int | float]] = {}
     positives = sum(case["expected"] == "hit" for case, _ in evaluated)
     negatives = sum(case["expected"] == "miss" for case, _ in evaluated)
+    if positives == 0 or negatives == 0:
+        raise ValueError("evaluation cases must include both positive and negative labels")
     for threshold in sorted(set(thresholds)):
         correct = 0
         false_positives = 0

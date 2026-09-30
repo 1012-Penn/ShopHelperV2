@@ -162,13 +162,10 @@ def split_markdown(
 
     drafts: list[ChunkDraft] = []
     path_counts: defaultdict[tuple[str, ...], int] = defaultdict(int)
-    current_question: str | None = None
     for path, kind, content in merged_segments:
         content = content.strip()
         if not content:
             continue
-        if path and path[-1].endswith(("?", "？")):
-            current_question = path[-1]
         parts = (
             _split_table(content.splitlines(), max_chars)
             if kind == "table"
@@ -181,7 +178,10 @@ def split_markdown(
                 continue
             parent_path = path[:-1] if len(path) > 1 else []
             category = " / ".join(parent_path) if parent_path else "电商客服"
-            question = current_question or (path[-1] if path else "电商客服知识")
+            question = next(
+                (heading for heading in reversed(path) if heading.endswith(("?", "？"))),
+                path[-1] if path else "电商客服知识",
+            )
             ordinal = path_counts[tuple(path)]
             path_counts[tuple(path)] += 1
             digest = hashlib.sha256(f"{source}\0{'/'.join(path)}\0{ordinal}".encode()).hexdigest()[:16]

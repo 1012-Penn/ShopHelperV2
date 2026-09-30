@@ -81,6 +81,7 @@ def test_knowledge_models_store_json_fields_and_neighbor_pointers(db_session):
     assert saved.chapter_path == ["配送", "运费"]
     assert saved.next_chunk_id == right.id
     assert db_session.get(KnowledgeChunk, right.id).previous_chunk_id == left.id
+    assert saved.is_active is True
     assert saved.vector_id is None
     assert saved.vector_status == "pending"
 

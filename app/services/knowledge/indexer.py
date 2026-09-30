@@ -26,6 +26,20 @@ class KnowledgeIndexer:
         """Persist complete source content before any vector service call."""
         return self.repository.upsert_drafts(drafts)
 
+    def import_markdown(self, drafts: list[ChunkDraft], active_sources: list[str]) -> list[int]:
+        """Reconcile Markdown source removals, then persist the current complete set."""
+        stale = self.repository.deactivate_missing_documents(
+            active_sources,
+            [draft.source_key for draft in drafts],
+        )
+        if stale:
+            if self.vector_store is None:
+                raise RuntimeError("vector store is required to reconcile removed knowledge vectors")
+            chunk_ids, vector_ids = zip(*stale)
+            self.vector_store.delete(list(vector_ids))
+            self.repository.clear_deleted_vector_ids(list(chunk_ids))
+        return self.repository.upsert_drafts(drafts)
+
     def import_faqs(self) -> list[int]:
         """Copy the current authoritative FAQ rows into pending knowledge chunks."""
         return self.repository.upsert_drafts(self.repository.load_faq_drafts())

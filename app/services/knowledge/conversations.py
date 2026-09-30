@@ -92,53 +92,72 @@ class ConversationKnowledgeExtractor:
         if batch_size < 1:
             raise ValueError("batch_size must be positive")
         recovered_deduped, recovered_inserted = self.repository.promote_staged()
-        cursor = self.repository.extraction_cursor()
-        turns, next_cursor = self.repository.load_turns_after(cursor, batch_size)
-        if next_cursor <= cursor:
-            return ExtractionSummary(0, 0, recovered_deduped, recovered_inserted, 0, cursor)
+        remaining = batch_size
+        messages_read = staged_pairs = skipped_tool_messages = 0
+        deduped, inserted = recovered_deduped, recovered_inserted
+        last_message_id = 0
+        for conversation_id, cursor in self.repository.conversations_with_pending_turns():
+            if remaining <= 0:
+                break
+            turns, next_cursor = self.repository.load_turns_after(cursor, remaining, conversation_id)
+            if next_cursor <= cursor:
+                continue
 
-        skipped_tool_messages = self.repository.count_skipped_tool_messages(cursor, next_cursor)
-        if turns:
-            sanitized_turns = [
-                replace(
-                    turn,
-                    user_text=redact_customer_data(turn.user_text),
-                    assistant_text=redact_customer_data(turn.assistant_text),
+            skipped_tool_messages += self.repository.count_skipped_tool_messages(
+                cursor, next_cursor, conversation_id
+            )
+            if turns:
+                sanitized_turns = [
+                    replace(
+                        turn,
+                        user_text=redact_customer_data(turn.user_text),
+                        assistant_text=redact_customer_data(turn.assistant_text),
+                    )
+                    for turn in turns
+                ]
+                candidates = self.model.extract_pairs(sanitized_turns)
+            else:
+                candidates = []
+
+            mapped: list[tuple[ConversationTurn, ExtractedCandidate]] = []
+            for raw_candidate in candidates:
+                candidate = (
+                    raw_candidate
+                    if isinstance(raw_candidate, ExtractedCandidate)
+                    else ExtractedCandidate.model_validate(raw_candidate)
                 )
-                for turn in turns
-            ]
-            candidates = self.model.extract_pairs(sanitized_turns)
-        else:
-            sanitized_turns = []
-            candidates = []
+                if candidate.source_turn_index >= len(turns):
+                    raise ValueError("extraction response references a turn outside the current batch")
+                category = redact_customer_data(candidate.category)
+                questions = [redact_customer_data(question) for question in candidate.questions]
+                answer = redact_customer_data(candidate.answer)
+                if (
+                    not category.strip()
+                    or not questions
+                    or any(not question.strip() for question in questions)
+                    or not answer.strip()
+                ):
+                    raise ValueError("extraction response contains an empty knowledge field")
+                safe_candidate = candidate.model_copy(
+                    update={"category": category, "questions": questions, "answer": answer}
+                )
+                mapped.append((turns[candidate.source_turn_index], safe_candidate))
 
-        mapped: list[tuple[ConversationTurn, ExtractedCandidate]] = []
-        for raw_candidate in candidates:
-            candidate = (
-                raw_candidate
-                if isinstance(raw_candidate, ExtractedCandidate)
-                else ExtractedCandidate.model_validate(raw_candidate)
-            )
-            if candidate.source_turn_index >= len(turns):
-                raise ValueError("extraction response references a turn outside the current batch")
-            category = redact_customer_data(candidate.category)
-            questions = [redact_customer_data(question) for question in candidate.questions]
-            answer = redact_customer_data(candidate.answer)
-            if not category.strip() or not questions or any(not question.strip() for question in questions) or not answer.strip():
-                raise ValueError("extraction response contains an empty knowledge field")
-            safe_candidate = candidate.model_copy(
-                update={"category": category, "questions": questions, "answer": answer}
-            )
-            mapped.append((turns[candidate.source_turn_index], safe_candidate))
+            run_id = uuid4().hex
+            self.repository.stage_batch_and_advance(mapped, next_cursor, run_id, conversation_id)
+            conversation_deduped, conversation_inserted = self.repository.promote_staged()
+            deduped += conversation_deduped
+            inserted += conversation_inserted
+            messages_read += self.repository.count_messages_between(cursor, next_cursor, conversation_id)
+            staged_pairs += len(mapped)
+            remaining -= len(turns)
+            last_message_id = max(last_message_id, next_cursor)
 
-        run_id = uuid4().hex
-        self.repository.stage_batch_and_advance(mapped, next_cursor, run_id)
-        deduped, inserted = self.repository.promote_staged()
         return ExtractionSummary(
-            messages_read=self.repository.count_messages_between(cursor, next_cursor),
-            staged_pairs=len(mapped),
-            deduped=recovered_deduped + deduped,
-            inserted=recovered_inserted + inserted,
+            messages_read=messages_read,
+            staged_pairs=staged_pairs,
+            deduped=deduped,
+            inserted=inserted,
             skipped_tool_messages=skipped_tool_messages,
-            last_message_id=next_cursor,
+            last_message_id=last_message_id,
         )

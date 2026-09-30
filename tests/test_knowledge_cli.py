@@ -20,6 +20,10 @@ class FakeIndexer:
         self.imported_drafts.extend(drafts)
         return list(range(1, len(drafts) + 1))
 
+    def import_markdown(self, drafts, active_sources):
+        self.active_sources = active_sources
+        return self.import_drafts(drafts)
+
     def import_faqs(self):
         self.faq_calls += 1
         return [99]
@@ -41,6 +45,7 @@ def test_build_cli_imports_markdown_and_faq_then_syncs(monkeypatch, tmp_path, ca
 
     assert result == 0
     assert len(indexer.imported_drafts) == 1
+    assert indexer.active_sources == ["shipping.md"]
     assert indexer.faq_calls == 1
     assert indexer.sync_calls == [16]
     assert indexer.closed

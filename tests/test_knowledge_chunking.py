@@ -22,6 +22,16 @@ def test_product_faq_question_heading_is_preserved_as_real_question():
     assert chunks[0].category == "商品 FAQ"
 
 
+def test_question_heading_does_not_leak_into_next_non_question_sibling():
+    chunks = split_markdown(
+        "faq.md",
+        "# 商品 FAQ\n## 运费是多少？\n运费以结算页为准。\n## 配送限制\n可配送地区以地址页展示为准。",
+    )
+
+    assert chunks[0].questions == ["运费是多少？"]
+    assert chunks[1].questions == ["配送限制"]
+
+
 def test_long_paragraph_recursively_splits_and_uses_complete_sentence_overlap():
     source = "第一句说明配送范围。第二句说明计算方式。第三句说明特殊地区。第四句说明查询入口。"
     chunks = split_markdown("delivery.md", "# 配送\n" + source, max_chars=22, overlap_chars=10)

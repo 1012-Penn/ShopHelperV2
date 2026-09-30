@@ -1,6 +1,6 @@
 from sqlalchemy import func, select
 
-from app.db.models import Conversation, KnowledgeChunk, KnowledgeExtractionCursor, KnowledgeQAStaging, Message
+from app.db.models import Conversation, KnowledgeChunk, KnowledgeQAStaging, Message
 from app.services.knowledge.conversations import (
     ConversationKnowledgeExtractor,
     ExtractedCandidate,
@@ -52,7 +52,7 @@ def test_repository_pairs_user_with_final_assistant_after_tool_cycle(db_session_
         _message(session, "tool-turn", "tool", "内部订单号ORD-4444", tool_call_id="call-1")
         answer = _message(session, "tool-turn", "assistant", "费用以结算页显示为准。")
 
-    turns, cursor = KnowledgeRepository(db_session_factory).load_turns_after(0, 20)
+    turns, cursor = KnowledgeRepository(db_session_factory).load_turns_after(0, 20, "tool-turn")
 
     assert turns == [ConversationTurn(user.id, answer.id, "邮费是多少？", "费用以结算页显示为准。")]
     assert cursor == answer.id
@@ -65,7 +65,7 @@ def test_consecutive_users_are_not_mispaired_and_empty_answers_are_skipped(db_se
         current_user = _message(session, "consecutive", "user", "当前问题")
         answer = _message(session, "consecutive", "assistant", "这是当前问题的回答。")
 
-    turns, cursor = KnowledgeRepository(db_session_factory).load_turns_after(0, 20)
+    turns, cursor = KnowledgeRepository(db_session_factory).load_turns_after(0, 20, "consecutive")
 
     assert turns == [ConversationTurn(current_user.id, answer.id, "当前问题", "这是当前问题的回答。")]
     assert cursor == answer.id
@@ -79,7 +79,7 @@ def test_empty_assistant_answers_are_skipped(db_session_factory):
         current_user = _message(session, "empty-answer", "user", "后续问题")
         answer = _message(session, "empty-answer", "assistant", "后续问题的回答。")
 
-    turns, cursor = KnowledgeRepository(db_session_factory).load_turns_after(0, 20)
+    turns, cursor = KnowledgeRepository(db_session_factory).load_turns_after(0, 20, "empty-answer")
 
     assert turns == [ConversationTurn(current_user.id, answer.id, "后续问题", "后续问题的回答。")]
     assert cursor == answer.id
@@ -135,8 +135,7 @@ def test_extractor_sends_redacted_turns_and_keeps_source_messages_unchanged(db_s
         staged = list(session.scalars(select(KnowledgeQAStaging)))
         assert len(staged) == 1 and staged[0].promoted_at is not None
         assert all(raw not in staged[0].answer for raw in ("user@example.com", "ORD-5555"))
-        cursor = session.get(KnowledgeExtractionCursor, "conversation_knowledge")
-        assert cursor.last_message_id == answer.id
+    assert KnowledgeRepository(db_session_factory).extraction_cursor("extract-pii") == answer.id
 
 
 def test_model_failure_does_not_advance_checkpoint_or_create_staging(db_session_factory):
@@ -152,8 +151,8 @@ def test_model_failure_does_not_advance_checkpoint_or_create_staging(db_session_
         assert False, "provider failure should abort this extraction batch"
 
     with db_session_factory() as session:
-        assert session.get(KnowledgeExtractionCursor, "conversation_knowledge") is None
         assert session.scalar(select(func.count()).select_from(KnowledgeQAStaging)) == 0
+    assert repository.extraction_cursor("extract-pii") == 0
 
 
 def test_exact_duplicate_across_cron_batches_promotes_only_once(db_session_factory):
@@ -215,7 +214,6 @@ def test_staged_rows_are_promoted_on_retry_after_promotion_failure(db_session_fa
 
     assert recovered.inserted == 1
     with db_session_factory() as session:
-        assert session.get(KnowledgeExtractionCursor, "conversation_knowledge").last_message_id == answer.id
         assert session.scalar(
             select(func.count()).select_from(KnowledgeQAStaging).where(KnowledgeQAStaging.promoted_at.is_(None))
         ) == 0
@@ -251,7 +249,7 @@ def test_invalid_turn_index_fails_without_advancing_checkpoint(db_session_factor
     else:
         assert False, "out-of-range source indexes must be rejected"
 
-    assert repository.extraction_cursor() == 0
+    assert repository.extraction_cursor("extract-pii") == 0
 
 
 def test_messages_read_counts_rows_not_message_id_gaps(db_session_factory):
@@ -269,6 +267,58 @@ def test_messages_read_counts_rows_not_message_id_gaps(db_session_factory):
     summary = ConversationKnowledgeExtractor(model, KnowledgeRepository(db_session_factory)).run(batch_size=20)
 
     assert summary.messages_read == 3
+
+
+def test_interleaved_conversations_do_not_advance_past_unprocessed_turns(db_session_factory):
+    with db_session_factory.begin() as session:
+        _conversation(session, "interleave-a")
+        _message(session, "interleave-a", "user", "问题 A")
+        _conversation(session, "interleave-b")
+        _message(session, "interleave-b", "user", "问题 B")
+        _message(session, "interleave-a", "assistant", "回答 A")
+        _message(session, "interleave-b", "assistant", "回答 B")
+
+    class PerQuestionModel:
+        def extract_pairs(self, turns):
+            return [
+                ExtractedCandidate(
+                    source_turn_index=index,
+                    category="电商客服",
+                    questions=[turn.user_text],
+                    answer=turn.assistant_text,
+                )
+                for index, turn in enumerate(turns)
+            ]
+
+    repository = KnowledgeRepository(db_session_factory)
+    extractor = ConversationKnowledgeExtractor(PerQuestionModel(), repository)
+    first = extractor.run(batch_size=1)
+    second = extractor.run(batch_size=1)
+
+    assert first.inserted + second.inserted == 2
+    with db_session_factory() as session:
+        rows = list(session.scalars(select(KnowledgeChunk).where(KnowledgeChunk.content_type == "conversation_qa")))
+        assert {row.questions[0] for row in rows} == {"问题 A", "问题 B"}
+
+
+def test_unanswered_conversation_does_not_starve_completed_conversation(db_session_factory):
+    with db_session_factory.begin() as session:
+        _conversation(session, "unanswered")
+        _message(session, "unanswered", "user", "未回答问题")
+        _conversation(session, "completed")
+        _message(session, "completed", "user", "已回答问题")
+        _message(session, "completed", "assistant", "已确认答复")
+
+    model = FakeExtractionModel([ExtractedCandidate(
+        source_turn_index=0,
+        category="电商客服",
+        questions=["已回答问题"],
+        answer="已确认答复",
+    )])
+    summary = ConversationKnowledgeExtractor(model, KnowledgeRepository(db_session_factory)).run(batch_size=10)
+
+    assert summary.inserted == 1
+    assert model.calls == 1
 
 
 def test_candidate_is_deduplicated_against_existing_knowledge(db_session_factory):
