@@ -116,12 +116,12 @@ def test_knowledge_chunk_round_trips_json_fields_and_neighbor_links(db_session):
     assert chunk.vector_id is None and chunk.vector_status == "pending"
 ```
 
-- [ ] **Step 1: Write failing ORM tests** asserting metadata fields, JSON question/path round-trip, nullable neighbor links, unique source/fingerprint constraints, and that a fresh SQLite schema contains the three knowledge tables.
-- [ ] **Step 2: Run red tests.** `python3 -m pytest tests/test_models.py -q`; expected: import/attribute failures for knowledge entities.
-- [ ] **Step 3: Add ORM models.** Use SQLAlchemy 2 `Mapped` annotations and database-portable types already used by the repository. Keep `FAQ`, `Conversation`, `Message`, and `Ticket` unchanged.
-- [ ] **Step 4: Verify DDL portability.** Add a test compiling `KnowledgeChunk` DDL for MySQL and assert no unique index is created over a `TEXT` column; fingerprint and source keys use bounded strings.
-- [ ] **Step 5: Run model tests.** `python3 -m pytest tests/test_models.py -q`; expected: all pass on SQLite and MySQL DDL compilation.
-- [ ] **Step 6: Commit.** `git add app/db/models.py app/db/session.py tests/test_models.py && git commit -m "feat: add knowledge persistence models"`.
+- [x] **Step 1: Write failing ORM tests** asserting metadata fields, JSON question/path round-trip, nullable neighbor links, unique source/fingerprint constraints, and that a fresh SQLite schema contains the three knowledge tables.
+- [x] **Step 2: Run red tests.** `python3 -m pytest tests/test_models.py -q`; expected: import/attribute failures for knowledge entities.
+- [x] **Step 3: Add ORM models.** Use SQLAlchemy 2 `Mapped` annotations and database-portable types already used by the repository. Keep `FAQ`, `Conversation`, `Message`, and `Ticket` unchanged.
+- [x] **Step 4: Verify DDL portability.** Add a test compiling `KnowledgeChunk` DDL for MySQL and assert no unique index is created over a `TEXT` column; fingerprint and source keys use bounded strings.
+- [x] **Step 5: Run model tests.** `python3 -m pytest tests/test_models.py -q`; expected: all pass on SQLite and MySQL DDL compilation.
+- [x] **Step 6: Commit.** `git add app/db/models.py app/db/session.py tests/test_models.py && git commit -m "feat: add knowledge persistence models"`.
 
 ## Task 3：Markdown chunker 与通用电商客服语料
 
