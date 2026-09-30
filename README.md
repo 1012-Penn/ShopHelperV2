@@ -1,10 +1,10 @@
 # MewHelp 电商客服知识库
 
-客服系统使用 BGE-M3 向量和 Milvus dense 检索商品 FAQ、配送/运费说明、退换货政策及售后手册。MySQL `knowledge_chunks` 保存权威原文和向量化状态；`query_faq(query: str)` 的工具参数及返回 JSON 保持原契约。当前检索只使用 dense 向量，不含关键词、混合召回或重排。随仓库提供的是通用电商客服基线语料；实际店铺价格、运费、时效、售后承诺和例外规则须导入正式政策。
+客服系统使用 Milvus 原生 BM25（内置 chinese analyzer）与 BGE-M3 dense 双路各召回 Top-50，hybrid_search + RRF 融合后由 `BAAI/bge-reranker-v2-m3` 精排 Top-10。MySQL `knowledge_chunks` 保留权威原文；回答通过证据充分性自评与引用校验，缺证明确拒答并记录低置信度问题。聊天页角标可查看当轮原文与章节路径，满意度反馈只写浏览器本地。随仓库提供受控电商业务基线，正式门店仍需导入已审核政策。
 
 ## 配置和启动
 
-需要 Python 3.10+、Docker Compose、MySQL 和可访问 SiliconFlow `BAAI/bge-m3` embeddings 的 API key。复制环境模板并配置 `DATABASE_URL`、`EMBEDDING_API_KEY`、`MILVUS_URI` 以及客服聊天模型的 `MODEL`、`API_KEY`、`BASE_URL`。嵌入密钥只放在本机 `.env` 或受控环境变量中，不要提交到版本控制。
+需要 Python 3.10+、Docker Compose、MySQL 和可访问 SiliconFlow `BAAI/bge-m3` embeddings 的 API key。复制环境模板并配置 `DATABASE_URL`、`EMBEDDING_API_KEY`、`MILVUS_URI` `RERANK_API_KEY`（SiliconFlow 固定重排模型）以及客服聊天模型的 `MODEL`、`API_KEY`、`BASE_URL`。嵌入密钥只放在本机 `.env` 或受控环境变量中，不要提交到版本控制。
 
 ```bash
 python3 -m pip install -e '.[dev]'
@@ -17,7 +17,9 @@ docker compose up -d db etcd minio milvus
 
 ```bash
 python3 -m scripts.seed
+python3 -m scripts.migrate_ch04
 python3 -m scripts.build_knowledge
+python3 -m scripts.rebuild_hybrid_index
 ```
 
 运行客服 Web 应用：
@@ -37,7 +39,7 @@ python3 -m scripts.extract_conversation_knowledge --batch-size 100
 python3 -m scripts.sync_knowledge_vectors --batch-size 32
 ```
 
-第三条命令只处理一批 pending 块，若部分失败会返回非零退出码。系统 cron 可以按业务频率调度，例如每小时抽取一次、每 5 分钟补向量：
+向量恢复命令只处理一批 legacy pending 块，并在 `QUALITY_ENABLED=true` 时同步启用中的 hybrid 集合；文档建库与对话抽取也维护新集合。以下 cron 为示例。legacy 这批，若部分失败会返回非零退出码。系统 cron 可以按业务频率调度，例如每小时抽取一次、每 5 分钟补向量：
 
 ```cron
 0 * * * * cd /path/to/MewHelp && .venv/bin/python -m scripts.extract_conversation_knowledge --batch-size 100 >> /var/log/mewhelp-knowledge-extract.log 2>&1
@@ -82,3 +84,47 @@ python3 -m scripts.evaluate_after_sale --fixture
 ```
 
 烟囱测试会启动 FastAPI 并调用配置的聊天模型，因此需要本地 `.env` 中有可用的模型配置。
+
+
+## ch04 演示与四策略评估
+
+启动前迁移并重建 `HYBRID_COLLECTION=knowledge_ch04`；旧 dense 集合保留。设置 `QUALITY_ENABLED=false` 可回到 ch03 路径。新知识/正文改动后可以继续使用原 build/extract/sync 命令；按集合串行同步，基于独立 content_hash checkpoint 恢复。
+
+```bash
+python3 -m scripts.migrate_ch04
+python3 -m scripts.rebuild_hybrid_index
+python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+访问 http://127.0.0.1:8000，问“邮费是多少”后点击 [n] 查看原文及章节，点击 👍/👎 只会在 localStorage 的 `mewhelp.feedback.v1` 留一条记录并锁定。问“请告诉我今晚彩票中奖号码”得到明确拒答；数据库 low_confidence_questions 保存用户原话和数值会话外键。品类筛选可在聊天 POST JSON 中加入 `category`，两路均先过滤。例如：
+
+```bash
+curl -N http://127.0.0.1:8000/api/v1/chat/stream   -H 'Content-Type: application/json'   -d '{"conversation_id":"ch04-demo","message":"邮费是多少","category":"配送与运费 / 运费与配送范围"}'
+```
+
+category 必须使用数据库实际 `knowledge_chunks.category` 值；未匹配品类会按无证据拒答。
+
+评估集 300 条，五桶各 60，难度三档；60 条校准与 240 条 test 分别报告。评估使用独立 SQLite `evaluation/ch04/eval.db` 和 Milvus `knowledge_ch04_eval`，其中 XH 测试型号全部虚构，只供检索验收，不入线上集合。可通过 EVAL_DATABASE_URL/EVAL_HYBRID_COLLECTION 自定义；faith_cases 持久台账仍写主业务 MySQL。
+
+```bash
+python3 -m scripts.validate_ch04_dataset
+python3 -m scripts.evaluate_ch04 --fixture
+python3 -m scripts.evaluate_ch04 --live --split all --workers 12 --calibrate
+python3 -m scripts.faith_cases --status 未解决
+python3 -m scripts.faith_cases --eval-id D046 --status 已解决 --resolution '填写实际完成的修复和验证依据'
+```
+
+fixture 仅验证指标/接线，不能替代真实质量结果。每轮报告以 run_id 独立保留 JSON/Markdown/逐题证据，不覆盖历史。默认裁判与生成使用同一聊天模型，有自评偏差；可以独立配置 JUDGE_MODEL/JUDGE_API_KEY/JUDGE_API_BASE。拒答忠实度记 N/A，同时单列已知问题误拒答、未知拒答、错误、空答率和指标分母。faith_cases 默认只长期收录 hybrid_rerank 编造个案，四策略所有个案均保留在报告；反复判出会累加计数、重新打开，未再次判出不自动解决。
+
+2026-10-01 最终实跑：300×4=1200 组，无调用错误；[完整报告](evaluation/ch04/runs/20261001-010751-f0400f2a/report.md)。
+
+| 策略 | Recall@10 | MRR | Faithfulness（逐题宏平均） |
+|---|---:|---:|---:|
+| dense | 98.54% | 0.896 | 1.000 |
+| BM25 | 93.96% | 0.797 | 0.998 |
+| hybrid | 99.17% | 0.881 | 1.000 |
+| hybrid_rerank | 99.79% | 0.944 | 1.000 |
+
+BM25 的 60 道型号题 Recall@1=100%。最终 hybrid_rerank 未知题拒答率 100%，已知题误拒答率 10.42%（独立 test 为 9.38%），检索排名提升并不意味着所有问题都能回答。RERANK_MIN_SCORE=0.05 来自 60 条校准题，需针对真实店铺重新校准。数据由助手构建，未经业务专家独立复核，跨桶相同政策仍可能语义相关。
+
+开发过程与独立评审修复详见 [dev-notes/ch04.md](dev-notes/ch04.md)。

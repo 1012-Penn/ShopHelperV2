@@ -63,3 +63,12 @@ def test_answer_evidence_persists(db_session_factory):
         s.add(Message(conversation_id='c', role='assistant', content='答[1]', citations=[{'n':1,'chunk_id':7}]))
     with db_session_factory() as s:
         assert s.scalar(select(Message)).citations == [{'n':1,'chunk_id':7}]
+
+
+def test_faith_case_database_defaults_match_supplied_ddl(db_session_factory):
+    from app.db.models import FaithCase
+    with db_session_factory.begin() as s:
+        s.execute(text("INSERT INTO faith_cases(eval_id,bucket,query,answer,reason) VALUES ('A-default','A_policy','q','a','r')"))
+    with db_session_factory() as s:
+        row=s.scalar(select(FaithCase))
+        assert (row.strategy,row.status,row.seen_count)==('hybrid_rerank','未解决',1)

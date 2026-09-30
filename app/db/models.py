@@ -34,7 +34,7 @@ class FAQ(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
 
 
-from sqlalchemy.dialects.mysql import BIGINT as MYSQL_BIGINT
+from sqlalchemy.dialects.mysql import BIGINT as MYSQL_BIGINT, INTEGER as MYSQL_INTEGER
 
 UnsignedID = BigInteger().with_variant(MYSQL_BIGINT(unsigned=True), "mysql").with_variant(Integer(), "sqlite")
 
@@ -164,13 +164,13 @@ class FaithCase(Base):
     eval_id: Mapped[str] = mapped_column(String(16), nullable=False, unique=True)
     bucket: Mapped[str] = mapped_column(String(24), nullable=False)
     query: Mapped[str] = mapped_column(String(512), nullable=False)
-    strategy: Mapped[str] = mapped_column(String(24), nullable=False, default="hybrid_rerank")
+    strategy: Mapped[str] = mapped_column(String(24), nullable=False, default="hybrid_rerank", server_default="hybrid_rerank")
     answer: Mapped[str] = mapped_column(Text, nullable=False)
     reason: Mapped[str] = mapped_column(Text, nullable=False)
     citations: Mapped[list[dict] | None] = mapped_column(JSON)
     judge_model: Mapped[str | None] = mapped_column(String(64))
-    status: Mapped[str] = mapped_column(Enum("未解决", "已解决", "无需解决", name="faith_status", create_constraint=True), nullable=False, default="未解决", index=True)
-    seen_count: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    status: Mapped[str] = mapped_column(Enum("未解决", "已解决", "无需解决", name="faith_status", create_constraint=True), nullable=False, default="未解决", server_default="未解决", index=True)
+    seen_count: Mapped[int] = mapped_column(Integer().with_variant(MYSQL_INTEGER(unsigned=True), "mysql"), nullable=False, default=1, server_default="1")
     first_seen_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False)
     last_seen_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False, index=True)
     resolution: Mapped[str | None] = mapped_column(String(300))

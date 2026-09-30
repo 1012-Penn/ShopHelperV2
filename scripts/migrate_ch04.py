@@ -30,6 +30,8 @@ def migrate_ch04(engine):
                         END'''))
             if 'messages' in tables and 'citations' not in {col['name'] for col in inspect(c).get_columns('messages')}:
                 c.execute(text('ALTER TABLE messages ADD COLUMN citations JSON NULL'))
+            if mysql and 'faith_cases' in tables:
+                c.execute(text("ALTER TABLE faith_cases MODIFY strategy VARCHAR(24) NOT NULL DEFAULT 'hybrid_rerank', MODIFY status ENUM('未解决','已解决','无需解决') NOT NULL DEFAULT '未解决', MODIFY seen_count INT UNSIGNED NOT NULL DEFAULT 1"))
             c.commit()
         finally:
             if mysql:

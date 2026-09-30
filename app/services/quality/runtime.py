@@ -27,4 +27,4 @@ def build_answer_service(session_factory, settings=None):
     model=ChatOpenAI(model=settings.model,api_key=settings.api_key,base_url=settings.base_url,temperature=0,timeout=90,max_retries=1)
     normalizer=QueryNormalizer.from_model(model)
     retriever=QualityRetriever(session_factory,embeddings,store,reranker,normalizer)
-    return KnowledgeAnswerService(retriever,StructuredGenerator(model),QualityLedger(session_factory),min_score=float(values.get('RERANK_MIN_SCORE','0')))
+    return KnowledgeAnswerService(retriever,StructuredGenerator(model),QualityLedger(session_factory),min_score=float(values.get('RERANK_MIN_SCORE','0.05')))
