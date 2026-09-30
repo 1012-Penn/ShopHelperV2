@@ -37,7 +37,7 @@
 - `app/db/models.py`、`app/db/session.py`：知识块、暂存问答和抽取游标 ORM；沿用现有 `create_all` 增量建表方式。
 - `app/services/knowledge/chunking.py`：Markdown 层级解析、递归分块和表格处理。
 - `app/services/knowledge/content.py`：知识草稿类型、embedding 文本和稳定指纹。
-- `app/services/knowledge/repository.py`：MySQL 知识块、暂存候选和 checkpoint 操作。
+- `app/services/knowledge/repository.py`：MySQL 知识块、暂存候选和 checkpoint 操作；`load_turns_after(last_message_id: int, limit: int) -> tuple[list[ConversationTurn], int]`、`stage_batch_and_advance(candidates: list[tuple[int, ExtractedCandidate]], last_message_id: int, run_id: str) -> None`、`promote_staged(run_id: str) -> tuple[int, int]`（去重数、新增数）。
 - `app/services/knowledge/embeddings.py`：OpenAI Python client 封装；`embed_documents(texts: list[str]) -> list[list[float]]`、`embed_query(text: str) -> list[float]`。
 - `app/services/knowledge/vector_store.py`：PyMilvus adapter；`ensure_collection() -> None`、`upsert(rows: list[VectorRow]) -> list[int]`、`search(vector: list[float], limit: int) -> list[VectorHit]`、`delete(ids: list[int]) -> None`。
 - `app/services/knowledge/indexer.py`：原文先入 MySQL pending，后生成 embedding/upsert/backfill；`sync_pending(batch_size: int) -> SyncSummary`。
@@ -50,7 +50,7 @@
 - `tests/test_knowledge_*.py`、`tests/fixtures/faq_cases.json`：分块、存储、恢复、抽取和标注评估。
 - `dev-notes/ch03.md`：每个阶段完成即追加原话、产出/评审、纠偏、翻车记录。
 
-类型定义：`VectorRow(chunk_id: int, vector: list[float])`；`VectorHit(chunk_id: int, score: float)`，其中 score 是 COSINE similarity；`SyncSummary(pending_before: int, vectorized: int, failed: int)`；`ConversationTurn(user_message_id: int, assistant_message_id: int, user_text: str, assistant_text: str)`；Pydantic `ExtractedQA(category: str, questions: list[str], answer: str)`；Pydantic `ExtractedCandidate(source_turn_index: int, category: str, questions: list[str], answer: str)` 与 `ExtractionBatch(candidates: list[ExtractedCandidate])` 是模型结构化响应；应用校验 turn index 后把来源消息 ID 加入 staging；`ExtractionSummary(messages_read: int, staged_pairs: int, deduped: int, inserted: int, skipped_tool_messages: int, last_message_id: int)`；`FAQHit(question: str, answer: str, category: str, score: float)`。
+类型定义：`VectorRow(chunk_id: int, vector: list[float])`；`VectorHit(chunk_id: int, score: float)`，其中 score 是 COSINE similarity；`SyncSummary(pending_before: int, vectorized: int, failed: int)`；`ConversationTurn(user_message_id: int, assistant_message_id: int, user_text: str, assistant_text: str)`；Pydantic `ExtractedCandidate(source_turn_index: int, category: str, questions: list[str], answer: str)` 与 `ExtractionBatch(candidates: list[ExtractedCandidate])` 是模型结构化响应；应用校验 turn index 后把来源消息 ID 加入 staging；`ExtractionSummary(messages_read: int, staged_pairs: int, deduped: int, inserted: int, skipped_tool_messages: int, last_message_id: int)`；`FAQHit(question: str, answer: str, category: str, score: float)`。
 
 ## 任务 1：配置与运行依赖
 
@@ -171,7 +171,7 @@ def test_oversize_sentence_is_kept_whole_and_table_headers_repeat():
 - Test: `tests/test_models.py`
 
 **Interfaces:**
-- `KnowledgeRepository(session_factory)` provides `upsert_drafts(drafts: list[ChunkDraft]) -> list[int]`, `pending(limit: int) -> list[KnowledgeChunk]`, `mark_vectorized(chunk_id: int, vector_id: int) -> None`, and `load_by_ids(ids: list[int]) -> list[KnowledgeChunk]`。
+- `KnowledgeRepository(session_factory)` provides `upsert_drafts(drafts: list[ChunkDraft]) -> list[int]`, `pending(limit: int) -> list[KnowledgeChunk]`, `mark_vectorized(chunk_id: int, vector_id: int) -> None`, `load_by_ids(ids: list[int]) -> list[KnowledgeChunk]`, `load_turns_after(last_message_id: int, limit: int) -> tuple[list[ConversationTurn], int]`, `stage_batch_and_advance(candidates: list[tuple[int, ExtractedCandidate]], last_message_id: int, run_id: str) -> None`, and `promote_staged(run_id: str) -> tuple[int, int]`。
 - FAQ source mapping: `FAQ.id -> source_key=f"faq:{faq.id}"`, `questions=[faq.question]`, `answer=faq.answer`, `category=faq.category`, `content_type="product_faq"`.
 - Document source keys are stable for a source/section/block ordinal. Same source and same content is a no-op; changed body updates same row and marks it pending.
 
@@ -208,7 +208,7 @@ def test_same_source_update_resets_vector_state_and_keeps_primary_key(repository
 **Interfaces:**
 - `EmbeddingClient.embed_documents(texts: list[str]) -> list[list[float]]`; `EmbeddingClient.embed_query(text: str) -> list[float]`。
 - `VectorRow(chunk_id: int, vector: list[float])`; `VectorHit(chunk_id: int, score: float)`。
-- `MilvusKnowledgeStore.ensure_collection() -> None`; `.upsert(rows: list[VectorRow]) -> list[int]`; `.search(vector: list[float], limit: int) -> list[VectorHit]`; `.delete(ids: list[int]) -> None`。
+- `MilvusKnowledgeStore.ensure_collection() -> None`; `.upsert(rows: list[VectorRow]) -> list[int]`; `.search(vector: list[float], limit: int) -> list[VectorHit]`。
 - `KnowledgeIndexer.sync_pending(batch_size: int) -> SyncSummary` embeds pending text, validates dimensions/order, Milvus-upserts by MySQL ID, then backfills returned ID/status.
 
 **Test case:**
@@ -216,8 +216,8 @@ def test_same_source_update_resets_vector_state_and_keeps_primary_key(repository
 ```python
 def test_rerun_after_milvus_success_before_mysql_backfill_upserts_same_id(indexer, vector_store, repository):
     vector_store.fail_after_upsert_once = True
-    with pytest.raises(RuntimeError):
-        indexer.sync_pending(batch_size=8)
+    first = indexer.sync_pending(batch_size=8)
+    assert first.failed == 1
     chunk_id = repository.pending(limit=1)[0].id
     indexer.sync_pending(batch_size=8)
     assert vector_store.ids == {chunk_id}
@@ -230,7 +230,7 @@ def test_rerun_after_milvus_success_before_mysql_backfill_upserts_same_id(indexe
 - [ ] **Step 3: Write failing Milvus/indexer tests** asserting known primary key upsert, COSINE collection, Top-K hit parsing, return-ID backfill and state transitions.
 - [ ] **Step 4: Run red tests.** `python3 -m pytest tests/test_knowledge_vectors.py -q`; expected: missing client/store/sync methods.
 - [ ] **Step 5: Implement embeddings and Milvus adapters** with dependency injection. Ensure collection schema uses Int64 `chunk_id` PK and 1024-d FloatVector; upsert rows use the MySQL primary key and return IDs in corresponding row order.
-- [ ] **Step 6: Implement sync ordering and failure semantics.** MySQL pending commit precedes embedding; Milvus upsert precedes SQL vectorized status. A failed SQL backfill leaves pending so the next run upserts the same ID.
+- [ ] **Step 6: Implement sync ordering and failure semantics.** MySQL pending commit precedes embedding; Milvus upsert precedes SQL vectorized status. Catch per-row failures, increment `SyncSummary.failed`, continue other rows, and leave the failed row pending so the next run upserts the same ID. CLI exits nonzero when any row failed.
 - [ ] **Step 7: Add official Milvus standalone service and persistent volumes** to compose, preserving existing MySQL behavior. Configure URI and health/readiness checks without exposing credentials.
 - [ ] **Step 8: Test both interruption points.** Inject failure before Milvus upsert and after successful upsert before MySQL state update; rerun sync and assert one Milvus PK per chunk, matching `vector_id`, status vectorized.
 - [ ] **Step 9: Run vector tests and compose validation.** `python3 -m pytest tests/test_knowledge_vectors.py -q` and `docker compose config`; expected: tests pass and valid compose YAML.
@@ -246,7 +246,7 @@ def test_rerun_after_milvus_success_before_mysql_backfill_upserts_same_id(indexe
 
 **Interfaces:**
 - `redact_customer_data(text: str) -> str` masks mainland Chinese mobile numbers, email addresses, 18-digit identity numbers, and order/ticket identifiers before an external model call; it never modifies persisted source messages.
-- `ConversationKnowledgeExtractor(session_factory, model, repository)` exposes `run(batch_size: int) -> ExtractionSummary`。
+- `ConversationKnowledgeExtractor(model, repository)` exposes `run(batch_size: int) -> ExtractionSummary`。
 - The injected model implements `extract_pairs(turns: list[ConversationTurn]) -> list[ExtractedCandidate]`; production adapter wraps `ChatOpenAI.with_structured_output(ExtractionBatch)` and tests use a deterministic fake.
 
 **Test case:**
@@ -286,7 +286,7 @@ def test_extractor_redacts_contact_data_and_skips_tool_messages(extractor, fake_
 - `FAQHit(question: str, answer: str, category: str, score: float)`。
 - `KnowledgeRetriever(searcher, repository, top_k: int, min_similarity: float).search(query: str) -> list[FAQHit]`。
 - `build_tools(session_factory, conversation_id, faq_retriever)` registers `query_faq(query: str) -> str`; only internal dependency changes.
-- `ChatService` receives `faq_retriever_factory(session_factory) -> KnowledgeRetriever` and binds that retriever into each tools list; `create_app(chat_service=...)` remains usable for isolated API tests.
+- `ChatService(session_factory, model_factory, tool_runner_factory, faq_retriever)` stores one app-scoped retriever and binds it into each tools list; `create_app(chat_service=...)` remains usable for isolated API tests.
 
 **Test case:**
 
@@ -303,8 +303,8 @@ def test_query_faq_preserves_tool_schema_and_json_contract(tools_by_name, fake_r
 - [ ] **Step 1: Write failing retriever tests** for query embedding, ordered MySQL hydration, category/question mapping, Top-K cap, threshold filtering and dangling Milvus IDs.
 - [ ] **Step 2: Rewrite FAQ contract tests first.** Keep exact name and input schema; expect same JSON keys/types and no-match message while hits now come from injected retriever instead of `FAQ.question LIKE`.
 - [ ] **Step 3: Run red tests.** `python3 -m pytest tests/test_knowledge_retriever.py tests/test_tools.py -q`; expected: constructor signature/behavior mismatch and old LIKE assertion fails.
-- [ ] **Step 4: Implement retriever.** Embed the query, perform Milvus COSINE Top-K, discard hits below `min_similarity`, fetch MySQL rows by primary key, preserve vector ranking, ignore missing/inactive SQL rows, and return at most five items.
-- [ ] **Step 5: Inject runtime dependencies.** Build one embedding client/store/retriever in `app.main` and inject it into each `build_tools` call from `ChatService`; do not change tool descriptions to promise keyword behavior.
+- [ ] **Step 4: Implement retriever.** Embed the query, perform Milvus COSINE Top-K, discard hits below `min_similarity`, fetch MySQL rows by primary key, preserve vector ranking, ignore missing SQL rows, and return at most five items.
+- [ ] **Step 5: Inject runtime dependencies.** Build one embedding client/store/retriever in `app.main` and inject it into `ChatService` once; `ChatService` passes that instance into each `build_tools` call. Do not change tool descriptions to promise keyword behavior.
 - [ ] **Step 6: Update FAQ marked cases** with query, expected source, expected answer phrase and hit/miss label. Include “邮费是多少” and answer assertion against the generated delivery/fee document; include unrelated negative queries.
 - [ ] **Step 7: Run retriever, tools, chat, and API tests.** `python3 -m pytest tests/test_knowledge_retriever.py tests/test_tools.py tests/test_chat.py tests/test_api.py -q`; expected: full tool/API compatibility passes.
 - [ ] **Step 8: Commit.** `git add app/services/knowledge/retriever.py app/tools/business.py app/services/chat.py app/main.py tests/test_tools.py tests/test_knowledge_retriever.py tests/fixtures/faq_cases.json && git commit -m "feat: retrieve faq answers with dense vectors"`.
