@@ -154,13 +154,13 @@ def test_oversize_sentence_is_kept_whole_and_table_headers_repeat():
     assert all("|---|---|" in chunk for chunk in table_chunks)
 ```
 
-- [ ] **Step 1: Write failing chunking tests** for nested heading path and parent category, product FAQ question preservation, a paragraph exceeding the target, a single sentence longer than target, Chinese/English sentence marks, overlap ending only at a complete sentence, table rows split with header/separator repeated, code fences kept balanced, deterministic source keys, and embedding text excluding metadata.
-- [ ] **Step 2: Run red tests.** `python3 -m pytest tests/test_knowledge_chunking.py -q`; expected: `split_markdown` and `ChunkDraft` are unavailable.
-- [ ] **Step 3: Implement structural Markdown parsing** with heading stack and typed segments for prose/tables/fenced code. Do not split a sentence or table row solely to meet the soft char target.
-- [ ] **Step 4: Implement recursive splitting and sentence-safe overlap.** Target `max_chars=1200`, overlap goal `200`; choose the nearest preceding complete sentence boundary; include at least one prior whole sentence when available, never cut mid-sentence.
-- [ ] **Step 5: Write production-baseline ecommerce documents.** Cover product selection/order, delivery/fees, returns/refunds, payments and after-sales. Use policy-safe wording and retain section titles for knowledge questions/category paths.
-- [ ] **Step 6: Run chunking tests.** `python3 -m pytest tests/test_knowledge_chunking.py -q`; expected: every boundary and metadata assertion passes.
-- [ ] **Step 7: Commit.** `git add app/services/knowledge knowledge_docs tests/test_knowledge_chunking.py && git commit -m "feat: add structured ecommerce knowledge chunking"`.
+- [x] **Step 1: Write failing chunking tests** for nested heading path and parent category, product FAQ question preservation, a paragraph exceeding the target, a single sentence longer than target, Chinese/English sentence marks, overlap ending only at a complete sentence, table rows split with header/separator repeated, code fences kept balanced, deterministic source keys, and embedding text excluding metadata.
+- [x] **Step 2: Run red tests.** `python3 -m pytest tests/test_knowledge_chunking.py -q`; expected: `split_markdown` and `ChunkDraft` are unavailable.
+- [x] **Step 3: Implement structural Markdown parsing** with heading stack and typed segments for prose/tables/fenced code. Do not split a sentence or table row solely to meet the soft char target.
+- [x] **Step 4: Implement recursive splitting and sentence-safe overlap.** Target `max_chars=1200`, overlap goal `200`; choose the nearest preceding complete sentence boundary; include at least one prior whole sentence when available, never cut mid-sentence.
+- [x] **Step 5: Write production-baseline ecommerce documents.** Cover product selection/order, delivery/fees, returns/refunds, payments and after-sales. Use policy-safe wording and retain section titles for knowledge questions/category paths.
+- [x] **Step 6: Run chunking tests.** `python3 -m pytest tests/test_knowledge_chunking.py -q`; expected: every boundary and metadata assertion passes.
+- [x] **Step 7: Commit.** `git add app/services/knowledge knowledge_docs tests/test_knowledge_chunking.py && git commit -m "feat: add structured ecommerce knowledge chunking"`.
 
 ## Task 4：MySQL 知识写入与来源幂等
 
