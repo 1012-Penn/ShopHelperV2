@@ -154,6 +154,14 @@ def test_milvus_upsert_uses_known_chunk_ids_and_search_parses_cosine_hits():
     assert client.upserts[0][1] == [{"chunk_id": 12, "embedding": [0.1] * 1024}]
     assert hits == [VectorHit(12, 0.82), VectorHit(8, 0.71)]
     assert client.search_kwargs["search_params"]["metric_type"] == "COSINE"
+
+
+def test_milvus_search_parses_schema_primary_key_name_from_milvus_3():
+    client = FakeMilvusClient()
+    client.search = lambda **kwargs: [[{"chunk_id": 42, "distance": 0.91, "entity": {}}]]
+    store = MilvusKnowledgeStore(client=client)
+
+    assert store.search([0.2] * 1024, limit=1)[0] == VectorHit(chunk_id=42, score=0.91)
     store.delete([12])
     assert client.deleted["ids"] == [12]
 

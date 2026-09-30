@@ -342,16 +342,16 @@ def test_vector_cli_reports_safe_nonzero_failure(monkeypatch, capsys):
     assert "pending" in output
 ```
 
-- [ ] **Step 1: Write failing CLI tests** for argparse values, missing settings returning nonzero safely, extraction invoking staging/finalization/sync once, vector CLI touching only pending records, and summary output excluding secrets.
-- [ ] **Step 2: Run red tests.** `python3 -m pytest tests/test_knowledge_cli.py -q`; expected: script module/entrypoint failures.
-- [ ] **Step 3: Implement three CLI entrypoints** with injectable service factories and `main(argv=None) -> int`; use short transactions and close SQL/Milvus clients in `finally` blocks.
-- [ ] **Step 4: Add README setup/demo commands** for installing extras, copying env names without a real key, `docker compose up -d db milvus`, build knowledge, extraction, pending repair, cron example, and the FAQ chat acceptance query.
-- [ ] **Step 5: Run focused CLI tests.** `python3 -m pytest tests/test_knowledge_cli.py -q`; expected: all pass without external service or secret.
-- [ ] **Step 6: Run full automated suite.** `python3 -m pytest -q`; expected: existing and new tests pass.
-- [ ] **Step 7: Run deployment validation.** `docker compose config`; if Docker is available, start MySQL/Milvus, run build CLI twice, run the FAQ evaluation set, inject/recover pending-vector interruption, and inspect counts/IDs without printing credentials.
-- [ ] **Step 8: Calibrate similarity threshold** using the fixed fixture grid; write selected `FAQ_MIN_SIMILARITY`, hit@5, answer/source correctness, negative false-positive count and any unsupported cases into README and dev note. Do not claim acceptance if the labeled set cannot meet its contract.
-- [ ] **Step 9: Update `dev-notes/ch03.md` immediately** with this task's user quote, outputs/test counts, corrections, errors/rework and review state.
-- [ ] **Step 10: Commit.** `git add scripts/build_knowledge.py scripts/extract_conversation_knowledge.py scripts/sync_knowledge_vectors.py README.md tests/test_knowledge_cli.py tests/fixtures/faq_cases.json dev-notes/ch03.md && git commit -m "feat: add knowledge build and recovery commands"`.
+- [x] **Step 1: Write failing CLI tests** for argparse values, missing settings returning nonzero safely, extraction invoking staging/finalization/sync once, vector CLI touching only pending records, summary output excluding secrets, and labeled threshold selection.
+- [x] **Step 2: Run red tests.** `python3 -m pytest tests/test_knowledge_cli.py -q`; expected: script module/entrypoint failures.
+- [x] **Step 3: Implement offline service factories and four CLI entrypoints** (`build_knowledge`, `extract_conversation_knowledge`, `sync_knowledge_vectors`, `evaluate_knowledge`) with injectable factories and safe errors; close SQL/Milvus clients in `finally` blocks.
+- [x] **Step 4: Add README setup/demo commands** for ecommerce corpus boundaries, environment setup, `docker compose up -d db etcd minio milvus`, build, extraction, pending repair, cron schedule, evaluation and FAQ acceptance query.
+- [x] **Step 5: Run focused CLI tests.** `python3 -m pytest tests/test_knowledge_cli.py -q`; expected: all pass without external service or secret.
+- [x] **Step 6: Run full automated suite.** `python3 -m pytest -q`; 84 passed before the final primary-key regression test; rerun at final verification.
+- [x] **Step 7: Run deployment validation.** `docker compose config` passes. Real MySQL + Milvus 3.0.0 + BGE-M3 run: first build inserted 39 markdown chunks and vectorized all; second build was idempotent with 0 pending; after seeding FAQ, build vectorized 4 FAQ rows and the repeat again had 0 pending. A forced MySQL pending state re-upserted the same Milvus primary key and restored `vectorized` status.
+- [x] **Step 8: Calibrate similarity threshold** on the four-case ecommerce fixture: `FAQ_MIN_SIMILARITY=0.60` gives answer+source correct `3/3`, negative false positives `0/1`; at `0.30` the negative false-positive count is `1/1`. The evaluated set is intentionally reported as a small baseline, not a broad production quality claim.
+- [x] **Step 9: Update `dev-notes/ch03.md` immediately** with this task's user quote, output/test counts, correction, service image issue, and real Milvus primary-key discovery/rework.
+- [ ] **Step 10: Commit.** Include CLI/evaluation scripts, README, Compose compatibility update, config threshold, updated seed language, labeled cases, tests, plan and dev notes.
 
 ## Final branch review and finish
 

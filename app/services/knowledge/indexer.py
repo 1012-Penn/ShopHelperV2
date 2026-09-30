@@ -92,3 +92,15 @@ class KnowledgeIndexer:
             raise ValueError("embedding response must have 1024 dimensions")
         vector_id = self.vector_store.upsert([VectorRow(chunk_id=chunk.id, vector=vector)])[0]
         self.repository.mark_vectorized(chunk.id, vector_id)
+
+    def close(self) -> None:
+        for service in (self.embeddings, self.vector_store):
+            close = getattr(service, "close", None)
+            if callable(close):
+                try:
+                    close()
+                except Exception:
+                    pass
+        engine = self.repository.session_factory.kw.get("bind")
+        if engine is not None:
+            engine.dispose()

@@ -54,7 +54,7 @@ def test_settings_reads_knowledge_defaults_and_overrides():
     assert defaults.knowledge_max_chars == 1200
     assert defaults.knowledge_overlap_chars == 200
     assert defaults.faq_top_k == 5
-    assert defaults.faq_min_similarity == 0.40
+    assert defaults.faq_min_similarity == 0.60
     assert defaults.knowledge_batch_size == 32
 
     configured = Settings.from_env(
@@ -110,3 +110,18 @@ def test_knowledge_credentials_are_required_only_when_requested():
         Settings.from_env(
             _chat_env(EMBEDDING_API_KEY="embedding-secret")
         ).require_knowledge()
+
+
+def test_offline_knowledge_settings_do_not_require_chat_provider_credentials():
+    settings = Settings.from_env(
+        {
+            "DATABASE_URL": "sqlite+pysqlite:///:memory:",
+            "EMBEDDING_API_KEY": "embedding-key",
+            "MILVUS_URI": "http://localhost:19530",
+        },
+        require_chat=False,
+    )
+
+    assert settings.api_key == ""
+    assert settings.model == ""
+    settings.require_knowledge()

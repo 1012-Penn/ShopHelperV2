@@ -55,3 +55,8 @@ class EmbeddingClient:
 
     def embed_query(self, text: str) -> list[float]:
         return self.embed_documents([text])[0]
+
+    def close(self) -> None:
+        close = getattr(self.client, "close", None)
+        if callable(close):
+            close()

@@ -88,8 +88,21 @@ class MilvusKnowledgeStore:
             output_fields=[],
             search_params={"metric_type": "COSINE", "params": {}},
         )
-        return [VectorHit(int(hit["id"]), float(hit["distance"])) for hit in (results[0] if results else [])]
+        parsed: list[VectorHit] = []
+        for hit in results[0] if results else []:
+            # Milvus returns the declared primary-key field name (`chunk_id` here).
+            # Older/fake clients may normalize it to `id`.
+            chunk_id = hit.get("chunk_id", hit.get("id"))
+            if chunk_id is None or "distance" not in hit:
+                raise ValueError("Milvus search hit is missing its primary key or distance")
+            parsed.append(VectorHit(int(chunk_id), float(hit["distance"])))
+        return parsed
 
     def delete(self, ids: list[int]) -> None:
         if ids:
             self.client.delete(collection_name=self.collection_name, ids=ids)
+
+    def close(self) -> None:
+        close = getattr(self.client, "close", None)
+        if callable(close):
+            close()

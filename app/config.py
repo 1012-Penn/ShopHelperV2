@@ -27,7 +27,7 @@ class Settings:
     knowledge_max_chars: int = 1200
     knowledge_overlap_chars: int = 200
     faq_top_k: int = 5
-    faq_min_similarity: float = 0.40
+    faq_min_similarity: float = 0.60
     knowledge_batch_size: int = 32
 
     def require_knowledge(self) -> None:
@@ -49,11 +49,16 @@ class Settings:
         return database_url
 
     @classmethod
-    def from_env(cls, environ: Mapping[str, str] | None = None) -> "Settings":
+    def from_env(
+        cls,
+        environ: Mapping[str, str] | None = None,
+        *,
+        require_chat: bool = True,
+    ) -> "Settings":
         if environ is None:
             values = {key: value for key, value in dotenv_values(Path.cwd() / ".env").items() if value is not None}
             values.update(os.environ)
-            if not values.get("API_KEY") and not values.get("DEEPSEEK_API_KEY"):
+            if require_chat and not values.get("API_KEY") and not values.get("DEEPSEEK_API_KEY"):
                 fallback = dotenv_values("/root/.env").get("DEEPSEEK_API_KEY")
                 if fallback:
                     values["DEEPSEEK_API_KEY"] = fallback
@@ -61,13 +66,13 @@ class Settings:
             values = dict(environ)
 
         model = values.get("MODEL", "").strip()
-        if not model:
+        if require_chat and not model:
             raise ValueError("MODEL is required")
         api_key = (values.get("API_KEY") or values.get("DEEPSEEK_API_KEY") or "").strip()
-        if not api_key:
+        if require_chat and not api_key:
             raise ValueError("API_KEY or DEEPSEEK_API_KEY is required")
         base_url = values.get("BASE_URL", "").strip()
-        if not base_url:
+        if require_chat and not base_url:
             raise ValueError("BASE_URL is required")
         database_url = values.get("DATABASE_URL", "").strip()
         if not database_url:
@@ -79,7 +84,7 @@ class Settings:
             max_chars = int(values.get("KNOWLEDGE_MAX_CHARS", "1200"))
             overlap_chars = int(values.get("KNOWLEDGE_OVERLAP_CHARS", "200"))
             top_k = int(values.get("FAQ_TOP_K", "5"))
-            min_similarity = float(values.get("FAQ_MIN_SIMILARITY", "0.40"))
+            min_similarity = float(values.get("FAQ_MIN_SIMILARITY", "0.60"))
             batch_size = int(values.get("KNOWLEDGE_BATCH_SIZE", "32"))
         except ValueError as error:
             raise ValueError("Timeout, retry, chunk, retrieval, and batch settings must be numeric") from error
