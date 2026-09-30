@@ -16,6 +16,7 @@ from app.db.session import create_tables, make_engine, make_session_factory
 from app.schemas import AfterSaleExtraction, AfterSaleRequest, ChatRequest
 from app.services.after_sale import AfterSaleService
 from app.services.chat import ChatService
+from app.services.quality.runtime import build_answer_service, config
 from app.services.knowledge.embeddings import EmbeddingClient
 from app.services.knowledge.repository import KnowledgeRepository
 from app.services.knowledge.retriever import DenseSearcher, KnowledgeRetriever
@@ -40,26 +41,33 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
         nonlocal service
         if service is None:
             settings = Settings.from_env()
-            settings.require_knowledge()
+            quality_enabled = config().get("QUALITY_ENABLED", "true").lower() == "true"
+            if not quality_enabled:
+                settings.require_knowledge()
             engine = make_engine(settings.database_url)
             create_tables(engine)
             session_factory = make_session_factory(engine)
-            embedding_client = EmbeddingClient(
-                api_key=settings.embedding_api_key,
-                base_url=settings.embedding_api_base,
-                model=settings.embedding_model,
-            )
-            vector_store = MilvusKnowledgeStore(
-                uri=settings.milvus_uri,
-                collection_name=settings.milvus_collection,
-            )
-            vector_store.ensure_collection()
-            faq_retriever = KnowledgeRetriever(
-                DenseSearcher(embedding_client, vector_store),
-                KnowledgeRepository(session_factory),
-                top_k=settings.faq_top_k,
-                min_similarity=settings.faq_min_similarity,
-            )
+            knowledge_answer_service = None
+            faq_retriever = None
+            if quality_enabled:
+                knowledge_answer_service = build_answer_service(session_factory, settings)
+            else:
+                embedding_client = EmbeddingClient(
+                    api_key=settings.embedding_api_key,
+                    base_url=settings.embedding_api_base,
+                    model=settings.embedding_model,
+                )
+                vector_store = MilvusKnowledgeStore(
+                    uri=settings.milvus_uri,
+                    collection_name=settings.milvus_collection,
+                )
+                vector_store.ensure_collection()
+                faq_retriever = KnowledgeRetriever(
+                    DenseSearcher(embedding_client, vector_store),
+                    KnowledgeRepository(session_factory),
+                    top_k=settings.faq_top_k,
+                    min_similarity=settings.faq_min_similarity,
+                )
             model_factory = lambda: ChatOpenAI(
                 model=settings.model,
                 api_key=settings.api_key,
@@ -70,7 +78,7 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
                 timeout_seconds=settings.tool_timeout_seconds,
                 max_retries=settings.tool_max_retries,
             )
-            service = ChatService(session_factory, model_factory, runner_factory, faq_retriever=faq_retriever)
+            service = ChatService(session_factory, model_factory, runner_factory, faq_retriever=faq_retriever, knowledge_answer_service=knowledge_answer_service)
         return service
 
     @application.get("/health")
