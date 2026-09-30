@@ -125,3 +125,18 @@ def test_offline_knowledge_settings_do_not_require_chat_provider_credentials():
     assert settings.api_key == ""
     assert settings.model == ""
     settings.require_knowledge()
+
+
+def test_chat_key_fallback_can_be_disabled_for_offline_extraction_cli(monkeypatch):
+    import app.config as config_module
+
+    monkeypatch.delenv("API_KEY", raising=False)
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.setattr(
+        config_module,
+        "dotenv_values",
+        lambda path: {"MODEL": "configured-chat", "BASE_URL": "https://model.test/v1", "DATABASE_URL": "sqlite:///test.db"},
+    )
+
+    with pytest.raises(ValueError, match="API_KEY"):
+        Settings.from_env(allow_chat_key_fallback=False)

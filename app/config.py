@@ -54,11 +54,17 @@ class Settings:
         environ: Mapping[str, str] | None = None,
         *,
         require_chat: bool = True,
+        allow_chat_key_fallback: bool = True,
     ) -> "Settings":
         if environ is None:
             values = {key: value for key, value in dotenv_values(Path.cwd() / ".env").items() if value is not None}
             values.update(os.environ)
-            if require_chat and not values.get("API_KEY") and not values.get("DEEPSEEK_API_KEY"):
+            if (
+                require_chat
+                and allow_chat_key_fallback
+                and not values.get("API_KEY")
+                and not values.get("DEEPSEEK_API_KEY")
+            ):
                 fallback = dotenv_values("/root/.env").get("DEEPSEEK_API_KEY")
                 if fallback:
                     values["DEEPSEEK_API_KEY"] = fallback

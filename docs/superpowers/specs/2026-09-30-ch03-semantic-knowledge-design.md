@@ -78,6 +78,10 @@ CLI 使用递增的 `Message.id` 游标分批读取历史客服消息，只把�
 
 Milvus 仅持有 chunk 主键与 dense vector；MySQL 始终权威保存 category/questions/answer 和所有要求的元数据。处理过程按有界批次运行，确保单块或单批失败不会回滚已完成知识。
 
+重建 Markdown 来源或导入 FAQ 时，同时协调已删除的知识块：MySQL 先将不再存在的来源块标为 inactive，检索与 pending 同步均排除它们；随后删除旧 Milvus 向量并清空 `vector_id`。删除失败时保留向量 ID，下一次 CLI 运行继续清理。FAQ 仍保留其主键来源键，FAQ 重现时可按同一主键重新激活并 upsert。
+
+legacy FAQ reconciliation 只处理 `faq:` 来源键，避免误清理章节标题虽属于 FAQ 内容、来源仍是 `doc:` 的 Markdown 块。MySQL hydration 只返回 active 且 `vector_status=vectorized` 的行；知识内容进入 pending 的窗口中，旧 Milvus hit 不得映射到更新后的 MySQL 答案。
+
 ### 在线检索与工具契约
 
 `build_tools` 获得 FAQ retriever 依赖；LangChain 工具继续名为 `query_faq`，参数仍为 `query: str`。检索步骤是：生成 query embedding、以 COSINE 在 Milvus `knowledge` 集合做 dense Top-5、按命中 ID 到 MySQL 批量取回记录、按 Milvus 排序组装响应。低于配置的 minimum similarity 时不返回不可信结果。

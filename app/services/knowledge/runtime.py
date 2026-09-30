@@ -44,7 +44,7 @@ def build_indexer(settings: Settings | None = None) -> KnowledgeIndexer:
 
 
 def build_extractor() -> tuple[ConversationKnowledgeExtractor, KnowledgeIndexer]:
-    settings = Settings.from_env()
+    settings = Settings.from_env(allow_chat_key_fallback=False)
     indexer = build_indexer(settings)
     try:
         model = LangChainConversationModel.from_settings(settings)

@@ -41,8 +41,16 @@ class KnowledgeIndexer:
         return self.repository.upsert_drafts(drafts)
 
     def import_faqs(self) -> list[int]:
-        """Copy the current authoritative FAQ rows into pending knowledge chunks."""
-        return self.repository.upsert_drafts(self.repository.load_faq_drafts())
+        """Reconcile deleted FAQ vectors, then copy current FAQ rows into knowledge chunks."""
+        drafts = self.repository.load_faq_drafts()
+        stale = self.repository.deactivate_missing_faq_chunks([draft.source_key for draft in drafts])
+        if stale:
+            if self.vector_store is None:
+                raise RuntimeError("vector store is required to reconcile removed FAQ vectors")
+            chunk_ids, vector_ids = zip(*stale)
+            self.vector_store.delete(list(vector_ids))
+            self.repository.clear_deleted_vector_ids(list(chunk_ids))
+        return self.repository.upsert_drafts(drafts)
 
     def sync_pending(self, batch_size: int) -> SyncSummary:
         if batch_size < 1:

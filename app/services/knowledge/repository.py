@@ -154,7 +154,9 @@ class KnowledgeRepository:
             rows = list(
                 session.scalars(
                     select(KnowledgeChunk).where(
-                        KnowledgeChunk.id.in_(set(ids)), KnowledgeChunk.is_active.is_(True)
+                        KnowledgeChunk.id.in_(set(ids)),
+                        KnowledgeChunk.is_active.is_(True),
+                        KnowledgeChunk.vector_status == "vectorized",
                     )
                 )
             )
@@ -177,6 +179,26 @@ class KnowledgeRepository:
                 (chunk.id, chunk.vector_id)
                 for chunk in document_chunks
                 if not chunk.is_active and chunk.vector_id is not None
+            ]
+
+    def deactivate_missing_faq_chunks(self, active_source_keys: list[str]) -> list[tuple[int, int]]:
+        active = set(active_source_keys)
+        with self.session_factory.begin() as session:
+            faq_chunks = list(
+                session.scalars(
+                    select(KnowledgeChunk).where(
+                        KnowledgeChunk.content_type == "product_faq",
+                        KnowledgeChunk.source_key.startswith("faq:"),
+                    )
+                )
+            )
+            for chunk in faq_chunks:
+                if chunk.source_key not in active:
+                    chunk.is_active = False
+            return [
+                (chunk.id, chunk.vector_id)
+                for chunk in faq_chunks
+                if chunk.source_key not in active and not chunk.is_active and chunk.vector_id is not None
             ]
 
     def clear_deleted_vector_ids(self, chunk_ids: list[int]) -> None:

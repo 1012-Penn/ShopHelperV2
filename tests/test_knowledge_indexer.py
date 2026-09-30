@@ -63,6 +63,7 @@ def test_changed_content_keeps_primary_key_and_resets_vector_state(db_session_fa
 
     pending = repository.pending(limit=10)
     assert [row.id for row in pending] == [chunk_id]
+    assert repository.load_by_ids([chunk_id]) == []
     assert pending[0].answer == "新版运费说明。"
     assert pending[0].vector_id is None
     assert pending[0].vector_status == "pending"
@@ -120,3 +121,105 @@ def test_markdown_rebuild_retires_removed_chunks_and_deletes_their_vectors(db_se
     with db_session_factory() as session:
         retired = session.get(KnowledgeChunk, old_ids[1])
         assert retired.is_active is False and retired.vector_id is None
+
+
+def test_failed_stale_vector_delete_retries_without_reexposing_removed_content(db_session_factory):
+    repository = KnowledgeRepository(db_session_factory)
+
+    class VectorStore:
+        def __init__(self):
+            self.calls = 0
+
+        def delete(self, ids):
+            self.calls += 1
+            if self.calls == 1:
+                raise RuntimeError("temporary Milvus outage")
+
+    vectors = VectorStore()
+    indexer = KnowledgeIndexer(repository, embeddings=object(), vector_store=vectors)
+    drafts = [
+        _draft("doc:shipping.md:0", "Current shipping policy."),
+        _draft("doc:shipping.md:1", "Removed shipping policy."),
+    ]
+    old_ids = indexer.import_drafts(drafts)
+    for chunk_id in old_ids:
+        repository.mark_vectorized(chunk_id, chunk_id)
+
+    try:
+        indexer.import_markdown([drafts[0]], active_sources=["shipping.md"])
+    except RuntimeError:
+        pass
+    else:
+        assert False, "vector deletion failure must be returned to the CLI"
+
+    assert repository.load_by_ids([old_ids[1]]) == []
+    indexer.import_markdown([drafts[0]], active_sources=["shipping.md"])
+
+    assert vectors.calls == 2
+    with db_session_factory() as session:
+        retired = session.get(KnowledgeChunk, old_ids[1])
+        assert retired.is_active is False and retired.vector_id is None
+
+
+def test_deleted_faq_is_hidden_and_vector_delete_retries(db_session_factory):
+    with db_session_factory.begin() as session:
+        faq = FAQ(question="邮费是多少？", answer="以结算页为准。", category="配送")
+        session.add(faq)
+        session.flush()
+        faq_id = faq.id
+
+    repository = KnowledgeRepository(db_session_factory)
+
+    class VectorStore:
+        def __init__(self):
+            self.deleted = []
+            self.calls = 0
+
+        def delete(self, ids):
+            self.calls += 1
+            self.deleted.extend(ids)
+            if self.calls == 1:
+                raise RuntimeError("temporary Milvus outage")
+
+    vectors = VectorStore()
+    indexer = KnowledgeIndexer(repository, embeddings=object(), vector_store=vectors)
+    chunk_id = indexer.import_faqs()[0]
+    repository.mark_vectorized(chunk_id, chunk_id)
+    with db_session_factory.begin() as session:
+        session.delete(session.get(FAQ, faq_id))
+
+    try:
+        indexer.import_faqs()
+    except RuntimeError:
+        pass
+    else:
+        assert False, "vector deletion failure must be returned to the caller"
+
+    assert repository.load_by_ids([chunk_id]) == []
+    assert repository.pending(10) == []
+
+    indexer.import_faqs()
+
+    assert vectors.calls == 2
+    assert vectors.deleted == [chunk_id, chunk_id]
+    with db_session_factory() as session:
+        retired = session.get(KnowledgeChunk, chunk_id)
+        assert retired.is_active is False and retired.vector_id is None
+
+
+def test_markdown_faq_content_is_not_reconciled_as_a_legacy_faq_row(db_session_factory):
+    repository = KnowledgeRepository(db_session_factory)
+    markdown_faq = replace(
+        _draft(source_key="doc:product-faq.md:0", answer="商品 FAQ 中的退款说明。"),
+        category="商品与订单",
+        content_type="product_faq",
+    )
+    indexer = KnowledgeIndexer(repository)
+    chunk_id = indexer.import_drafts([markdown_faq])[0]
+    repository.mark_vectorized(chunk_id, chunk_id)
+
+    assert indexer.import_faqs() == []
+
+    assert [row.id for row in repository.load_by_ids([chunk_id])] == [chunk_id]
+    with db_session_factory() as session:
+        assert session.get(KnowledgeChunk, chunk_id).is_active is True

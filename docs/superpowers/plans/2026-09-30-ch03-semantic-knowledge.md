@@ -175,6 +175,8 @@ def test_oversize_sentence_is_kept_whole_and_table_headers_repeat():
 - FAQ source mapping: `FAQ.id -> source_key=f"faq:{faq.id}"`, `questions=[faq.question]`, `answer=faq.answer`, `category=faq.category`, `content_type="product_faq"`.
 - Document source keys are stable for a source/section/block ordinal. Same source and same content is a no-op; changed body updates same row and marks it pending. A source rebuild retires keys no longer present from active retrieval and retries deletion of their Milvus vectors.
 - `KnowledgeIndexer.import_markdown(drafts, active_sources)` retires stale/missing markdown chunks, deletes their vectors, clears deleted vector IDs for retry safety, then upserts the current draft set.
+- `KnowledgeIndexer.import_faqs()` also retires FAQ chunks whose authoritative FAQ rows were removed; MySQL hides them immediately and Milvus deletion retries from the retained vector ID.
+- FAQ reconciliation is scoped to legacy `faq:` source keys, while MySQL hydration accepts only active `vectorized` rows so an old Milvus hit cannot expose changed pending content.
 
 **Test case:**
 
