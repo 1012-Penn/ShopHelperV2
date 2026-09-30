@@ -34,3 +34,28 @@ def test_fixture_report_is_marked_synthetic(tmp_path):
     assert result['mode']=='synthetic_fixture'
     assert set(result['summary'])=={'dense','bm25','hybrid','hybrid_rerank'}
     assert result['rows']
+
+
+def test_summary_reports_denominators_and_empty_answers():
+    rows=[dict(bucket='A_policy',difficulty='easy',should_refuse=False,refused=False,faithfulness=.5,claims=[{'supported':True},{'supported':False}],answer='fact',metrics={'mrr':1},error=None),dict(bucket='D_unknown',difficulty='easy',should_refuse=True,refused=True,faithfulness=None,answer='',metrics={'mrr':None},error=None)]
+    m=summarize(rows)
+    assert m['retrieval_cases']==1
+    assert m['known_cases']==1 and m['unknown_cases']==1
+    assert m['empty_answer_rate']==.5
+    assert m['faithfulness_claims']==2 and m['faithfulness_micro']==.5
+
+
+def test_eval_prepare_deactivates_removed_source(db_session_factory):
+    from app.services.knowledge.repository import KnowledgeRepository
+    from app.services.knowledge.content import ChunkDraft
+    from scripts.evaluate_ch04 import prepare_evaluation_corpus
+    from app.db.models import KnowledgeChunk
+    from sqlalchemy import select
+    repository=KnowledgeRepository(db_session_factory)
+    old=ChunkDraft(source_key='doc:old.md:1',category='x',questions=['q'],answer='old',chapter_path=['x'],content_type='policy',is_critical=False)
+    new=ChunkDraft(source_key='doc:new.md:1',category='x',questions=['q2'],answer='new',chapter_path=['x'],content_type='policy',is_critical=False)
+    repository.upsert_drafts([old])
+    prepare_evaluation_corpus(repository,[new])
+    with db_session_factory() as s:
+        rows={r.source_key:r.is_active for r in s.scalars(select(KnowledgeChunk))}
+        assert rows=={'doc:old.md:1':False,'doc:new.md:1':True}

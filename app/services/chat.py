@@ -52,7 +52,7 @@ class ChatService:
                 return
 
             if not tool_calls:
-                if self.knowledge_answer_service and not re.fullmatch(r"[\s你好您好谢谢再见嗨哈喽！!。,.，]+", request.message):
+                if self.knowledge_answer_service and not self._safe_nonknowledge(request.message, self._chunk_text(response)):
                     yield from self._knowledge_events(request)
                     return
                 answer_parts = [self._chunk_text(chunk) for chunk in chunks]
@@ -192,8 +192,20 @@ class ChatService:
             session.flush()
             return message.id
 
+    @staticmethod
+    def _safe_nonknowledge(question, answer):
+        if re.fullmatch(r"[\s你好您好谢谢再见嗨哈喽！!。,.，]+", question):
+            return True
+        # Only narrow requests for missing identifiers; factual policy prose stays gated.
+        return bool(re.fullmatch(r"(?:请|麻烦|烦请)(?:提供|补充|告知)(?:一下|您的|你的)?(?:订单号|商品链接|完整型号|使用场景|收货地区|支付渠道)(?:[，,。\s]*(?:我(?:来)?帮(?:您|你)查询|以便核查|方便核查))?[。！!？?\s]*", answer))
+
     def _knowledge_events(self, request, tool_call_id=None):
-        result = self.knowledge_answer_service.answer(request.message, request.conversation_id, category=request.category)
+        try:
+            result = self.knowledge_answer_service.answer(request.message, request.conversation_id, category=request.category)
+        except Exception:
+            if tool_call_id:
+                self._persist_tool_result(request.conversation_id, ToolResult("query_faq", tool_call_id, "知识服务暂时不可用。", True))
+            raise
         if tool_call_id:
             self._persist_tool_result(request.conversation_id, ToolResult("query_faq", tool_call_id, json.dumps({"matched": not result.refused, "evidence": result.citations}, ensure_ascii=False), False))
         message_id = self._persist_assistant(request.conversation_id, result.answer, result.citations)

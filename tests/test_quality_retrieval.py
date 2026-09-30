@@ -49,3 +49,12 @@ def test_normalization_reused_across_strategies():
     normalizer.normalize('邮费多少')
     normalizer.normalize('邮费多少')
     assert len(calls)==1
+
+
+@pytest.mark.parametrize('raw,changed',[
+ ('XH-300 支持七天退货吗','XH-300 支持三十天退货吗'),
+ ('XH-300 不支持游泳但支持淋雨吗','XH-300 支持游泳但不支持淋雨吗')])
+def test_normalizer_does_not_change_chinese_number_or_negative_scope(raw,changed):
+    q=QueryNormalizer(lambda value:changed).normalize(raw)
+    assert q.canonical==raw
+    assert q.downgrade_reason

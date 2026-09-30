@@ -19,7 +19,8 @@ def summarize(rows):
     known=[r for r in rows if not r['should_refuse']]
     unknown=[r for r in rows if r['should_refuse']]
     names=set().union(*(r.get('metrics',{}).keys() for r in rows)) if rows else set()
-    return {'cases':len(rows),'error_count':sum(bool(r.get('error')) for r in rows),'faithfulness':mean(faith),'faithfulness_cases':len(faith),
+    claims=[c for r in rows if not r.get('error') for c in r.get('claims',[])]
+    return {'retrieval_cases':sum(r.get('metrics',{}).get('mrr') is not None for r in rows), 'known_cases':len(known), 'unknown_cases':len(unknown), 'empty_answer_rate':mean([int(not r.get('answer','').strip()) for r in rows]), 'faithfulness_claims':len(claims), 'faithfulness_micro':mean([int(c['supported']) for c in claims]), 'latency_seconds':mean([r.get('latency_seconds') for r in rows]), 'cases':len(rows),'error_count':sum(bool(r.get('error')) for r in rows),'faithfulness':mean(faith),'faithfulness_cases':len(faith),
             'known_false_refusal_rate':mean([int(r['refused']) for r in known]),'unknown_refusal_rate':mean([int(r['refused']) for r in unknown]),
             **{name:mean([r.get('metrics',{}).get(name) for r in rows]) for name in sorted(names)}}
 

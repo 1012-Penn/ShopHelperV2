@@ -1,5 +1,9 @@
 """Recoverable collection synchronization keyed by current content hashes."""
-from sqlalchemy import select
+from sqlalchemy import select, text
+from contextlib import contextmanager
+import hashlib
+import tempfile
+from pathlib import Path
 from app.db.models import KnowledgeChunk, HybridSync
 from app.services.knowledge.hybrid_store import HybridRow
 
@@ -8,7 +12,32 @@ class HybridIndexer:
     def __init__(self, session_factory, embeddings, store):
         self.session_factory, self.embeddings, self.store = session_factory, embeddings, store
 
+    @contextmanager
+    def _collection_lock(self):
+        name='mewhelp-hybrid-'+hashlib.sha256(self.store.collection_name.encode()).hexdigest()[:32]
+        engine=self.session_factory.kw['bind']
+        if engine.dialect.name=='mysql':
+            with engine.connect() as c:
+                if c.execute(text('SELECT GET_LOCK(:name, 60)'),{'name':name}).scalar()!=1:
+                    raise RuntimeError('hybrid collection sync lock unavailable')
+                try:
+                    yield
+                finally:
+                    c.execute(text('SELECT RELEASE_LOCK(:name)'),{'name':name})
+        else:
+            import fcntl
+            with (Path(tempfile.gettempdir())/(name+'.lock')).open('a') as lock:
+                fcntl.flock(lock,fcntl.LOCK_EX)
+                try:
+                    yield
+                finally:
+                    fcntl.flock(lock,fcntl.LOCK_UN)
+
     def sync(self, batch_size=32):
+        with self._collection_lock():
+            return self._sync_locked(batch_size)
+
+    def _sync_locked(self, batch_size):
         if batch_size < 1:
             raise ValueError('positive batch size required')
         self.store.ensure_collection()

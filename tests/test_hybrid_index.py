@@ -56,3 +56,48 @@ def test_rebuild_cli_safe_failure(monkeypatch,capsys):
     monkeypatch.setattr(rebuild_hybrid_index,'build_indexer',fail)
     assert rebuild_hybrid_index.main([])==1
     assert 'sk-secret' not in capsys.readouterr().out
+
+
+def test_overlap_cannot_overwrite_newer_index(tmp_path):
+    from threading import Thread,Event
+    from app.db.session import make_engine,create_tables,make_session_factory
+    engine=make_engine('sqlite:///'+str(tmp_path/'race.db'));create_tables(engine)
+    sessions=make_session_factory(engine)
+    with sessions.begin() as s:s.add(chunk())
+    started=Event();release=Event()
+    class Blocking(Store):
+        def upsert(self,rows):
+            if rows[0].content_hash=='v1':
+                started.set();release.wait(5)
+            return super().upsert(rows)
+    store=Blocking();one=HybridIndexer(sessions,Embeddings(),store);two=HybridIndexer(sessions,Embeddings(),store)
+    errors=[]
+    def run(index):
+        try:index.sync()
+        except Exception as e:errors.append(e)
+    t=Thread(target=run,args=(one,));t.start();assert started.wait(2)
+    with sessions.begin() as s:
+        row=s.scalar(select(KnowledgeChunk));row.content_hash='v2';row.answer='v2'
+    other=Thread(target=run,args=(two,));other.start()
+    import time
+    time.sleep(.15);release.set();t.join(5);other.join(5)
+    assert not errors
+    assert store.rows[1].content_hash=='v2'
+    assert one.sync()['synchronized']==0
+
+
+def test_legacy_sync_updates_enabled_hybrid(db_session_factory):
+    from app.services.knowledge.indexer import KnowledgeIndexer
+    from app.services.knowledge.repository import KnowledgeRepository
+    from types import SimpleNamespace
+    class Legacy:
+        def upsert(self,rows):return [r.chunk_id for r in rows]
+    class Embedding:
+        def embed_documents(self,texts):return [[0.]*1024 for x in texts]
+    calls=[]
+    class Hybrid:
+        def sync(self,batch_size=32):calls.append(batch_size)
+    indexer=KnowledgeIndexer(KnowledgeRepository(db_session_factory),Embedding(),Legacy())
+    indexer.hybrid_indexer=Hybrid()
+    indexer.sync_pending(8)
+    assert calls==[8]

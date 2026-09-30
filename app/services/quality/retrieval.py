@@ -1,5 +1,6 @@
 """Shared retrieval interface and authoritative evidence hydration."""
 from dataclasses import dataclass, asdict, replace
+import time
 from sqlalchemy import select
 from app.db.models import KnowledgeChunk, HybridSync
 from app.services.quality.query import QueryNormalizer
@@ -41,16 +42,26 @@ class QualityRetriever:
             accepted.append(Evidence(len(accepted)+1,row.id,row.chapter_path,(row.questions or [''])[0],row.answer,row.source_key,hit.score,row.category))
         return accepted
 
-    def retrieve_with_candidates(self, query, strategy='hybrid_rerank', category=None):
+    def retrieve_with_trace(self, query, strategy='hybrid_rerank', category=None):
+        started=time.monotonic()
         understanding=self.normalizer.normalize(query)
+        normalized_at=time.monotonic()
         vector=None if strategy=='bm25' else self.embeddings.embed_query(understanding.canonical)
+        embedded_at=time.monotonic()
         hits=self.store.search(vector,understanding.lexical,strategy,category=category,limit=50)
+        recalled_at=time.monotonic()
         candidates=self.hydrate(hits)
+        hydrated_at=time.monotonic()
         if strategy=='hybrid_rerank' and candidates:
             ranks=self.reranker.rank(understanding.canonical,[e.question+'\n'+e.answer for e in candidates],10)
             evidence=[replace(candidates[i],n=n+1,score=score) for n,(i,score) in enumerate(ranks)]
         else:
             evidence=[replace(e,n=i+1) for i,e in enumerate(candidates[:10])]
+        trace={'canonical_query':understanding.canonical,'lexical_query':understanding.lexical,'downgrade_reason':understanding.downgrade_reason,'normalization_seconds':normalized_at-started,'embedding_seconds':embedded_at-normalized_at,'recall_seconds':recalled_at-embedded_at,'hydration_seconds':hydrated_at-recalled_at,'rerank_seconds':time.monotonic()-hydrated_at}
+        return evidence,candidates,trace
+
+    def retrieve_with_candidates(self, query, strategy='hybrid_rerank', category=None):
+        evidence,candidates,_=self.retrieve_with_trace(query,strategy,category)
         return evidence,candidates
 
     def retrieve(self, query, strategy='hybrid_rerank', category=None):

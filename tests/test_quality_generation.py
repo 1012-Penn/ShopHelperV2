@@ -68,3 +68,45 @@ def test_no_tool_policy_cannot_bypass_gate(db_session_factory):
     text=''.join(e['data'].get('content','') for e in events)
     assert '肯定到账' not in text and '无法确认' in text
     assert events[-1]['event']=='done'
+
+
+def test_invalid_structured_output_is_self_check_refusal():
+    service=KnowledgeAnswerService(None,lambda q,e:{'answer':'乱写'},None)
+    result=service.generate('退款',[evidence()])
+    assert result.refused and result.source=='self_check'
+
+
+def test_failed_knowledge_tool_has_paired_error_result(db_session_factory):
+    from app.services.chat import ChatService
+    from app.schemas import ChatRequest
+    from app.db.models import Message
+    from langchain_core.messages import AIMessageChunk
+    class Model:
+        def bind_tools(self,t):return self
+        def stream(self,m):yield AIMessageChunk(content='',tool_calls=[{'id':'tc','name':'query_faq','args':{'query':'退款'}}])
+    class Runner:
+        class registry:tools=[]
+    class Failing:
+        def answer(self,*a,**kw):raise RuntimeError('provider failure')
+    chat=ChatService(db_session_factory,lambda:Model(),lambda t:Runner(),knowledge_answer_service=Failing())
+    assert list(chat.stream_events(ChatRequest(conversation_id='fail',message='退款')))[-1]['event']=='error'
+    with db_session_factory() as s:
+        messages=list(s.scalars(select(Message)))
+        assert any(m.role=='tool' and m.tool_call_id=='tc' for m in messages)
+
+
+def test_order_clarification_preserved(db_session_factory):
+    from app.services.chat import ChatService
+    from app.schemas import ChatRequest
+    from langchain_core.messages import AIMessageChunk
+    class Model:
+        def bind_tools(self,t):return self
+        def stream(self,m):yield AIMessageChunk(content='请提供订单号，我帮您查询。')
+    class Runner:
+        class registry:tools=[]
+    class FailIfUsed:
+        def answer(self,*a,**kw):raise RuntimeError('should not use knowledge')
+    chat=ChatService(db_session_factory,lambda:Model(),lambda t:Runner(),knowledge_answer_service=FailIfUsed())
+    events=list(chat.stream_events(ChatRequest(conversation_id='clarify',message='帮我查一下订单')))
+    assert '请提供订单号' in ''.join(e['data'].get('content','') for e in events)
+    assert events[-1]['event']=='done'

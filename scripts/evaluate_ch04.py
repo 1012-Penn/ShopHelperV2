@@ -45,6 +45,12 @@ def markdown_report(result):
     return '\n'.join(lines)+'\n'
 
 
+def prepare_evaluation_corpus(repository, drafts):
+    repository.upsert_drafts(drafts)
+    sources=sorted({d.source_key[4:].rsplit(':',1)[0] for d in drafts})
+    repository.deactivate_missing_documents(sources,[d.source_key for d in drafts])
+
+
 def build_live():
     settings=Settings.from_env()
     values=config()
@@ -53,7 +59,7 @@ def build_live():
     sessions=make_session_factory(eval_engine)
     repository=KnowledgeRepository(sessions)
     drafts=load_corpus()
-    repository.upsert_drafts(drafts)
+    prepare_evaluation_corpus(repository,drafts)
     os.environ['HYBRID_COLLECTION']=values.get('EVAL_HYBRID_COLLECTION','knowledge_ch04_eval')
     service=build_answer_service(sessions,settings)
     print('evaluation index:',HybridIndexer(sessions,service.retriever.embeddings,service.retriever.store).sync(),flush=True)
@@ -80,22 +86,29 @@ def evaluate_case(case,strategies,service,judge,judge_model):
         started=time.monotonic()
         row={**case,'strategy':strategy,'error':None,'refused':False,'faithfulness':None,'metrics':{},'answer':'','citations':[],'top_score':0}
         try:
-            evidence,candidates=service.retriever.retrieve_with_candidates(case['query'],strategy,case['category'])
+            stage='retrieval'
+            evidence,candidates,trace=service.retriever.retrieve_with_trace(case['query'],strategy,case['category'])
+            row['retrieval_trace']=trace
             row['metrics']=retrieval_metrics([e.source_key for e in evidence],set(case['relevant_source_keys']))
             candidate_metrics=retrieval_metrics([e.source_key for e in candidates],set(case['relevant_source_keys']),[50])
             row['metrics']['candidate_recall@50']=candidate_metrics['recall@50']
             row['candidate_ids']=[e.chunk_id for e in candidates]
             row['final_ids']=[e.chunk_id for e in evidence]
             row['top_score']=evidence[0].score if evidence else 0
+            stage='generation';generated_at=time.monotonic()
             answer=service.generate(case['query'],evidence,strategy)
+            row['generation_seconds']=time.monotonic()-generated_at
             row.update(answer=answer.answer,citations=answer.citations,refused=answer.refused,refusal_reason=answer.reason)
             if not answer.refused:
+                stage='judge';judged_at=time.monotonic()
                 verdict=judge_faithfulness(judge,case['query'],answer.answer,answer.citations)
+                row['judge_seconds']=time.monotonic()-judged_at
                 row['faithfulness']=verdict['score']
                 row['judge_reason']=verdict['reason'];row['claims']=verdict['claims']
                 row['judge_model']=judge_model
         except Exception as error:
             row['error']=type(error).__name__
+            row['error_stage']=stage
         row['latency_seconds']=time.monotonic()-started
         rows.append(row)
     return rows
