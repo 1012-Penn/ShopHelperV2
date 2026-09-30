@@ -225,16 +225,16 @@ def test_rerun_after_milvus_success_before_mysql_backfill_upserts_same_id(indexe
     assert row.vector_id == chunk_id and row.vector_status == "vectorized"
 ```
 
-- [ ] **Step 1: Query current Context7 and official docs before coding** for OpenAI Python and PyMilvus. Confirmed APIs: `OpenAI(base_url=..., api_key=...)`, `client.embeddings.create(model=..., input=...)`, `MilvusClient.create_schema/create_collection`, `upsert` response `ids`, `search` hits `id/distance`, and `delete(ids=...)`. SiliconFlow documents `BAAI/bge-m3` at 8192 tokens; successful configured call returned 1024 dimensions. Keep dependency bounds `openai>=2.45,<4` and `pymilvus>=3.0.2,<4`; record installed versions and docs access date in this task note without secrets.
-- [ ] **Step 2: Write failing embedding tests** with an injected fake OpenAI client, asserting batch input order, `response.data[*].index` ordering, 1024 dimension validation and safe error propagation.
-- [ ] **Step 3: Write failing Milvus/indexer tests** asserting known primary key upsert, COSINE collection, Top-K hit parsing, return-ID backfill and state transitions.
-- [ ] **Step 4: Run red tests.** `python3 -m pytest tests/test_knowledge_vectors.py -q`; expected: missing client/store/sync methods.
-- [ ] **Step 5: Implement embeddings and Milvus adapters** with dependency injection. Ensure collection schema uses Int64 `chunk_id` PK and 1024-d FloatVector; upsert rows use the MySQL primary key and return IDs in corresponding row order.
-- [ ] **Step 6: Implement sync ordering and failure semantics.** MySQL pending commit precedes embedding; Milvus upsert precedes SQL vectorized status. Catch per-row failures, increment `SyncSummary.failed`, continue other rows, and leave the failed row pending so the next run upserts the same ID. CLI exits nonzero when any row failed.
-- [ ] **Step 7: Add official Milvus standalone service and persistent volumes** to compose, preserving existing MySQL behavior. Configure URI and health/readiness checks without exposing credentials.
-- [ ] **Step 8: Test both interruption points.** Inject failure before Milvus upsert and after successful upsert before MySQL state update; rerun sync and assert one Milvus PK per chunk, matching `vector_id`, status vectorized.
-- [ ] **Step 9: Run vector tests and compose validation.** `python3 -m pytest tests/test_knowledge_vectors.py -q` and `docker compose config`; expected: tests pass and valid compose YAML.
-- [ ] **Step 10: Commit.** `git add app/services/knowledge/embeddings.py app/services/knowledge/vector_store.py app/services/knowledge/indexer.py docker-compose.yml tests/test_knowledge_vectors.py pyproject.toml && git commit -m "feat: sync knowledge vectors idempotently"`.
+- [x] **Step 1: Query current Context7 and official docs before coding** for OpenAI Python and PyMilvus. Confirmed APIs: `OpenAI(base_url=..., api_key=...)`, `client.embeddings.create(model=..., input=...)`, `MilvusClient.create_schema/create_collection`, `upsert` response `ids`, `search` hits `id/distance`, and `delete(ids=...)`. SiliconFlow documents `BAAI/bge-m3` at 8192 tokens; successful configured call returned 1024 dimensions. Keep dependency bounds `openai>=2.45,<4` and `pymilvus>=3.0.2,<4`; record installed versions and docs access date in this task note without secrets.
+- [x] **Step 2: Write failing embedding tests** with an injected fake OpenAI client, asserting batch input order, `response.data[*].index` ordering, 1024 dimension validation and safe error propagation.
+- [x] **Step 3: Write failing Milvus/indexer tests** asserting known primary key upsert, COSINE collection, Top-K hit parsing, return-ID backfill and state transitions.
+- [x] **Step 4: Run red tests.** `python3 -m pytest tests/test_knowledge_vectors.py -q`; expected: missing client/store/sync methods.
+- [x] **Step 5: Implement embeddings and Milvus adapters** with dependency injection. Ensure collection schema uses Int64 `chunk_id` PK and 1024-d FloatVector; upsert rows use the MySQL primary key and return IDs in corresponding row order.
+- [x] **Step 6: Implement sync ordering and failure semantics.** MySQL pending commit precedes embedding; Milvus upsert precedes SQL vectorized status. Catch per-row failures, increment `SyncSummary.failed`, continue other rows, and leave the failed row pending so the next run upserts the same ID. CLI exits nonzero when any row failed.
+- [x] **Step 7: Add official Milvus standalone service and persistent volumes** to compose, preserving existing MySQL behavior. Configure URI and health/readiness checks without exposing credentials.
+- [x] **Step 8: Test both interruption points.** Inject failure before Milvus upsert and after successful upsert before MySQL state update; rerun sync and assert one Milvus PK per chunk, matching `vector_id`, status vectorized.
+- [x] **Step 9: Run vector tests and compose validation.** `python3 -m pytest tests/test_knowledge_vectors.py -q` and `docker compose config`; expected: tests pass and valid compose YAML.
+- [x] **Step 10: Commit.** `git add app/services/knowledge/embeddings.py app/services/knowledge/vector_store.py app/services/knowledge/indexer.py docker-compose.yml tests/test_knowledge_vectors.py pyproject.toml && git commit -m "feat: sync knowledge vectors idempotently"`.
 
 ## Task 6：客服对话挖掘、脱敏、暂存和全局去重
 
