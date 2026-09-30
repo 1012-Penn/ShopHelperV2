@@ -10,6 +10,8 @@ from sqlalchemy import (
     CheckConstraint,
     DateTime,
     ForeignKey,
+    FetchedValue,
+    Enum,
     Integer,
     JSON,
     String,
@@ -32,9 +34,15 @@ class FAQ(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
 
 
+from sqlalchemy.dialects.mysql import BIGINT as MYSQL_BIGINT
+
+UnsignedID = BigInteger().with_variant(MYSQL_BIGINT(unsigned=True), "mysql").with_variant(Integer(), "sqlite")
+
+
 class Conversation(Base):
     __tablename__ = "conversations"
 
+    id: Mapped[int] = mapped_column(UnsignedID, unique=True, nullable=True, server_default=FetchedValue())
     conversation_id: Mapped[str] = mapped_column(String(128), primary_key=True)
     user_id: Mapped[str] = mapped_column(String(128), nullable=False)
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="open")
@@ -53,6 +61,7 @@ class Message(Base):
     conversation_id: Mapped[str] = mapped_column(ForeignKey("conversations.conversation_id"), nullable=False, index=True)
     role: Mapped[str] = mapped_column(String(16), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    citations: Mapped[list[dict] | None] = mapped_column(JSON, nullable=True)
     tool_calls: Mapped[list[dict] | None] = mapped_column(JSON, nullable=True)
     tool_call_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
@@ -137,3 +146,39 @@ class KnowledgeExtractionCursor(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
     )
+
+
+class LowConfidenceQuestion(Base):
+    __tablename__ = "low_confidence_questions"
+    id: Mapped[int] = mapped_column(UnsignedID, primary_key=True, autoincrement=True)
+    conversation_id: Mapped[int | None] = mapped_column(UnsignedID, ForeignKey("conversations.id"), nullable=True)
+    raw_question: Mapped[str] = mapped_column(Text, nullable=False)
+    source: Mapped[str] = mapped_column(Enum("retrieval_low_conf", "self_check", "user_feedback", name="lcq_source", create_constraint=True), nullable=False, index=True)
+    reason: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False, index=True)
+
+
+class FaithCase(Base):
+    __tablename__ = "faith_cases"
+    id: Mapped[int] = mapped_column(UnsignedID, primary_key=True, autoincrement=True)
+    eval_id: Mapped[str] = mapped_column(String(16), nullable=False, unique=True)
+    bucket: Mapped[str] = mapped_column(String(24), nullable=False)
+    query: Mapped[str] = mapped_column(String(512), nullable=False)
+    strategy: Mapped[str] = mapped_column(String(24), nullable=False, default="hybrid_rerank")
+    answer: Mapped[str] = mapped_column(Text, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    citations: Mapped[list[dict] | None] = mapped_column(JSON)
+    judge_model: Mapped[str | None] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(Enum("未解决", "已解决", "无需解决", name="faith_status", create_constraint=True), nullable=False, default="未解决", index=True)
+    seen_count: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    first_seen_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False)
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False, index=True)
+    resolution: Mapped[str | None] = mapped_column(String(300))
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime)
+
+
+class HybridSync(Base):
+    __tablename__ = "knowledge_hybrid_sync"
+    collection: Mapped[str] = mapped_column(String(128), primary_key=True)
+    chunk_id: Mapped[int] = mapped_column(ForeignKey("knowledge_chunks.id"), primary_key=True)
+    content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
