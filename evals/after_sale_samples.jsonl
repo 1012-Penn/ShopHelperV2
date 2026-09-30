@@ -1,0 +1,6 @@
+{"id":"swap-with-order","text":"订单123456的耳机坏了，我想换货，最好尽快补发。","expected":{"order_id":"123456","request_type":"换货","expected_solution":"尽快补发"}}
+{"id":"refund-without-order","text":"商品与描述不符，我想申请退款。","expected":{"order_id":null,"request_type":"退款","expected_solution":null}}
+{"id":"logistics-question","text":"我的包裹现在到哪里了？","expected":{"order_id":null,"request_type":"物流","expected_solution":null}}
+{"id":"repair-request","text":"扫地机器人无法开机，我希望寄回维修。","expected":{"order_id":null,"request_type":"维修","expected_solution":"寄回维修"}}
+{"id":"return-request","text":"订单9988买大了，想退货，麻烦上门取件。","expected":{"order_id":"9988","request_type":"退货","expected_solution":"上门取件"}}
+{"id":"other-request","text":"我想投诉客服态度问题。","expected":{"order_id":null,"request_type":"其他","expected_solution":null}}

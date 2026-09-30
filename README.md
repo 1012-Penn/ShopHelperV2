@@ -60,3 +60,25 @@ python3 -m scripts.evaluate_knowledge
 python3 -m pytest -q
 docker compose config
 ```
+
+## 客服工作台与售后识别
+
+项目同时提供 React + Vite 客服工作台，FastAPI 会托管 `frontend/dist` 中的构建产物。构建前端：
+
+```bash
+cd frontend
+npm ci
+npm run build
+cd ..
+```
+
+根页面支持多轮客服对话、SSE 流式回复和快捷提问；对话由后端按 `conversation_id` 持久化。右侧售后识别区调用 `POST /api/v1/after-sale/extract`，从描述中提取订单号、诉求类型和期望方案。
+
+可用以下命令运行售后识别的离线样例评估和服务烟囱测试：
+
+```bash
+python3 -m scripts.evaluate_after_sale --fixture
+./scripts/smoke_test.sh
+```
+
+烟囱测试会启动 FastAPI 并调用配置的聊天模型，因此需要本地 `.env` 中有可用的模型配置。

@@ -6,13 +6,15 @@ import json
 from collections.abc import Iterator
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from langchain_openai import ChatOpenAI
 
 from app.config import Settings
 from app.db.session import create_tables, make_engine, make_session_factory
-from app.schemas import ChatRequest
+from app.schemas import AfterSaleExtraction, AfterSaleRequest, ChatRequest
+from app.services.after_sale import AfterSaleService
 from app.services.chat import ChatService
 from app.services.knowledge.embeddings import EmbeddingClient
 from app.services.knowledge.repository import KnowledgeRepository
@@ -22,6 +24,12 @@ from app.tools.registry import ToolRegistry, ToolRunner
 
 
 ERROR_EVENT = {"event": "error", "data": {"message": "暂时无法处理，请稍后再试。"}}
+
+
+def get_after_sale_service() -> AfterSaleService:
+    settings = Settings.from_env()
+    model = ChatOpenAI(model=settings.model, api_key=settings.api_key, base_url=settings.base_url)
+    return AfterSaleService(model)
 
 
 def create_app(chat_service: ChatService | None = None) -> FastAPI:
@@ -71,7 +79,10 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
 
     @application.get("/", include_in_schema=False)
     def chat_page() -> FileResponse:
-        page = Path(__file__).parent / "static" / "index.html"
+        frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+        page = frontend_dist / "index.html"
+        if not page.exists():
+            page = Path(__file__).parent / "static" / "index.html"
         return FileResponse(page)
 
     @application.post("/api/v1/chat/stream")
@@ -93,6 +104,17 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
         )
+
+    @application.post("/api/v1/after-sale/extract", response_model=AfterSaleExtraction)
+    def extract_after_sale(
+        request: AfterSaleRequest,
+        after_sale: AfterSaleService = Depends(get_after_sale_service),
+    ) -> AfterSaleExtraction:
+        return after_sale.extract(request.text)
+
+    frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+    if frontend_dist.exists():
+        application.mount("/assets", StaticFiles(directory=frontend_dist / "assets"), name="frontend-assets")
 
     return application
 
