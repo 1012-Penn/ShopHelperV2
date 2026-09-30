@@ -52,7 +52,7 @@
 
 类型定义：`VectorRow(chunk_id: int, vector: list[float])`；`VectorHit(chunk_id: int, score: float)`，其中 score 是 COSINE similarity；`SyncSummary(pending_before: int, vectorized: int, failed: int)`；`ConversationTurn(user_message_id: int, assistant_message_id: int, user_text: str, assistant_text: str)`；Pydantic `ExtractedCandidate(source_turn_index: int, category: str, questions: list[str], answer: str)` 与 `ExtractionBatch(candidates: list[ExtractedCandidate])` 是模型结构化响应；应用校验 turn index 后把来源消息 ID 加入 staging；`ExtractionSummary(messages_read: int, staged_pairs: int, deduped: int, inserted: int, skipped_tool_messages: int, last_message_id: int)`；`FAQHit(question: str, answer: str, category: str, score: float)`。
 
-## 任务 1：配置与运行依赖
+## Task 1：配置与运行依赖
 
 **Files:**
 - Modify: `pyproject.toml`
@@ -88,7 +88,7 @@ def test_knowledge_settings_validate_chunking_and_retrieval_limits():
 - [ ] **Step 6: Run settings and existing config tests.** `python3 -m pytest tests/test_config.py -q`; expected: all pass with no secret in captured output.
 - [ ] **Step 7: Commit.** `git add pyproject.toml app/config.py .env.example tests/test_config.py && git commit -m "feat: configure semantic knowledge services"`.
 
-## 任务 2：MySQL ORM schema
+## Task 2：MySQL ORM schema
 
 **Files:**
 - Modify: `app/db/models.py`
@@ -123,7 +123,7 @@ def test_knowledge_chunk_round_trips_json_fields_and_neighbor_links(db_session):
 - [ ] **Step 5: Run model tests.** `python3 -m pytest tests/test_models.py -q`; expected: all pass on SQLite and MySQL DDL compilation.
 - [ ] **Step 6: Commit.** `git add app/db/models.py app/db/session.py tests/test_models.py && git commit -m "feat: add knowledge persistence models"`.
 
-## 任务 3：Markdown chunker 与通用电商客服语料
+## Task 3：Markdown chunker 与通用电商客服语料
 
 **Files:**
 - Create: `app/services/knowledge/__init__.py`
@@ -162,7 +162,7 @@ def test_oversize_sentence_is_kept_whole_and_table_headers_repeat():
 - [ ] **Step 6: Run chunking tests.** `python3 -m pytest tests/test_knowledge_chunking.py -q`; expected: every boundary and metadata assertion passes.
 - [ ] **Step 7: Commit.** `git add app/services/knowledge knowledge_docs tests/test_knowledge_chunking.py && git commit -m "feat: add structured ecommerce knowledge chunking"`.
 
-## 任务 4：MySQL 知识写入与来源幂等
+## Task 4：MySQL 知识写入与来源幂等
 
 **Files:**
 - Create: `app/services/knowledge/repository.py`
@@ -196,7 +196,7 @@ def test_same_source_update_resets_vector_state_and_keeps_primary_key(repository
 - [ ] **Step 6: Run repository, model, and existing seed tests.** `python3 -m pytest tests/test_knowledge_indexer.py tests/test_models.py -q`; expected: all pass, including existing FAQ seed idempotency.
 - [ ] **Step 7: Commit.** `git add app/services/knowledge/content.py app/services/knowledge/repository.py app/services/knowledge/indexer.py tests/test_knowledge_indexer.py tests/test_models.py && git commit -m "feat: persist knowledge chunks idempotently"`.
 
-## 任务 5：SiliconFlow embeddings 与 Milvus pending 恢复
+## Task 5：SiliconFlow embeddings 与 Milvus pending 恢复
 
 **Files:**
 - Create: `app/services/knowledge/embeddings.py`
@@ -236,7 +236,7 @@ def test_rerun_after_milvus_success_before_mysql_backfill_upserts_same_id(indexe
 - [ ] **Step 9: Run vector tests and compose validation.** `python3 -m pytest tests/test_knowledge_vectors.py -q` and `docker compose config`; expected: tests pass and valid compose YAML.
 - [ ] **Step 10: Commit.** `git add app/services/knowledge/embeddings.py app/services/knowledge/vector_store.py app/services/knowledge/indexer.py docker-compose.yml tests/test_knowledge_vectors.py pyproject.toml && git commit -m "feat: sync knowledge vectors idempotently"`.
 
-## 任务 6：客服对话挖掘、脱敏、暂存和全局去重
+## Task 6：客服对话挖掘、脱敏、暂存和全局去重
 
 **Files:**
 - Create: `app/services/knowledge/privacy.py`
@@ -271,7 +271,7 @@ def test_extractor_redacts_contact_data_and_skips_tool_messages(extractor, fake_
 - [ ] **Step 8: Run dialogue tests and all existing chat/model tests.** `python3 -m pytest tests/test_knowledge_conversations.py tests/test_chat.py tests/test_models.py -q`; expected: all pass and no source message contents appear in logs.
 - [ ] **Step 9: Commit.** `git add app/services/knowledge/privacy.py app/services/knowledge/conversations.py app/db/models.py tests/test_knowledge_conversations.py && git commit -m "feat: extract deduplicated knowledge from conversations"`.
 
-## 任务 7：FAQ dense retriever 与契约兼容
+## Task 7：FAQ dense retriever 与契约兼容
 
 **Files:**
 - Create: `app/services/knowledge/retriever.py`
@@ -309,7 +309,7 @@ def test_query_faq_preserves_tool_schema_and_json_contract(tools_by_name, fake_r
 - [ ] **Step 7: Run retriever, tools, chat, and API tests.** `python3 -m pytest tests/test_knowledge_retriever.py tests/test_tools.py tests/test_chat.py tests/test_api.py -q`; expected: full tool/API compatibility passes.
 - [ ] **Step 8: Commit.** `git add app/services/knowledge/retriever.py app/tools/business.py app/services/chat.py app/main.py tests/test_tools.py tests/test_knowledge_retriever.py tests/fixtures/faq_cases.json && git commit -m "feat: retrieve faq answers with dense vectors"`.
 
-## 任务 8：CLI、运行手册、真实服务验收与最终评估
+## Task 8：CLI、运行手册、真实服务验收与最终评估
 
 **Files:**
 - Create: `scripts/build_knowledge.py`
