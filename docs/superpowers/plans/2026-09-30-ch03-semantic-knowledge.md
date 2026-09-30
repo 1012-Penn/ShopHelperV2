@@ -171,7 +171,7 @@ def test_oversize_sentence_is_kept_whole_and_table_headers_repeat():
 - Test: `tests/test_models.py`
 
 **Interfaces:**
-- `KnowledgeRepository(session_factory)` provides `upsert_drafts(drafts: list[ChunkDraft]) -> list[int]`, `pending(limit: int) -> list[KnowledgeChunk]`, `mark_vectorized(chunk_id: int, vector_id: int) -> None`, `load_by_ids(ids: list[int]) -> list[KnowledgeChunk]`, `load_turns_after(last_message_id: int, limit: int) -> tuple[list[ConversationTurn], int]`, `stage_batch_and_advance(candidates: list[tuple[ConversationTurn, ExtractedCandidate]], last_message_id: int, run_id: str) -> None`, and `promote_staged(run_id: str) -> tuple[int, int]`。
+- `KnowledgeRepository(session_factory)` provides `upsert_drafts(drafts: list[ChunkDraft]) -> list[int]`, `pending(limit: int) -> list[KnowledgeChunk]`, `mark_vectorized(chunk_id: int, vector_id: int) -> None`, `load_by_ids(ids: list[int]) -> list[KnowledgeChunk]`, `load_turns_after(last_message_id: int, limit: int) -> tuple[list[ConversationTurn], int]`, `stage_batch_and_advance(candidates: list[tuple[ConversationTurn, ExtractedCandidate]], last_message_id: int, run_id: str) -> None`, and `promote_staged() -> tuple[int, int]` for every unpromoted staging row.
 - FAQ source mapping: `FAQ.id -> source_key=f"faq:{faq.id}"`, `questions=[faq.question]`, `answer=faq.answer`, `category=faq.category`, `content_type="product_faq"`.
 - Document source keys are stable for a source/section/block ordinal. Same source and same content is a no-op; changed body updates same row and marks it pending.
 
@@ -244,6 +244,8 @@ def test_rerun_after_milvus_success_before_mysql_backfill_upserts_same_id(indexe
 - Modify: `app/db/models.py`
 - Test: `tests/test_knowledge_conversations.py`
 
+Staging rows include a nullable `promoted_at` checkpoint. Promotion marks rows in the same MySQL transaction that inserts their knowledge chunks. Each extraction invocation first retries all unpromoted staging rows, so a crash after staging/cursor commit cannot strand candidates.
+
 **Interfaces:**
 - `redact_customer_data(text: str) -> str` masks mainland Chinese mobile numbers, email addresses, 18-digit identity numbers, and order/ticket identifiers before an external model call; it never modifies persisted source messages.
 - `ConversationKnowledgeExtractor(model, repository)` exposes `run(batch_size: int) -> ExtractionSummary`。
@@ -261,15 +263,15 @@ def test_extractor_redacts_contact_data_and_skips_tool_messages(extractor, fake_
     assert result.skipped_tool_messages >= 1
 ```
 
-- [ ] **Step 1: Write failing privacy and turn-selection tests** for phone/email/ID/order redaction, tool messages omitted, assistant tool-call request omitted, user + final assistant answer pair retained, consecutive user messages not mispaired, and empty answers skipped.
-- [ ] **Step 2: Write failing checkpoint/staging tests** for two batches, repeat run idempotency, exception without cursor advancement, duplicate Q&A across batches, and duplicate against existing `knowledge_chunks`.
-- [ ] **Step 3: Run red tests.** `python3 -m pytest tests/test_knowledge_conversations.py -q`; expected: missing extractor/privacy functions.
-- [ ] **Step 4: Implement pure privacy redaction** and assert sanitized text is the only text passed to the fake/external extractor; store extracted generic content, never raw transcript in staging answer fields.
-- [ ] **Step 5: Implement message batching by `Message.id`** using a durable cursor. Pair each user message with the next assistant final answer only if it occurs before another user message; skip unmatched turns and assistant tool-call requests. Include stable per-batch `source_turn_index` values in the prompt, validate indexes are in range, and map selected candidates back to local user/assistant IDs. Advance cursor only after all candidates for that batch commit into staging (also advance when valid pairs produce zero candidates).
-- [ ] **Step 6: Implement structured extraction adapter** using documented LangChain `with_structured_output` and strict empty/invalid candidate validation; on parse/provider error leave checkpoint unchanged.
-- [ ] **Step 7: Implement stage-level and global canonical deduplication.** Normalize category/question list/answer, hash deterministically, compare current run plus existing knowledge, then create only unseen pending `KnowledgeChunk` rows.
-- [ ] **Step 8: Run dialogue tests and all existing chat/model tests.** `python3 -m pytest tests/test_knowledge_conversations.py tests/test_chat.py tests/test_models.py -q`; expected: all pass and no source message contents appear in logs.
-- [ ] **Step 9: Commit.** `git add app/services/knowledge/privacy.py app/services/knowledge/conversations.py app/db/models.py tests/test_knowledge_conversations.py && git commit -m "feat: extract deduplicated knowledge from conversations"`.
+- [x] **Step 1: Write failing privacy and turn-selection tests** for phone/email/ID/order redaction, tool messages omitted, assistant tool-call request omitted, user + final assistant answer pair retained, consecutive user messages not mispaired, and empty answers skipped.
+- [x] **Step 2: Write failing checkpoint/staging tests** for two batches, repeat run idempotency, exception without cursor advancement, duplicate Q&A across batches, duplicate against existing `knowledge_chunks`, and recovery after staging commits but promotion fails.
+- [x] **Step 3: Run red tests.** `python3 -m pytest tests/test_knowledge_conversations.py -q`; expected: missing extractor/privacy functions.
+- [x] **Step 4: Implement pure privacy redaction** and assert sanitized text is the only text passed to the fake/external extractor; store extracted generic content, never raw transcript in staging answer fields.
+- [x] **Step 5: Implement message batching by `Message.id`** using a durable cursor. Pair each user message with the next assistant final answer only if it occurs before another user message; skip unmatched turns and assistant tool-call requests. Include stable per-batch `source_turn_index` values in the prompt, validate indexes are in range, and map selected candidates back to local user/assistant IDs. Advance cursor only after all candidates for that batch commit into staging (also advance when valid pairs produce zero candidates).
+- [x] **Step 6: Implement structured extraction adapter** using documented LangChain `with_structured_output` and strict empty/invalid candidate validation; on parse/provider error leave checkpoint unchanged.
+- [x] **Step 7: Implement stage-level and global canonical deduplication.** Normalize category/question list/answer, hash deterministically, compare current run plus existing knowledge, then create only unseen pending `KnowledgeChunk` rows.
+- [x] **Step 8: Run dialogue tests and all existing chat/model tests.** `python3 -m pytest tests/test_knowledge_conversations.py tests/test_chat.py tests/test_models.py -q`; expected: all pass and no source message contents appear in logs.
+- [x] **Step 9: Commit.** `git add app/services/knowledge/privacy.py app/services/knowledge/conversations.py app/db/models.py tests/test_knowledge_conversations.py && git commit -m "feat: extract deduplicated knowledge from conversations"`.
 
 ## Task 7：FAQ dense retriever 与契约兼容
 

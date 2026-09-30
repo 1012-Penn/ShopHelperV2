@@ -125,6 +125,7 @@ class KnowledgeQAStaging(Base):
     fingerprint: Mapped[str] = mapped_column(String(64), nullable=False)
     run_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    promoted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, index=True)
 
 
 class KnowledgeExtractionCursor(Base):

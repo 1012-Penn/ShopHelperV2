@@ -5,12 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.db.models import (
     FAQ,
-    Conversation,
     KnowledgeChunk,
     KnowledgeExtractionCursor,
     KnowledgeQAStaging,
@@ -157,42 +156,85 @@ class KnowledgeRepository:
         if limit < 1:
             return [], last_message_id
         with self.session_factory() as session:
-            messages = list(
+            users = list(
                 session.scalars(
                     select(Message)
-                    .where(Message.id > last_message_id)
+                    .where(Message.id > last_message_id, Message.role == "user")
                     .order_by(Message.id)
                     .limit(limit)
                 )
             )
-            if not messages:
-                return [], last_message_id
-            next_cursor = messages[-1].id
-            pending_user: dict[str, Message] = {}
+            if not users:
+                latest_id = session.scalar(select(func.max(Message.id)).where(Message.id > last_message_id))
+                return [], latest_id or last_message_id
+            next_cursor = last_message_id
             turns: list[ConversationTurn] = []
-            for message in messages:
-                if message.role == "user":
-                    pending_user[message.conversation_id] = message
-                elif message.role == "assistant":
-                    user_message = pending_user.get(message.conversation_id)
-                    if user_message is None:
-                        continue
-                    if message.tool_calls:
-                        continue
-                    pending_user.pop(message.conversation_id, None)
-                    if message.content.strip():
-                        turns.append(
-                            ConversationTurn(
-                                user_message_id=user_message.id,
-                                assistant_message_id=message.id,
-                                user_text=user_message.content,
-                                assistant_text=message.content,
-                            )
+            for user_message in users:
+                next_user_id = session.scalar(
+                    select(Message.id)
+                    .where(
+                        Message.conversation_id == user_message.conversation_id,
+                        Message.role == "user",
+                        Message.id > user_message.id,
+                    )
+                    .order_by(Message.id)
+                    .limit(1)
+                )
+                assistant_query = select(Message).where(
+                    Message.conversation_id == user_message.conversation_id,
+                    Message.role == "assistant",
+                    Message.id > user_message.id,
+                )
+                if next_user_id is not None:
+                    assistant_query = assistant_query.where(Message.id < next_user_id)
+                assistants = list(session.scalars(assistant_query.order_by(Message.id)))
+                final_answer = next(
+                    (message for message in assistants if not message.tool_calls and message.content.strip()),
+                    None,
+                )
+                if final_answer is not None:
+                    turns.append(
+                        ConversationTurn(
+                            user_message_id=user_message.id,
+                            assistant_message_id=final_answer.id,
+                            user_text=user_message.content,
+                            assistant_text=final_answer.content,
                         )
-            if pending_user:
-                # Keep the trailing unanswered user message in the next batch.
-                next_cursor = min(next_cursor, min(message.id for message in pending_user.values()) - 1)
+                    )
+                    next_cursor = max(next_cursor, final_answer.id)
+                elif next_user_id is not None:
+                    next_cursor = max(next_cursor, next_user_id - 1)
+                else:
+                    # Keep the trailing unanswered turn for a later scheduled run.
+                    break
+            if next_cursor == last_message_id:
+                return [], last_message_id
             return turns, next_cursor
+
+    def extraction_cursor(self) -> int:
+        with self.session_factory() as session:
+            cursor = session.get(KnowledgeExtractionCursor, "conversation_knowledge")
+            return cursor.last_message_id if cursor else 0
+
+    def count_messages_between(self, after_id: int, through_id: int) -> int:
+        if through_id <= after_id:
+            return 0
+        with self.session_factory() as session:
+            return session.scalar(
+                select(func.count()).select_from(Message).where(
+                    Message.id > after_id,
+                    Message.id <= through_id,
+                )
+            ) or 0
+
+    def count_skipped_tool_messages(self, after_id: int, through_id: int) -> int:
+        if through_id <= after_id:
+            return 0
+        with self.session_factory() as session:
+            messages = list(
+                session.scalars(select(Message).where(Message.id > after_id, Message.id <= through_id))
+            )
+            return sum(message.role == "tool" or bool(message.tool_calls) for message in messages)
 
     def stage_batch_and_advance(
         self,
@@ -236,12 +278,12 @@ class KnowledgeRepository:
             elif last_message_id > cursor.last_message_id:
                 cursor.last_message_id = last_message_id
 
-    def promote_staged(self, run_id: str) -> tuple[int, int]:
+    def promote_staged(self) -> tuple[int, int]:
         with self.session_factory.begin() as session:
             staged = list(
                 session.scalars(
                     select(KnowledgeQAStaging)
-                    .where(KnowledgeQAStaging.run_id == run_id)
+                    .where(KnowledgeQAStaging.promoted_at.is_(None))
                     .order_by(KnowledgeQAStaging.id)
                 )
             )
@@ -273,4 +315,6 @@ class KnowledgeRepository:
                     )
                 )
             self._upsert_drafts(session, drafts)
+            for row in staged:
+                row.promoted_at = func.now()
             return deduped, len(drafts)
