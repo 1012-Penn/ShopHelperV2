@@ -16,3 +16,5 @@ python3 -m scripts.evaluate_ch04 --live --dataset-dir evaluation/ch04/v2 --split
 ```
 
 默认隔离SQLite为本目录eval.db，Milvus为knowledge_ch04_eval_v2；生产和v1不会被覆盖。环境中显式EVAL配置可覆盖默认，报告会记录。
+
+真实1200组已完成，无调用错误：[报告](runs/20261002-120853-23796104/report.md)、[解读](runs/20261002-120853-23796104/analysis.md)。完整证据命中与MRR呈现不同取舍；同模型裁判限制保留，尚未接入独立模型服务。
