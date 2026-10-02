@@ -1,0 +1,29 @@
+{
+  "reviewer": "primary agent",
+  "all_changed_candidates_reviewed": 16,
+  "initial_guard_counts": {
+    "unchangedAccepted": 26,
+    "fallback": 18,
+    "changedAccepted": 16
+  },
+  "same_old_candidates_current_guard": {
+    "unchangedAccepted": 26,
+    "fallback": 22,
+    "changedAccepted": 12
+  },
+  "mixed_inputs_after_4_regressions": {
+    "unchangedAccepted": 30,
+    "fallback": 18,
+    "changedAccepted": 12
+  },
+  "known_semantic_issues": {
+    "V2C003": "used-for-several-months context dropped",
+    "V2C006": "used-for-several-months context dropped",
+    "V2C009": "usage context dropped and calculation policy dimension added",
+    "V2C012": "used-for-several-months context dropped"
+  },
+  "new_4_results": "all original questions returned; no actual rewrite benefit claimed",
+  "provenance_note": "56 candidates came from the earlier prompt and 4 from the revised prompt; this is a fixed reviewed input set for paired retrieval testing, not a uniform 60-case latest-prompt performance estimate",
+  "input_sha256": "26bbe4af3f8d18130025adca575ec63af9879cb52a0e708a4486d86687b5d18f",
+  "provider_identity_note": "request alias deepseek-chat; newly captured provider model_name deepseek-flash; alias not changed by implementation"
+}

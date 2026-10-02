@@ -1,0 +1,38 @@
+{
+  "created_at_utc": "2026-10-02T08:48:47.126058+00:00",
+  "stage": "initial",
+  "model": "deepseek-chat",
+  "endpoint_host": "api.deepseek.com",
+  "temperature": 0,
+  "max_retries": 0,
+  "method": "json_mode",
+  "include_raw": true,
+  "schema": {
+    "properties": {
+      "canonical": {
+        "title": "Canonical",
+        "type": "string"
+      }
+    },
+    "required": [
+      "canonical"
+    ],
+    "title": "NormalizedQuery",
+    "type": "object"
+  },
+  "calibration_count": 60,
+  "total_live_call_budget": 60,
+  "inputs_sha256": "6bf2e08bbf06f5a8f775dca841e88660ec93ae21efc9619323b767b46e5403e6",
+  "calibration_sha256": "dd323e3b4ea72e682922bf7b46520bb7220b20447782c65f7bdbab8536d58591",
+  "initial_eval_ids": [
+    "V2A003",
+    "V2B001",
+    "V2C001",
+    "V2C003"
+  ],
+  "excluded_test_cases": 240,
+  "script_sha256": "4f06e2596bf5a718413300c1e9de54d6f1657a32f7baf78e6183161920068e83",
+  "system_prompt": "将本轮口语客服问题归一为清晰、简短的标准问法，只处理本轮，不做指代消解或多轮推断。逐项保留原问题中的每个型号及后缀（如 SE、Pro）、活动编号、金额和所有数字/数量及其单位、正负号与百分号、适用条件与范围。比较问题必须保留每个不同的比较型号；可以合并重复提到的同一个型号，但不能删掉不同型号，也不能新增型号。否定条件和否定作用范围必须保留；任何含否定条件的子句必须逐字保持原文，不得移动、交换、弱化或新增否定。只在信息明确且上述内容均保真时归一；无法确认等价就原样返回用户问题。输出JSON：{\"canonical\":\"标准问法\"}。",
+  "prompt_sha256": "07f5518bbdd86381e9900f4d450ba207042fb34553a7ede29b57de23f2e1310d",
+  "schema_sha256": "1ccab78cfc665f3f263eae7ab949c25a94dc57a8299f0152b0098c4c8597a4aa"
+}

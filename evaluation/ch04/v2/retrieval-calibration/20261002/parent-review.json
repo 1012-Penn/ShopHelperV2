@@ -1,0 +1,28 @@
+{
+  "verified": true,
+  "rows": 60,
+  "known_rows": 48,
+  "sql_chunks": 480,
+  "changed_cases": [
+    "V2E012"
+  ],
+  "recomputed": {
+    "50": {
+      "recall@10": 0.9930555555555556,
+      "all_evidence@10": 0.9791666666666666,
+      "mrr": 0.90625
+    },
+    "100": {
+      "recall@10": 1.0,
+      "all_evidence@10": 1.0,
+      "mrr": 0.90625
+    }
+  },
+  "call_counts": {
+    "embedding": 60,
+    "hybrid_search": 120,
+    "rerank": 120
+  },
+  "results_sha256": "a4929cc43d2c03f865f8617321bc0afebf39805809dd73a94409769471dda034",
+  "limitations": "calibration only; mixed query prompt input is fixed identically for both variants; no generation/correctness judge in this experiment"
+}

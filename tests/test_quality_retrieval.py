@@ -58,3 +58,92 @@ def test_normalizer_does_not_change_chinese_number_or_negative_scope(raw,changed
     q=QueryNormalizer(lambda value:changed).normalize(raw)
     assert q.canonical==raw
     assert q.downgrade_reason
+
+
+@pytest.mark.parametrize(('raw','candidate'),[
+    ('MX-474分别有哪些接口？','MX-474有哪些接口？'),
+    ('MX-474是否支持快充？','MX-474支持快充吗？'),
+    ('MX-474这个型号能快一点吗？','MX-474这个型号速度能快些吗？'),
+])
+def test_normalizer_does_not_mistake_chinese_function_words_for_negation_or_numbers(raw,candidate):
+    q=QueryNormalizer(lambda value:candidate).normalize(raw)
+    assert q.canonical==candidate
+    assert not q.downgrade_reason
+
+
+def test_normalizer_allows_removing_a_repeated_occurrence_of_the_same_model():
+    raw='MX-474Pro和MX-474Pro怎么选？'
+    candidate='MX-474Pro怎么选？'
+    q=QueryNormalizer(lambda value:candidate).normalize(raw)
+    assert q.canonical==candidate
+    assert not q.downgrade_reason
+
+
+def test_normalizer_rejects_dropping_one_model_from_a_comparison():
+    raw='MX-474Pro和MX-405-SE哪个更适合？'
+    candidate='MX-474Pro哪个更适合？'
+    q=QueryNormalizer(lambda value:candidate).normalize(raw)
+    assert q.canonical==raw
+    assert q.downgrade_reason
+
+
+def test_normalizer_rejects_changing_an_arabic_amount():
+    raw='MX-474差一点到220元'
+    candidate='MX-474差一点到200元'
+    q=QueryNormalizer(lambda value:candidate).normalize(raw)
+    assert q.canonical==raw
+    assert q.downgrade_reason
+
+
+@pytest.mark.parametrize(('raw','candidate'),[
+    ('MX-474售价一点五元','MX-474售价二点五元'),
+    ('MX-474支持7天退货','MX-474支持7个月退货'),
+])
+def test_normalizer_preserves_chinese_and_arabic_quantities_with_units(raw,candidate):
+    q=QueryNormalizer(lambda value:candidate).normalize(raw)
+    assert q.canonical==raw
+    assert q.downgrade_reason
+
+
+def test_normalizer_allows_rewriting_a_positive_clause_when_negative_clause_is_unchanged():
+    raw='MX-474不能游泳，能淋雨吗？'
+    candidate='MX-474不能游泳，是否支持淋雨？'
+    q=QueryNormalizer(lambda value:candidate).normalize(raw)
+    assert q.canonical==candidate
+    assert not q.downgrade_reason
+
+
+def test_normalizer_rejects_a_candidate_that_adds_a_negative_scope():
+    raw='MX-474支持快充吗？'
+    candidate='MX-474不支持快充吗？'
+    q=QueryNormalizer(lambda value:candidate).normalize(raw)
+    assert q.canonical==raw
+    assert q.downgrade_reason
+
+
+@pytest.mark.parametrize(('raw','candidate'),[
+    ('MX-474不同意退款','MX-474同意退款'),
+    ('MX-474金额不过220元','MX-474金额超过220元'),
+    ('MX-474折扣10%','MX-474折扣10'),
+    ('MX-474余额-5元','MX-474余额5元'),
+    ('MX-474余额−5元','MX-474余额5元'),
+    ('MX-474余额负五元','MX-474余额五元'),
+    ('MX-474选项三还是五？','MX-474选项三还是七？'),
+    ('MX-474容量7升','MX-474容量7毫升'),
+    ('MX-474重量7公斤','MX-474重量7斤'),
+    ('MX-474规格7磅','MX-474规格7两'),
+])
+def test_normalizer_rejects_changes_to_negative_conditions_or_amounts(raw,candidate):
+    q=QueryNormalizer(lambda value:candidate).normalize(raw)
+    assert q.canonical==raw
+    assert q.downgrade_reason
+
+
+@pytest.mark.parametrize(('raw','candidate'),[
+    ('MX-474Pro我都用了几个月了，保修期还有多久？','MX-474Pro的保修期还有多久？'),
+    ('MX-474已经用了几个月，这种情况保修多久？','MX-474已经用了数年，这种情况保修多久？'),
+])
+def test_normalizer_rejects_dropping_or_changing_vague_duration(raw,candidate):
+    q=QueryNormalizer(lambda value:candidate).normalize(raw)
+    assert q.canonical==raw
+    assert q.downgrade_reason
