@@ -1,0 +1,308 @@
+{
+  "model": {
+    "model": "deepseek-chat",
+    "endpoint_host": "api.deepseek.com",
+    "temperature": 0,
+    "max_retries": 0,
+    "generated_at_utc": "2026-10-02T07:50:07.675703+00:00"
+  },
+  "inputs_sha256": "85bb2240e8b99d37a4eee28106bb1fb60e72324df5c9127717f111c4866fb06d",
+  "synthetic_counterexamples": [
+    {
+      "name": "identifier_drop",
+      "raw": "MX-405-SE接口是什么",
+      "candidate": "MX-405接口是什么",
+      "decision": {
+        "accepted": false,
+        "failed_predicates": [
+          "identifier_mismatch"
+        ],
+        "raw_identifiers": [
+          "MX-405-SE"
+        ],
+        "candidate_identifiers": [
+          "MX-405"
+        ],
+        "raw_chinese_numbers": [],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": false
+      },
+      "production_normalizer_result": {
+        "canonical": "MX-405-SE接口是什么",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      },
+      "guard_matches_production": true
+    },
+    {
+      "name": "chinese_number_change",
+      "raw": "三天内能退吗",
+      "candidate": "3天内能退吗",
+      "decision": {
+        "accepted": false,
+        "failed_predicates": [
+          "identifier_mismatch",
+          "chinese_number_mismatch"
+        ],
+        "raw_identifiers": [],
+        "candidate_identifiers": [
+          "3"
+        ],
+        "raw_chinese_numbers": [
+          "三"
+        ],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": false
+      },
+      "production_normalizer_result": {
+        "canonical": "三天内能退吗",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      },
+      "guard_matches_production": true
+    },
+    {
+      "name": "negative_legal_paraphrase",
+      "raw": "MX-474不是快充吧？",
+      "candidate": "MX-474是否不支持快充？",
+      "decision": {
+        "accepted": false,
+        "failed_predicates": [
+          "negative_query_requires_exact_text"
+        ],
+        "raw_identifiers": [
+          "MX-474"
+        ],
+        "candidate_identifiers": [
+          "MX-474"
+        ],
+        "raw_chinese_numbers": [],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": true
+      },
+      "production_normalizer_result": {
+        "canonical": "MX-474不是快充吧？",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      },
+      "guard_matches_production": true
+    },
+    {
+      "name": "false_negative_character_bie",
+      "raw": "MX-474分别是什么接口？",
+      "candidate": "MX-474接口是什么？",
+      "decision": {
+        "accepted": false,
+        "failed_predicates": [
+          "negative_query_requires_exact_text"
+        ],
+        "raw_identifiers": [
+          "MX-474"
+        ],
+        "candidate_identifiers": [
+          "MX-474"
+        ],
+        "raw_chinese_numbers": [],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": true
+      },
+      "production_normalizer_result": {
+        "canonical": "MX-474分别是什么接口？",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      },
+      "guard_matches_production": true
+    },
+    {
+      "name": "false_chinese_number_yidian",
+      "raw": "这个型号能快一点吗？",
+      "candidate": "这个型号速度能快些吗？",
+      "decision": {
+        "accepted": false,
+        "failed_predicates": [
+          "chinese_number_mismatch"
+        ],
+        "raw_identifiers": [],
+        "candidate_identifiers": [],
+        "raw_chinese_numbers": [
+          "一"
+        ],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": false
+      },
+      "production_normalizer_result": {
+        "canonical": "这个型号能快一点吗？",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      },
+      "guard_matches_production": true
+    },
+    {
+      "name": "repeated_identifier_drop",
+      "raw": "MX-474Pro和MX-474Pro怎么选？",
+      "candidate": "MX-474Pro怎么选？",
+      "decision": {
+        "accepted": false,
+        "failed_predicates": [
+          "identifier_mismatch"
+        ],
+        "raw_identifiers": [
+          "MX-474Pro",
+          "MX-474Pro"
+        ],
+        "candidate_identifiers": [
+          "MX-474Pro"
+        ],
+        "raw_chinese_numbers": [],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": false
+      },
+      "production_normalizer_result": {
+        "canonical": "MX-474Pro和MX-474Pro怎么选？",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      },
+      "guard_matches_production": true
+    },
+    {
+      "name": "positive_control",
+      "raw": "MX-405的接口是什么",
+      "candidate": "MX-405的接口类型是什么",
+      "decision": {
+        "accepted": true,
+        "failed_predicates": [],
+        "raw_identifiers": [
+          "MX-405"
+        ],
+        "candidate_identifiers": [
+          "MX-405"
+        ],
+        "raw_chinese_numbers": [],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": false
+      },
+      "production_normalizer_result": {
+        "canonical": "MX-405的接口类型是什么",
+        "downgrade_reason": ""
+      },
+      "guard_matches_production": true
+    }
+  ],
+  "results": [
+    {
+      "eval_id": "V2A003",
+      "query": "MX-474在官方网店参加EV-687，商品金额差一点到220元，加上邮费才够；能用券并再叠会员折扣吗？",
+      "raw_content": "{\"canonical\":\"在官方网店参加活动，商品金额差一点到指定金额，加上邮费才够；能用券并再叠会员折扣吗？\"}",
+      "parsed": {
+        "canonical": "在官方网店参加活动，商品金额差一点到指定金额，加上邮费才够；能用券并再叠会员折扣吗？"
+      },
+      "parsing_error_type": null,
+      "guard": {
+        "accepted": false,
+        "failed_predicates": [
+          "identifier_mismatch"
+        ],
+        "raw_identifiers": [
+          "MX-474",
+          "EV-687",
+          "220"
+        ],
+        "candidate_identifiers": [],
+        "raw_chinese_numbers": [
+          "一"
+        ],
+        "candidate_chinese_numbers": [
+          "一"
+        ],
+        "raw_has_negative_character": false
+      },
+      "production_normalizer_result": {
+        "canonical": "MX-474在官方网店参加EV-687，商品金额差一点到220元，加上邮费才够；能用券并再叠会员折扣吗？",
+        "lexical": "MX-474在官方网店参加EV-687，商品金额差一点到220元，加上邮费才够；能用券并再叠会员折扣吗？ 邮费 运费",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      }
+    },
+    {
+      "eval_id": "V2B001",
+      "query": "MX-474和MX-474Pro长得很像，我只买了MX-474Pro，它的充电接口是哪种？",
+      "raw_content": "{\"canonical\":\"它的充电接口是哪种？\"}",
+      "parsed": {
+        "canonical": "它的充电接口是哪种？"
+      },
+      "parsing_error_type": null,
+      "guard": {
+        "accepted": false,
+        "failed_predicates": [
+          "identifier_mismatch"
+        ],
+        "raw_identifiers": [
+          "MX-474",
+          "MX-474Pro",
+          "MX-474Pro"
+        ],
+        "candidate_identifiers": [],
+        "raw_chinese_numbers": [],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": false
+      },
+      "production_normalizer_result": {
+        "canonical": "MX-474和MX-474Pro长得很像，我只买了MX-474Pro，它的充电接口是哪种？",
+        "lexical": "MX-474和MX-474Pro长得很像，我只买了MX-474Pro，它的充电接口是哪种？",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      }
+    },
+    {
+      "eval_id": "V2C001",
+      "query": "MX-474网店这单我不想要了，盒子没动过也没少东西，过了几天就不给退啦？",
+      "raw_content": "{\"canonical\":\"网店购买的商品不想要了，包装未拆封且配件齐全，超过几天就不给退货吗？\"}",
+      "parsed": {
+        "canonical": "网店购买的商品不想要了，包装未拆封且配件齐全，超过几天就不给退货吗？"
+      },
+      "parsing_error_type": null,
+      "guard": {
+        "accepted": false,
+        "failed_predicates": [
+          "identifier_mismatch",
+          "negative_query_requires_exact_text"
+        ],
+        "raw_identifiers": [
+          "MX-474"
+        ],
+        "candidate_identifiers": [],
+        "raw_chinese_numbers": [],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": true
+      },
+      "production_normalizer_result": {
+        "canonical": "MX-474网店这单我不想要了，盒子没动过也没少东西，过了几天就不给退啦？",
+        "lexical": "MX-474网店这单我不想要了，盒子没动过也没少东西，过了几天就不给退啦？",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      }
+    },
+    {
+      "eval_id": "V2C003",
+      "query": "MX-474主机和里头那块电池都用了几个月，保修算同一段时间吗？分别多长，凭啥给保？",
+      "raw_content": "{\"canonical\":\"主机和内置电池的保修期是否相同，分别多长，保修依据是什么\"}",
+      "parsed": {
+        "canonical": "主机和内置电池的保修期是否相同，分别多长，保修依据是什么"
+      },
+      "parsing_error_type": null,
+      "guard": {
+        "accepted": false,
+        "failed_predicates": [
+          "identifier_mismatch",
+          "chinese_number_mismatch",
+          "negative_query_requires_exact_text"
+        ],
+        "raw_identifiers": [
+          "MX-474"
+        ],
+        "candidate_identifiers": [],
+        "raw_chinese_numbers": [
+          "一"
+        ],
+        "candidate_chinese_numbers": [],
+        "raw_has_negative_character": true
+      },
+      "production_normalizer_result": {
+        "canonical": "MX-474主机和里头那块电池都用了几个月，保修算同一段时间吗？分别多长，凭啥给保？",
+        "lexical": "MX-474主机和里头那块电池都用了几个月，保修算同一段时间吗？分别多长，凭啥给保？",
+        "downgrade_reason": "改写未完整保留标识、数值或否定范围，使用原话"
+      }
+    }
+  ]
+}

@@ -1,0 +1,938 @@
+{
+  "rrf_k": 60,
+  "formula": "sum(1 / (k + one_based_rank))",
+  "strict_rank_rule": "1 + count(other_score > candidate_score)",
+  "provenance": "official PyMilvus RRFRanker(k=60) default; computed from the already captured dense/BM25 lists; no retrieval request",
+  "documentation": "https://github.com/milvus-io/pymilvus/blob/master/_autodocs/api-reference/rankers.md",
+  "cases": {
+    "V2E012": {
+      "dense_count": 50,
+      "bm25_count": 50,
+      "union_count": 66,
+      "hybrid_count": 50,
+      "hybrid_overlap_with_formula_top50": 50,
+      "hybrid_only_vs_formula": [],
+      "formula_only_vs_hybrid": [],
+      "hybrid_score_matches_formula": true,
+      "historical_candidate_overlap_current_hybrid": 50,
+      "historical_candidate_order_equals_current_hybrid": true,
+      "historical_candidate_moved_positions": [],
+      "historical_candidate_only_vs_current": [],
+      "current_candidate_only_vs_historical": [],
+      "historical_final_ids": [
+        92,
+        89,
+        90,
+        95,
+        88,
+        185,
+        449,
+        76,
+        91,
+        473
+      ],
+      "current_full_rerank_top10_ids": [],
+      "current_top10_equals_historical_final_ids": null,
+      "strict_order_violations_among_hybrid": 0,
+      "gold_candidates": {
+        "doc:F04-扩展坞-MX-689.md:130837b507b40bff": [
+          {
+            "chunk_id": 92,
+            "dense_rank": 17,
+            "bm25_rank": 21,
+            "rrf_score": 0.025332691999358666,
+            "strict_gt_rank_plus_one": 20,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 20
+          }
+        ],
+        "doc:F04-扩展坞-MX-689.md:9bbe2289fab136a5": [
+          {
+            "chunk_id": 89,
+            "dense_rank": 1,
+            "bm25_rank": 1,
+            "rrf_score": 0.03278688524590164,
+            "strict_gt_rank_plus_one": 1,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 1
+          }
+        ],
+        "doc:F04-扩展坞-MX-689.md:a5c3ccaf262c053d": [
+          {
+            "chunk_id": 85,
+            "dense_rank": 45,
+            "bm25_rank": null,
+            "rrf_score": 0.009523809523809525,
+            "strict_gt_rank_plus_one": 56,
+            "in_hybrid50": false,
+            "actual_hybrid_rank": null
+          }
+        ]
+      },
+      "candidate_cutoff": [
+        {
+          "chunk_id": 76,
+          "rrf_score": 0.010101010101010102,
+          "strict_gt_rank_plus_one": 46
+        },
+        {
+          "chunk_id": 20,
+          "rrf_score": 0.01,
+          "strict_gt_rank_plus_one": 47
+        },
+        {
+          "chunk_id": 330,
+          "rrf_score": 0.01,
+          "strict_gt_rank_plus_one": 47
+        },
+        {
+          "chunk_id": 188,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 354,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 472,
+          "rrf_score": 0.00980392156862745,
+          "strict_gt_rank_plus_one": 51
+        },
+        {
+          "chunk_id": 140,
+          "rrf_score": 0.009708737864077669,
+          "strict_gt_rank_plus_one": 52
+        },
+        {
+          "chunk_id": 426,
+          "rrf_score": 0.009708737864077669,
+          "strict_gt_rank_plus_one": 52
+        },
+        {
+          "chunk_id": 380,
+          "rrf_score": 0.009615384615384616,
+          "strict_gt_rank_plus_one": 54
+        },
+        {
+          "chunk_id": 450,
+          "rrf_score": 0.009615384615384616,
+          "strict_gt_rank_plus_one": 54
+        }
+      ]
+    },
+    "V2E021": {
+      "dense_count": 50,
+      "bm25_count": 50,
+      "union_count": 63,
+      "hybrid_count": 50,
+      "hybrid_overlap_with_formula_top50": 50,
+      "hybrid_only_vs_formula": [],
+      "formula_only_vs_hybrid": [],
+      "hybrid_score_matches_formula": true,
+      "historical_candidate_overlap_current_hybrid": 50,
+      "historical_candidate_order_equals_current_hybrid": true,
+      "historical_candidate_moved_positions": [],
+      "historical_candidate_only_vs_current": [],
+      "current_candidate_only_vs_historical": [],
+      "historical_final_ids": [
+        164,
+        161,
+        162,
+        44,
+        41,
+        284,
+        167,
+        17,
+        404,
+        185
+      ],
+      "current_full_rerank_top10_ids": [],
+      "current_top10_equals_historical_final_ids": null,
+      "strict_order_violations_among_hybrid": 0,
+      "gold_candidates": {
+        "doc:F07-智能手表-MX-405.md:b41ca37d9b23f062": [
+          {
+            "chunk_id": 161,
+            "dense_rank": 5,
+            "bm25_rank": 1,
+            "rrf_score": 0.0317780580075662,
+            "strict_gt_rank_plus_one": 2,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 2
+          }
+        ],
+        "doc:F07-智能手表-MX-405.md:bfb522f09555e54c": [
+          {
+            "chunk_id": 157,
+            "dense_rank": 43,
+            "bm25_rank": null,
+            "rrf_score": 0.009708737864077669,
+            "strict_gt_rank_plus_one": 53,
+            "in_hybrid50": false,
+            "actual_hybrid_rank": null
+          }
+        ],
+        "doc:F07-智能手表-MX-405.md:e0d2cf13068e1c5d": [
+          {
+            "chunk_id": 164,
+            "dense_rank": 21,
+            "bm25_rank": 21,
+            "rrf_score": 0.024691358024691357,
+            "strict_gt_rank_plus_one": 21,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 21
+          }
+        ]
+      },
+      "candidate_cutoff": [
+        {
+          "chunk_id": 256,
+          "rrf_score": 0.010416666666666666,
+          "strict_gt_rank_plus_one": 46
+        },
+        {
+          "chunk_id": 234,
+          "rrf_score": 0.010309278350515464,
+          "strict_gt_rank_plus_one": 47
+        },
+        {
+          "chunk_id": 479,
+          "rrf_score": 0.01020408163265306,
+          "strict_gt_rank_plus_one": 48
+        },
+        {
+          "chunk_id": 258,
+          "rrf_score": 0.01020408163265306,
+          "strict_gt_rank_plus_one": 48
+        },
+        {
+          "chunk_id": 330,
+          "rrf_score": 0.01,
+          "strict_gt_rank_plus_one": 50
+        },
+        {
+          "chunk_id": 354,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 51
+        },
+        {
+          "chunk_id": 472,
+          "rrf_score": 0.00980392156862745,
+          "strict_gt_rank_plus_one": 52
+        },
+        {
+          "chunk_id": 157,
+          "rrf_score": 0.009708737864077669,
+          "strict_gt_rank_plus_one": 53
+        },
+        {
+          "chunk_id": 95,
+          "rrf_score": 0.009615384615384616,
+          "strict_gt_rank_plus_one": 54
+        },
+        {
+          "chunk_id": 450,
+          "rrf_score": 0.009615384615384616,
+          "strict_gt_rank_plus_one": 54
+        }
+      ]
+    },
+    "V2E051": {
+      "dense_count": 50,
+      "bm25_count": 50,
+      "union_count": 67,
+      "hybrid_count": 50,
+      "hybrid_overlap_with_formula_top50": 50,
+      "hybrid_only_vs_formula": [],
+      "formula_only_vs_hybrid": [],
+      "hybrid_score_matches_formula": true,
+      "historical_candidate_overlap_current_hybrid": 50,
+      "historical_candidate_order_equals_current_hybrid": false,
+      "historical_candidate_moved_positions": [
+        {
+          "chunk_id": 474,
+          "historical_rank": 29,
+          "current_rank": 30
+        },
+        {
+          "chunk_id": 18,
+          "historical_rank": 30,
+          "current_rank": 29
+        },
+        {
+          "chunk_id": 472,
+          "historical_rank": 45,
+          "current_rank": 47
+        },
+        {
+          "chunk_id": 234,
+          "historical_rank": 46,
+          "current_rank": 45
+        },
+        {
+          "chunk_id": 258,
+          "historical_rank": 47,
+          "current_rank": 46
+        }
+      ],
+      "historical_candidate_only_vs_current": [],
+      "current_candidate_only_vs_historical": [],
+      "historical_final_ids": [
+        404,
+        401,
+        402,
+        407,
+        284,
+        400,
+        405,
+        403,
+        137,
+        185
+      ],
+      "current_full_rerank_top10_ids": [],
+      "current_top10_equals_historical_final_ids": null,
+      "strict_order_violations_among_hybrid": 0,
+      "gold_candidates": {
+        "doc:F17-耳机-MX-770.md:1e0cb20dcb2e7421": [
+          {
+            "chunk_id": 404,
+            "dense_rank": 15,
+            "bm25_rank": 21,
+            "rrf_score": 0.02567901234567901,
+            "strict_gt_rank_plus_one": 20,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 20
+          }
+        ],
+        "doc:F17-耳机-MX-770.md:2cd278aee758b688": [
+          {
+            "chunk_id": 397,
+            "dense_rank": 41,
+            "bm25_rank": null,
+            "rrf_score": 0.009900990099009901,
+            "strict_gt_rank_plus_one": 51,
+            "in_hybrid50": false,
+            "actual_hybrid_rank": null
+          }
+        ],
+        "doc:F17-耳机-MX-770.md:744f53e1b9cffc6c": [
+          {
+            "chunk_id": 401,
+            "dense_rank": 1,
+            "bm25_rank": 1,
+            "rrf_score": 0.03278688524590164,
+            "strict_gt_rank_plus_one": 1,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 1
+          }
+        ]
+      },
+      "candidate_cutoff": [
+        {
+          "chunk_id": 472,
+          "rrf_score": 0.01020408163265306,
+          "strict_gt_rank_plus_one": 46
+        },
+        {
+          "chunk_id": 258,
+          "rrf_score": 0.01020408163265306,
+          "strict_gt_rank_plus_one": 46
+        },
+        {
+          "chunk_id": 287,
+          "rrf_score": 0.010101010101010102,
+          "strict_gt_rank_plus_one": 48
+        },
+        {
+          "chunk_id": 405,
+          "rrf_score": 0.01,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 330,
+          "rrf_score": 0.01,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 397,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 51
+        },
+        {
+          "chunk_id": 354,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 51
+        },
+        {
+          "chunk_id": 95,
+          "rrf_score": 0.009708737864077669,
+          "strict_gt_rank_plus_one": 53
+        },
+        {
+          "chunk_id": 426,
+          "rrf_score": 0.009708737864077669,
+          "strict_gt_rank_plus_one": 53
+        },
+        {
+          "chunk_id": 376,
+          "rrf_score": 0.009615384615384616,
+          "strict_gt_rank_plus_one": 55
+        }
+      ]
+    },
+    "V2E057": {
+      "dense_count": 50,
+      "bm25_count": 50,
+      "union_count": 65,
+      "hybrid_count": 50,
+      "hybrid_overlap_with_formula_top50": 50,
+      "hybrid_only_vs_formula": [],
+      "formula_only_vs_hybrid": [],
+      "hybrid_score_matches_formula": true,
+      "historical_candidate_overlap_current_hybrid": 50,
+      "historical_candidate_order_equals_current_hybrid": true,
+      "historical_candidate_moved_positions": [],
+      "historical_candidate_only_vs_current": [],
+      "current_candidate_only_vs_historical": [],
+      "historical_final_ids": [
+        449,
+        452,
+        450,
+        209,
+        92,
+        212,
+        185,
+        257,
+        137,
+        281
+      ],
+      "current_full_rerank_top10_ids": [],
+      "current_top10_equals_historical_final_ids": null,
+      "strict_order_violations_among_hybrid": 0,
+      "gold_candidates": {
+        "doc:F19-智能手表-MX-602.md:2518bec884f03f78": [
+          {
+            "chunk_id": 449,
+            "dense_rank": 11,
+            "bm25_rank": 1,
+            "rrf_score": 0.03047794966520434,
+            "strict_gt_rank_plus_one": 4,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 4
+          }
+        ],
+        "doc:F19-智能手表-MX-602.md:34624312e40967a2": [
+          {
+            "chunk_id": 452,
+            "dense_rank": 21,
+            "bm25_rank": 21,
+            "rrf_score": 0.024691358024691357,
+            "strict_gt_rank_plus_one": 21,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 21
+          }
+        ],
+        "doc:F19-智能手表-MX-602.md:c84f9cc71e12aeef": []
+      },
+      "candidate_cutoff": [
+        {
+          "chunk_id": 376,
+          "rrf_score": 0.010526315789473684,
+          "strict_gt_rank_plus_one": 46
+        },
+        {
+          "chunk_id": 140,
+          "rrf_score": 0.010416666666666666,
+          "strict_gt_rank_plus_one": 47
+        },
+        {
+          "chunk_id": 162,
+          "rrf_score": 0.010416666666666666,
+          "strict_gt_rank_plus_one": 47
+        },
+        {
+          "chunk_id": 280,
+          "rrf_score": 0.010309278350515464,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 88,
+          "rrf_score": 0.01020408163265306,
+          "strict_gt_rank_plus_one": 50
+        },
+        {
+          "chunk_id": 234,
+          "rrf_score": 0.01020408163265306,
+          "strict_gt_rank_plus_one": 50
+        },
+        {
+          "chunk_id": 258,
+          "rrf_score": 0.010101010101010102,
+          "strict_gt_rank_plus_one": 52
+        },
+        {
+          "chunk_id": 308,
+          "rrf_score": 0.01,
+          "strict_gt_rank_plus_one": 53
+        },
+        {
+          "chunk_id": 330,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 54
+        },
+        {
+          "chunk_id": 354,
+          "rrf_score": 0.00980392156862745,
+          "strict_gt_rank_plus_one": 55
+        }
+      ]
+    },
+    "V2E060": {
+      "dense_count": 50,
+      "bm25_count": 50,
+      "union_count": 66,
+      "hybrid_count": 50,
+      "hybrid_overlap_with_formula_top50": 50,
+      "hybrid_only_vs_formula": [],
+      "formula_only_vs_hybrid": [],
+      "hybrid_score_matches_formula": true,
+      "historical_candidate_overlap_current_hybrid": 50,
+      "historical_candidate_order_equals_current_hybrid": true,
+      "historical_candidate_moved_positions": [],
+      "historical_candidate_only_vs_current": [],
+      "current_candidate_only_vs_historical": [],
+      "historical_final_ids": [
+        476,
+        473,
+        474,
+        479,
+        472,
+        477,
+        475,
+        185,
+        89,
+        449
+      ],
+      "current_full_rerank_top10_ids": [],
+      "current_top10_equals_historical_final_ids": null,
+      "strict_order_violations_among_hybrid": 0,
+      "gold_candidates": {
+        "doc:F20-扩展坞-MX-697.md:7b51ca5a8bbff166": [
+          {
+            "chunk_id": 469,
+            "dense_rank": 48,
+            "bm25_rank": null,
+            "rrf_score": 0.009259259259259259,
+            "strict_gt_rank_plus_one": 61,
+            "in_hybrid50": false,
+            "actual_hybrid_rank": null
+          }
+        ],
+        "doc:F20-扩展坞-MX-697.md:92fa68b14104ee16": [
+          {
+            "chunk_id": 476,
+            "dense_rank": 13,
+            "bm25_rank": 21,
+            "rrf_score": 0.02604430914933198,
+            "strict_gt_rank_plus_one": 19,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 19
+          }
+        ],
+        "doc:F20-扩展坞-MX-697.md:b5dd788e4765aad1": [
+          {
+            "chunk_id": 473,
+            "dense_rank": 1,
+            "bm25_rank": 1,
+            "rrf_score": 0.03278688524590164,
+            "strict_gt_rank_plus_one": 1,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 1
+          }
+        ]
+      },
+      "candidate_cutoff": [
+        {
+          "chunk_id": 234,
+          "rrf_score": 0.01020408163265306,
+          "strict_gt_rank_plus_one": 46
+        },
+        {
+          "chunk_id": 188,
+          "rrf_score": 0.010101010101010102,
+          "strict_gt_rank_plus_one": 47
+        },
+        {
+          "chunk_id": 258,
+          "rrf_score": 0.010101010101010102,
+          "strict_gt_rank_plus_one": 47
+        },
+        {
+          "chunk_id": 136,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 330,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 460,
+          "rrf_score": 0.00980392156862745,
+          "strict_gt_rank_plus_one": 51
+        },
+        {
+          "chunk_id": 354,
+          "rrf_score": 0.00980392156862745,
+          "strict_gt_rank_plus_one": 51
+        },
+        {
+          "chunk_id": 91,
+          "rrf_score": 0.009708737864077669,
+          "strict_gt_rank_plus_one": 53
+        },
+        {
+          "chunk_id": 428,
+          "rrf_score": 0.009615384615384616,
+          "strict_gt_rank_plus_one": 54
+        },
+        {
+          "chunk_id": 426,
+          "rrf_score": 0.009615384615384616,
+          "strict_gt_rank_plus_one": 54
+        }
+      ]
+    },
+    "V2E048": {
+      "dense_count": 50,
+      "bm25_count": 50,
+      "union_count": 67,
+      "hybrid_count": 50,
+      "hybrid_overlap_with_formula_top50": 50,
+      "hybrid_only_vs_formula": [],
+      "formula_only_vs_hybrid": [],
+      "hybrid_score_matches_formula": true,
+      "historical_candidate_overlap_current_hybrid": 50,
+      "historical_candidate_order_equals_current_hybrid": true,
+      "historical_candidate_moved_positions": [],
+      "historical_candidate_only_vs_current": [],
+      "current_candidate_only_vs_historical": [],
+      "historical_final_ids": [
+        380,
+        305,
+        377,
+        329,
+        449,
+        281,
+        185,
+        353,
+        209,
+        161
+      ],
+      "current_full_rerank_top10_ids": [
+        380,
+        305,
+        377,
+        329,
+        449,
+        185,
+        281,
+        353,
+        209,
+        425
+      ],
+      "current_top10_equals_historical_final_ids": false,
+      "strict_order_violations_among_hybrid": 0,
+      "gold_candidates": {
+        "doc:F16-扩展坞-MX-323.md:2f84985111426fc8": [
+          {
+            "chunk_id": 373,
+            "dense_rank": 27,
+            "bm25_rank": null,
+            "rrf_score": 0.011494252873563218,
+            "strict_gt_rank_plus_one": 36,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 37
+          }
+        ],
+        "doc:F16-扩展坞-MX-323.md:3ef8db78854bdf3b": [
+          {
+            "chunk_id": 377,
+            "dense_rank": 1,
+            "bm25_rank": 5,
+            "rrf_score": 0.0317780580075662,
+            "strict_gt_rank_plus_one": 1,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 1
+          }
+        ],
+        "doc:F16-扩展坞-MX-323.md:969db6a72e0adb68": [
+          {
+            "chunk_id": 380,
+            "dense_rank": 18,
+            "bm25_rank": 1,
+            "rrf_score": 0.02921395544346364,
+            "strict_gt_rank_plus_one": 4,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 4
+          }
+        ]
+      },
+      "candidate_cutoff": [
+        {
+          "chunk_id": 379,
+          "rrf_score": 0.010526315789473684,
+          "strict_gt_rank_plus_one": 46
+        },
+        {
+          "chunk_id": 138,
+          "rrf_score": 0.010526315789473684,
+          "strict_gt_rank_plus_one": 46
+        },
+        {
+          "chunk_id": 162,
+          "rrf_score": 0.010416666666666666,
+          "strict_gt_rank_plus_one": 48
+        },
+        {
+          "chunk_id": 234,
+          "rrf_score": 0.01020408163265306,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 258,
+          "rrf_score": 0.010101010101010102,
+          "strict_gt_rank_plus_one": 50
+        },
+        {
+          "chunk_id": 136,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 51
+        },
+        {
+          "chunk_id": 330,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 51
+        },
+        {
+          "chunk_id": 308,
+          "rrf_score": 0.00980392156862745,
+          "strict_gt_rank_plus_one": 53
+        },
+        {
+          "chunk_id": 354,
+          "rrf_score": 0.00980392156862745,
+          "strict_gt_rank_plus_one": 53
+        },
+        {
+          "chunk_id": 428,
+          "rrf_score": 0.009708737864077669,
+          "strict_gt_rank_plus_one": 55
+        }
+      ]
+    },
+    "V2E054": {
+      "dense_count": 50,
+      "bm25_count": 50,
+      "union_count": 66,
+      "hybrid_count": 50,
+      "hybrid_overlap_with_formula_top50": 50,
+      "hybrid_only_vs_formula": [],
+      "formula_only_vs_hybrid": [],
+      "hybrid_score_matches_formula": true,
+      "historical_candidate_overlap_current_hybrid": 50,
+      "historical_candidate_order_equals_current_hybrid": false,
+      "historical_candidate_moved_positions": [
+        {
+          "chunk_id": 18,
+          "historical_rank": 30,
+          "current_rank": 31
+        },
+        {
+          "chunk_id": 282,
+          "historical_rank": 31,
+          "current_rank": 30
+        },
+        {
+          "chunk_id": 138,
+          "historical_rank": 34,
+          "current_rank": 45
+        },
+        {
+          "chunk_id": 354,
+          "historical_rank": 35,
+          "current_rank": 34
+        },
+        {
+          "chunk_id": 424,
+          "historical_rank": 36,
+          "current_rank": 35
+        },
+        {
+          "chunk_id": 431,
+          "historical_rank": 37,
+          "current_rank": 36
+        },
+        {
+          "chunk_id": 376,
+          "historical_rank": 38,
+          "current_rank": 37
+        },
+        {
+          "chunk_id": 352,
+          "historical_rank": 39,
+          "current_rank": 38
+        },
+        {
+          "chunk_id": 210,
+          "historical_rank": 40,
+          "current_rank": 39
+        },
+        {
+          "chunk_id": 421,
+          "historical_rank": 41,
+          "current_rank": 40
+        },
+        {
+          "chunk_id": 280,
+          "historical_rank": 42,
+          "current_rank": 41
+        },
+        {
+          "chunk_id": 402,
+          "historical_rank": 43,
+          "current_rank": 42
+        },
+        {
+          "chunk_id": 42,
+          "historical_rank": 44,
+          "current_rank": 43
+        },
+        {
+          "chunk_id": 66,
+          "historical_rank": 45,
+          "current_rank": 44
+        }
+      ],
+      "historical_candidate_only_vs_current": [],
+      "current_candidate_only_vs_historical": [],
+      "historical_final_ids": [
+        353,
+        425,
+        428,
+        41,
+        305,
+        257,
+        185,
+        281,
+        449,
+        308
+      ],
+      "current_full_rerank_top10_ids": [
+        353,
+        425,
+        428,
+        41,
+        305,
+        185,
+        257,
+        449,
+        281,
+        308
+      ],
+      "current_top10_equals_historical_final_ids": false,
+      "strict_order_violations_among_hybrid": 0,
+      "gold_candidates": {
+        "doc:F18-清洁电器-MX-523.md:205e3b7f9320a3a0": [
+          {
+            "chunk_id": 421,
+            "dense_rank": 29,
+            "bm25_rank": null,
+            "rrf_score": 0.011235955056179775,
+            "strict_gt_rank_plus_one": 39,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 40
+          }
+        ],
+        "doc:F18-清洁电器-MX-523.md:363716df63bfaef5": [
+          {
+            "chunk_id": 425,
+            "dense_rank": 2,
+            "bm25_rank": 1,
+            "rrf_score": 0.03252247488101533,
+            "strict_gt_rank_plus_one": 1,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 1
+          }
+        ],
+        "doc:F18-清洁电器-MX-523.md:ef01be3f821b377f": [
+          {
+            "chunk_id": 428,
+            "dense_rank": 19,
+            "bm25_rank": 21,
+            "rrf_score": 0.025003906860446946,
+            "strict_gt_rank_plus_one": 21,
+            "in_hybrid50": true,
+            "actual_hybrid_rank": 21
+          }
+        ]
+      },
+      "candidate_cutoff": [
+        {
+          "chunk_id": 162,
+          "rrf_score": 0.010416666666666666,
+          "strict_gt_rank_plus_one": 46
+        },
+        {
+          "chunk_id": 373,
+          "rrf_score": 0.010309278350515464,
+          "strict_gt_rank_plus_one": 47
+        },
+        {
+          "chunk_id": 234,
+          "rrf_score": 0.01020408163265306,
+          "strict_gt_rank_plus_one": 48
+        },
+        {
+          "chunk_id": 136,
+          "rrf_score": 0.010101010101010102,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 258,
+          "rrf_score": 0.010101010101010102,
+          "strict_gt_rank_plus_one": 49
+        },
+        {
+          "chunk_id": 256,
+          "rrf_score": 0.01,
+          "strict_gt_rank_plus_one": 51
+        },
+        {
+          "chunk_id": 380,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 52
+        },
+        {
+          "chunk_id": 330,
+          "rrf_score": 0.009900990099009901,
+          "strict_gt_rank_plus_one": 52
+        },
+        {
+          "chunk_id": 356,
+          "rrf_score": 0.00980392156862745,
+          "strict_gt_rank_plus_one": 54
+        },
+        {
+          "chunk_id": 88,
+          "rrf_score": 0.009708737864077669,
+          "strict_gt_rank_plus_one": 55
+        }
+      ]
+    }
+  },
+  "route_input_sha256": "8562e5838d58783d556049aac0b10a8922d59cc2c94193dbcc2f25e0da7f3816"
+}

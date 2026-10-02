@@ -1,0 +1,149 @@
+{
+  "frozen_and_sql_chunks_verified": 480,
+  "normalizer_replays": [
+    {
+      "eval_id": "V2A003",
+      "fallback": true
+    },
+    {
+      "eval_id": "V2B001",
+      "fallback": true
+    },
+    {
+      "eval_id": "V2C001",
+      "fallback": true
+    },
+    {
+      "eval_id": "V2C003",
+      "fallback": true
+    }
+  ],
+  "generation_replays": [
+    {
+      "file": "generation.json",
+      "eval_id": "V2B021",
+      "refused": false
+    },
+    {
+      "file": "generation.json",
+      "eval_id": "V2B036",
+      "refused": false
+    },
+    {
+      "file": "generation.json",
+      "eval_id": "V2C022",
+      "refused": false
+    },
+    {
+      "file": "generation.json",
+      "eval_id": "V2C034",
+      "refused": false
+    },
+    {
+      "file": "generation-repeat2.json",
+      "eval_id": "V2B021",
+      "refused": false
+    },
+    {
+      "file": "generation-repeat2.json",
+      "eval_id": "V2B036",
+      "refused": false
+    },
+    {
+      "file": "generation-repeat2.json",
+      "eval_id": "V2C022",
+      "refused": false
+    },
+    {
+      "file": "generation-repeat2.json",
+      "eval_id": "V2C034",
+      "refused": false
+    },
+    {
+      "file": "generation-repeat3.json",
+      "eval_id": "V2B021",
+      "refused": false
+    },
+    {
+      "file": "generation-repeat3.json",
+      "eval_id": "V2B036",
+      "refused": false
+    },
+    {
+      "file": "generation-repeat3.json",
+      "eval_id": "V2C022",
+      "refused": false
+    },
+    {
+      "file": "generation-repeat3.json",
+      "eval_id": "V2C034",
+      "refused": false
+    }
+  ],
+  "rrf_recomputations": [
+    {
+      "eval_id": "V2E012",
+      "missing_gold": [
+        {
+          "chunk_id": 85,
+          "strict_rank": 56,
+          "below_cutoff": true
+        }
+      ]
+    },
+    {
+      "eval_id": "V2E021",
+      "missing_gold": [
+        {
+          "chunk_id": 157,
+          "strict_rank": 53,
+          "below_cutoff": true
+        }
+      ]
+    },
+    {
+      "eval_id": "V2E051",
+      "missing_gold": [
+        {
+          "chunk_id": 397,
+          "strict_rank": 51,
+          "below_cutoff": true
+        }
+      ]
+    },
+    {
+      "eval_id": "V2E057",
+      "missing_gold": []
+    },
+    {
+      "eval_id": "V2E060",
+      "missing_gold": [
+        {
+          "chunk_id": 469,
+          "strict_rank": 61,
+          "below_cutoff": true
+        }
+      ]
+    },
+    {
+      "eval_id": "V2E048",
+      "missing_gold": []
+    },
+    {
+      "eval_id": "V2E054",
+      "missing_gold": []
+    }
+  ],
+  "verified_at_utc": "2026-10-02T07:57:16.026928+00:00",
+  "reviewer": "primary agent; independent local replay, no additional API calls",
+  "artifacts_sha256": {
+    "route.json": "8562e5838d58783d556049aac0b10a8922d59cc2c94193dbcc2f25e0da7f3816",
+    "normalize.json": "831028f011e92c7a13986dd3cb4717e2ffd4d18cbab7982b1b9a17ab4bd06fee",
+    "offline.json": "229a00e6ecd279551345a6900e620ff7743dfe2298285952232dea9789151232",
+    "generation-repeat2.json": "eae07530aafdb6d71e8e6f0fd8d808ab93dbdf4957da832e7f0484e4a732c163",
+    "generation.json": "0fd3996269f8cb644a414eb04d2211ce5e96668296cf4ec825430489ef6fc077",
+    "rrf-audit.json": "7361897e540788338edff74372ab47e27c0efbf673e57c99ebed9fc13443027b",
+    "probe.py": "19c27b38e761f932a16ec511cfeaa16004bc0a25d98f91eac9f0ebd0a8307936",
+    "generation-repeat3.json": "b8e374ed38566f300f300cae113e6434a2632e3d16dffb4156e17df4a7bfd93b"
+  }
+}
