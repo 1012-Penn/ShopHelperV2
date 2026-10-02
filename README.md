@@ -143,3 +143,10 @@ python3 -m scripts.evaluate_ch04 --judge-only evaluation/ch04/v2/runs/<run_id>/r
 v2 报告区分 Recall@1/5/10、完整证据@K、MRR、必要事实覆盖/答案正确性、Faithfulness 和拒答质量，并给 test 同题配对差异。正确性裁判可看必要事实标注；忠实度裁判仍只看当轮证据，生成模型不接触 ground-truth。正例误拒答正确性为 0，未知题明确拒答正确性为 1；裁判失败单列错误和有效样本数。冻结后的题库/语料 hash 不一致会拒绝运行，防止按 test 成绩删题或改标注。不同难度的数据集不能直接按总分比较是否退化；当前裁判仍是同模型基线，未做业务专家盲审。
 
 2026-10-02 v2实跑完成，1200组、错误0：[报告](evaluation/ch04/v2/runs/20261002-120853-23796104/report.md)、[结果解读](evaluation/ch04/v2/runs/20261002-120853-23796104/analysis.md)。dense/BM25/hybrid/hybrid_rerank完整证据@10分别91.67%/75.00%/91.67%/97.08%，必要事实与拒答正确率93.33%/78.67%/93.00%/96.33%。多证据桶完整证据命中由66.67%提升到88.33%；整体MRR最高为hybrid，重排不是所有指标最优。test子集和同题胜/平/负见报告，当前仍为同模型裁判基线。
+
+生成结构解析或引用编号校验失败时，仍明确拒答，并保存当轮原始输出、实际送入模型的证据全集、具体失败谓词和会话/策略标识。默认快照在 `.runtime/quality/generation-failures.jsonl`；可用 `QUALITY_GENERATION_DIAGNOSTICS_PATH` 调整路径。该目录不进入 Git，快照不会发给聊天前端。正常回答和证据不足的自评拒答不记作协议失败。
+
+```bash
+# 确定性复现协议异常，核对快照与拒答行为
+python3 -m pytest -q tests/test_quality_generation_diagnostics.py
+```

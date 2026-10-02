@@ -10,6 +10,7 @@ __pycache__/
 .mypy_cache/
 .coverage
 htmlcov/
+.runtime/
 .superpowers/
 frontend/node_modules/
 *.egg-info/

@@ -1,6 +1,7 @@
 """Shared production factories for chat, rebuild and live evaluation."""
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from dotenv import dotenv_values
 from langchain_openai import ChatOpenAI
 from app.config import Settings
@@ -10,6 +11,7 @@ from app.services.quality.query import QueryNormalizer
 from app.services.quality.rerank import Reranker
 from app.services.quality.retrieval import QualityRetriever
 from app.services.quality.generation import KnowledgeAnswerService, StructuredGenerator
+from app.services.quality.generation_diagnostics import JsonlGenerationFailureSink
 from app.services.quality.ledger import QualityLedger
 
 
@@ -27,4 +29,15 @@ def build_answer_service(session_factory, settings=None):
     model=ChatOpenAI(model=settings.model,api_key=settings.api_key,base_url=settings.base_url,temperature=0,timeout=90,max_retries=1)
     normalizer=QueryNormalizer.from_model(model)
     retriever=QualityRetriever(session_factory,embeddings,store,reranker,normalizer)
-    return KnowledgeAnswerService(retriever,StructuredGenerator(model),QualityLedger(session_factory),min_score=float(values.get('RERANK_MIN_SCORE','0.05')))
+    project_root=Path(__file__).resolve().parents[3]
+    diagnostic_path=Path(values.get('QUALITY_GENERATION_DIAGNOSTICS_PATH') or '.runtime/quality/generation-failures.jsonl')
+    if not diagnostic_path.is_absolute():
+        diagnostic_path=project_root/diagnostic_path
+    return KnowledgeAnswerService(
+        retriever,
+        StructuredGenerator(model,model_identity=settings.model),
+        QualityLedger(session_factory),
+        min_score=float(values.get('RERANK_MIN_SCORE','0.05')),
+        diagnostic_sink=JsonlGenerationFailureSink(diagnostic_path),
+        model_identity=settings.model,
+    )
