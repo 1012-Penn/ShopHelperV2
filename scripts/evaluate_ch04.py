@@ -5,20 +5,22 @@ import json
 import os
 import re
 import time
-from collections import defaultdict
+from itertools import combinations
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
-from langchain_openai import ChatOpenAI
 from app.config import Settings
 from app.db.session import create_tables,make_engine,make_session_factory
 from app.services.knowledge.repository import KnowledgeRepository
 from app.services.quality.index import HybridIndexer
 from app.services.quality.runtime import build_answer_service,config
-from app.services.quality.evaluation import retrieval_metrics,summarize,FaithfulnessJudge,judge_faithfulness,calibration_threshold
+from app.services.quality.evaluation import retrieval_metrics,summarize,calibration_threshold
 from app.services.quality.ledger import QualityLedger
-from scripts.validate_ch04_dataset import load_corpus,validate_dataset
+from scripts.validate_ch04_dataset import load_corpus,validate_dataset,verify_frozen_dataset
+
+from scripts.ch04_judging import (build_judges, judge_identity, public_endpoint, score_answer,
+                                  load_replay_rows, rejudge_row)
 
 STRATEGIES=['dense','bm25','hybrid','hybrid_rerank']
 
@@ -30,19 +32,54 @@ def report(rows,mode,metadata):
         selected=[r for r in rows if r['strategy']==strategy]
         if not selected:continue
         summaries[strategy]=summarize(selected)
-        groups[strategy]={'bucket':{b:summarize([r for r in selected if r['bucket']==b]) for b in sorted({r['bucket'] for r in selected})},'difficulty':{d:summarize([r for r in selected if r['difficulty']==d]) for d in ['easy','medium','hard']},'split':{split:summarize([r for r in selected if r['split']==split]) for split in ['calibration','test']}}
-    return {'mode':mode,'metadata':metadata,'summary':summaries,'groups':groups,'rows':rows}
+        groups[strategy]={'bucket':{b:summarize([r for r in selected if r['bucket']==b]) for b in sorted({r['bucket'] for r in selected})},'difficulty':{d:summarize([r for r in selected if r['difficulty']==d]) for d in ['easy','medium','hard']},'split':{split:summarize([r for r in selected if r['split']==split]) for split in ['calibration','test']}, 'challenge_tags':{tag:summarize([r for r in selected if tag in r.get('challenge_tags',[])]) for tag in sorted({tag for r in selected for tag in r.get('challenge_tags',[])})}}
+    return {'mode':mode,'metadata':metadata,'summary':summaries,'groups':groups,'paired_comparisons':paired_comparisons(rows),'rows':rows}
+
+
+def paired_comparisons(rows):
+    output = {}
+    for split in ['all','calibration','test']:
+        chosen = [r for r in rows if split == 'all' or r['split'] == split]
+        by_strategy = {s:{r['eval_id']:r for r in chosen if r['strategy']==s} for s in STRATEGIES}
+        output[split] = {}
+        for left,right in combinations(STRATEGIES,2):
+            if not by_strategy[left] or not by_strategy[right]:continue
+            pair = {}
+            for metric in ['recall@1','recall@5','recall@10','all_evidence@10','mrr','correctness']:
+                values=[]
+                for id in sorted(by_strategy[left].keys() & by_strategy[right].keys()):
+                    a,b=by_strategy[left][id],by_strategy[right][id]
+                    if metric=='correctness' and (a.get('error') or b.get('error')):continue
+                    av=a.get('correctness') if metric=='correctness' else a.get('metrics',{}).get(metric)
+                    bv=b.get('correctness') if metric=='correctness' else b.get('metrics',{}).get(metric)
+                    if av is not None and bv is not None:values.append(bv-av)
+                pair[metric]={'pairs':len(values),'left_wins':sum(v < -1e-9 for v in values),
+                              'ties':sum(abs(v) <= 1e-9 for v in values),'right_wins':sum(v > 1e-9 for v in values),
+                              'mean_delta_right_minus_left':sum(values)/len(values) if values else None}
+            output[split][left+'_vs_'+right]=pair
+    return output
 
 
 def markdown_report(result):
-    lines=['# ch04 四策略评估', '', '模式：'+result['mode'], '', '| 策略 | 题数 | Recall@10 | MRR | Faithfulness | 忠实度样本 | 错误 |','|---|---:|---:|---:|---:|---:|---:|']
+    meta=result['metadata']
+    identity='同模型裁判基线，存在自评偏差' if meta.get('same_model_judge') is True else ('不同模型/端点配置的裁判，仍需人工抽查' if meta.get('same_model_judge') is False else '裁判独立性未确认')
+    lines=['# ch04 四策略评估', '', '模式：'+result['mode'], '', identity,
+           f"语料 chunk：{meta.get('corpus_chunks')}；生成：{meta.get('generator_model')}；裁判：{meta.get('judge_model')}", '',
+           '| 策略 | 题数 | Recall@1 | Recall@5 | Recall@10 | 完整证据@10 | MRR | 答案正确率 | Faithfulness | 错误 |',
+           '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|']
     for strategy,m in result['summary'].items():
-        lines.append(f"| {strategy} | {m['cases']} | {m.get('recall@10')} | {m.get('mrr')} | {m['faithfulness']} | {m['faithfulness_cases']} | {m['error_count']} |")
+        lines.append(f"| {strategy} | {m['cases']} | {m.get('recall@1')} | {m.get('recall@5')} | {m.get('recall@10')} | {m.get('all_evidence@10')} | {m.get('mrr')} | {m['answer_accuracy']} | {m['faithfulness']} | {m['error_count']} |")
     for strategy,groups in result['groups'].items():
-        lines+=['', '## '+strategy+' 按类型', '', '| 桶 | Recall@10 | MRR | Faithfulness | 未知拒答率 | 已知误拒答率 |','|---|---:|---:|---:|---:|---:|']
+        lines+=['', '## '+strategy+' 按类型', '', '| 桶 | Recall@5 | 完整证据@10 | MRR | 正确率 | Faithfulness | 未知拒答率 | 已知误拒答率 |','|---|---:|---:|---:|---:|---:|---:|---:|']
         for bucket,m in groups['bucket'].items():
-            lines.append(f"| {bucket} | {m.get('recall@10')} | {m.get('mrr')} | {m['faithfulness']} | {m['unknown_refusal_rate']} | {m['known_false_refusal_rate']} |")
-    lines+=['','拒答无事实声明记 N/A，不计为忠实度通过。错误单独计数。合计与 test 分组分别保存于 JSON。','数据来自受控业务基线与虚构测试型号；未经业务专家独立复核。生成与默认裁判使用同一模型，存在自评偏差。']
+            lines.append(f"| {bucket} | {m.get('recall@5')} | {m.get('all_evidence@10')} | {m.get('mrr')} | {m['answer_accuracy']} | {m['faithfulness']} | {m['unknown_refusal_rate']} | {m['known_false_refusal_rate']} |")
+    lines+=['','## Test 同题配对差异','','| 左 vs 右 | 指标 | 配对数 | 左胜 | 平 | 右胜 | 右减左均值 |','|---|---|---:|---:|---:|---:|---:|']
+    for pair,metrics in result['paired_comparisons']['test'].items():
+        for name,m in metrics.items():
+            lines.append(f"| {pair} | {name} | {m['pairs']} | {m['left_wins']} | {m['ties']} | {m['right_wins']} | {m['mean_delta_right_minus_left']} |")
+    lines+=['','拒答无事实声明记 N/A，不计为忠实度通过。正例误拒答的正确性为0；未知题按显式拒答判定。正确性与证据忠实度分开，不共享 ground-truth 输入。',
+            '错误单独计数；正确性排除错误，分母及事实覆盖率保存在JSON。检索指标可保留已完成检索但裁判失败的行。',
+            '类型、难度、挑战标签、test及calibration分组分别保存于JSON。受控虚构语料尚未经业务专家独立复核；不得按test成绩筛题或调参。']
     return '\n'.join(lines)+'\n'
 
 
@@ -86,12 +123,11 @@ def build_live(dataset_dir=Path('evaluation/ch04'), drafts=None):
         else:
             os.environ['HYBRID_COLLECTION'] = previous
     print('evaluation index:',HybridIndexer(sessions,service.retriever.embeddings,service.retriever.store).sync(),flush=True)
-    judge_model=values.get('JUDGE_MODEL',settings.model)
-    judge=FaithfulnessJudge(ChatOpenAI(model=judge_model,api_key=values.get('JUDGE_API_KEY',settings.api_key),base_url=values.get('JUDGE_API_BASE',settings.base_url),temperature=0,timeout=90,max_retries=1))
+    judges=build_judges(settings,values)
     ledger_engine=make_engine(settings.database_url)
     create_tables(ledger_engine)
     ledger=QualityLedger(make_session_factory(ledger_engine))
-    return service,judge,ledger,judge_model,[eval_engine,ledger_engine]
+    return service,judges,ledger,[eval_engine,ledger_engine]
 
 
 def fixture_rows(cases,strategies):
@@ -99,15 +135,16 @@ def fixture_rows(cases,strategies):
     for c in cases:
         for strategy in strategies:
             ranking=c['relevant_source_keys'] if not c['should_refuse'] else []
-            rows.append({**c,'strategy':strategy,'refused':c['should_refuse'],'answer':'fixture only','citations':[],'faithfulness':None if c['should_refuse'] else 1.,'error':None,'metrics':retrieval_metrics(ranking,set(c['relevant_source_keys'])),'top_score':.9 if ranking else 0,'latency_seconds':0})
+            rows.append({**c,'strategy':strategy,'refused':c['should_refuse'],'answer':'fixture only','citations':[],'faithfulness':None if c['should_refuse'] else 1.,'correctness':1.,'error':None,'metrics':retrieval_metrics(ranking,set(c['relevant_source_keys'])),'top_score':.9 if ranking else 0,'latency_seconds':0})
     return rows
 
 
-def evaluate_case(case,strategies,service,judge,judge_model):
+def evaluate_case(case,strategies,service,judges):
+    faith_judge,correctness_judge,identity=judges
     rows=[]
     for strategy in strategies:
         started=time.monotonic()
-        row={**case,'strategy':strategy,'error':None,'refused':False,'faithfulness':None,'metrics':{},'answer':'','citations':[],'top_score':0}
+        row={**case,**identity,'strategy':strategy,'error':None,'refused':False,'faithfulness':None,'metrics':{},'answer':'','citations':[],'top_score':0}
         try:
             stage='retrieval'
             evidence,candidates,trace=service.retriever.retrieve_with_trace(case['query'],strategy,case['category'])
@@ -122,25 +159,85 @@ def evaluate_case(case,strategies,service,judge,judge_model):
             answer=service.generate(case['query'],evidence,strategy)
             row['generation_seconds']=time.monotonic()-generated_at
             row.update(answer=answer.answer,citations=answer.citations,refused=answer.refused,refusal_reason=answer.reason)
-            if not answer.refused:
-                stage='judge';judged_at=time.monotonic()
-                verdict=judge_faithfulness(judge,case['query'],answer.answer,answer.citations)
-                row['judge_seconds']=time.monotonic()-judged_at
-                row['faithfulness']=verdict['score']
-                row['judge_reason']=verdict['reason'];row['claims']=verdict['claims']
-                row['judge_model']=judge_model
+            stage='judging'
+            score_answer(row,faith_judge,correctness_judge,identity['judge_model'])
         except Exception as error:
             row['error']=type(error).__name__
-            row['error_stage']=stage
+            row['error_stage']=row.get('error_stage',stage)
         row['latency_seconds']=time.monotonic()-started
         rows.append(row)
     return rows
+
+
+def new_run(output_dir):
+    run_dir=Path(output_dir)/(datetime.now().strftime('%Y%m%d-%H%M%S')+'-'+uuid4().hex[:8])
+    run_dir.mkdir(parents=True)
+    return run_dir
+
+
+def is_fabrication(row):
+    return (row['strategy']=='hybrid_rerank' and row.get('faithfulness') is not None
+            and row['faithfulness'] < 1 and (not row.get('error')
+            or row.get('error_stage')=='correctness_judge'))
+
+
+def persist_faith_case(ledger, row):
+    if is_fabrication(row):
+        ledger.record_faith_case(dict(eval_id=row['eval_id'],bucket=row['bucket'],query=row['query'],
+            strategy=row['strategy'],answer=row['answer'],reason=row['judge_reason'],
+            citations=row['citations'],judge_model=row['judge_model']))
+
+
+def build_quality_ledger():
+    engine=make_engine(Settings.from_env().database_url)
+    create_tables(engine)
+    return QualityLedger(make_session_factory(engine)),engine
+
+
+def replay_main(args):
+    rows,original_metadata=load_replay_rows(args.judge_only)
+    if any(r['strategy'] not in STRATEGIES for r in rows):raise ValueError('unknown replay strategy')
+    rows=[r for r in rows if (args.split=='all' or r['split']==args.split) and (args.strategy=='all' or r['strategy']==args.strategy)]
+    if not rows:raise ValueError('no replay rows selected')
+    if args.limit:
+        ids=list(dict.fromkeys(r['eval_id'] for r in rows))[:args.limit]
+        rows=[r for r in rows if r['eval_id'] in ids]
+    identities={(r.get('generator_model'),r.get('generator_base_url')) for r in rows}
+    if len(identities)!=1:raise ValueError('replay requires one known generator identity')
+    generator_model,generator_base=next(iter(identities))
+    judges=build_judges(require_independent=args.require_independent_judge,
+                       generator_identity={'generator_model':generator_model,'generator_base_url':generator_base})
+    run_dir=new_run(args.output_dir or args.judge_only.parent / 'rejudged')
+    output=[]
+    ledger=None;ledger_engine=None
+    try:
+        with ThreadPoolExecutor(max_workers=args.workers) as pool, (run_dir/'rows.jsonl').open('w') as journal:
+            futures=[pool.submit(rejudge_row,r,judges) for r in rows]
+            for future in as_completed(futures):
+                row=future.result();output.append(row)
+                journal.write(json.dumps(row,ensure_ascii=False)+'\n');journal.flush()
+                if is_fabrication(row):
+                    if ledger is None:ledger,ledger_engine=build_quality_ledger()
+                    persist_faith_case(ledger,row)
+    finally:
+        if ledger_engine:ledger_engine.dispose()
+    output.sort(key=lambda r:(r['eval_id'],r['strategy']))
+    metadata={**original_metadata,**judges[2],'generator_model':generator_model,'generator_base_url':generator_base,
+              'source_rows_sha256':hashlib.sha256(args.judge_only.read_bytes()).hexdigest(),
+              'source_rows':str(args.judge_only),'split':args.split,'cases':len({r['eval_id'] for r in rows})}
+    result=report(output,'judge_only',metadata)
+    (run_dir/'report.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    (run_dir/'report.md').write_text(markdown_report(result))
+    print('report:',run_dir/'report.md',flush=True)
+    return 1 if any(r.get('error') for r in output) else 0
 
 
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     mode=p.add_mutually_exclusive_group(required=True)
     mode.add_argument('--live',action='store_true');mode.add_argument('--fixture',action='store_true')
+    mode.add_argument('--judge-only',type=Path)
+    p.add_argument('--require-independent-judge',action='store_true')
     p.add_argument('--split',choices=['all','calibration','test'],default='all')
     p.add_argument('--strategy',choices=['all',*STRATEGIES],default='all')
     p.add_argument('--workers',type=int,default=12)
@@ -150,30 +247,36 @@ def main(argv=None):
     p.add_argument('--output-dir',type=Path)
     args=p.parse_args(argv)
     if not 1<=args.workers<=24: p.error('workers must be 1..24')
+    if args.limit is not None and args.limit < 1:p.error('limit must be positive')
+    if args.require_independent_judge and args.fixture:p.error('fixture has no real judge')
+    if args.judge_only:
+        return replay_main(args)
     dataset_file = args.dataset_dir / 'cases.json'
     cases=json.loads(dataset_file.read_text())
     drafts=load_corpus(args.dataset_dir / 'corpus');validate_dataset(cases,{d.source_key:d.category for d in drafts})
+    verify_frozen_dataset(args.dataset_dir, drafts)
     cases=[c for c in cases if args.split=='all' or c['split']==args.split]
     if args.limit:cases=cases[:args.limit]
     strategies=STRATEGIES if args.strategy=='all' else [args.strategy]
-    run_dir=(args.output_dir or args.dataset_dir / 'runs')/(datetime.now().strftime('%Y%m%d-%H%M%S')+'-'+uuid4().hex[:8]);run_dir.mkdir(parents=True)
+    identity=judge_identity(Settings.from_env(),config(),args.require_independent_judge) if args.live else {}
+    run_dir=new_run(args.output_dir or args.dataset_dir / 'runs')
     database_url, collection = evaluation_targets(args.dataset_dir, config())
-    metadata={'cases':len(cases),'strategies':strategies,'split':args.split,'dataset_dir':str(args.dataset_dir),'dataset_sha256':hashlib.sha256(dataset_file.read_bytes()).hexdigest(),'corpus_sha256':hashlib.sha256(''.join(d.source_key+d.answer for d in drafts).encode()).hexdigest(), 'corpus_chunks':len(drafts), 'collection':collection, 'evaluation_database':database_url.rsplit('@',1)[-1]}
+    metadata={**identity,'cases':len(cases),'strategies':strategies,'split':args.split,'dataset_dir':str(args.dataset_dir),'dataset_sha256':hashlib.sha256(dataset_file.read_bytes()).hexdigest(),'corpus_sha256':hashlib.sha256(''.join(d.source_key+d.answer for d in drafts).encode()).hexdigest(), 'corpus_chunks':len(drafts), 'collection':collection, 'evaluation_database':database_url.rsplit('@',1)[-1]}
     rows=[];resources=[];service=None;ledger=None
     try:
         if args.fixture:
             rows=fixture_rows(cases,strategies)
         else:
-            service,judge,ledger,judge_model,resources=build_live(args.dataset_dir, drafts)
-            metadata.update(generator_model=Settings.from_env().model,judge_model=judge_model,reranker=service.retriever.reranker.model,collection=service.retriever.store.collection_name,rerank_min_score=service.min_score)
+            service,judges,ledger,resources=build_live(args.dataset_dir, drafts)
+            judge_model=judges[2]['judge_model']
+            metadata.update(**judges[2],reranker=service.retriever.reranker.model,collection=service.retriever.store.collection_name,rerank_min_score=service.min_score)
             with ThreadPoolExecutor(max_workers=args.workers) as pool, (run_dir/'rows.jsonl').open('w') as journal:
-                futures=[pool.submit(evaluate_case,c,strategies,service,judge,judge_model) for c in cases]
+                futures=[pool.submit(evaluate_case,c,strategies,service,judges) for c in cases]
                 for completed,future in enumerate(as_completed(futures),1):
                     batch=future.result();rows.extend(batch)
                     for r in batch:
                         journal.write(json.dumps(r,ensure_ascii=False)+'\n')
-                        if r['strategy']=='hybrid_rerank' and r['faithfulness'] is not None and r['faithfulness']<1 and not r['error']:
-                            ledger.record_faith_case(dict(eval_id=r['eval_id'],bucket=r['bucket'],query=r['query'],strategy=r['strategy'],answer=r['answer'],reason=r['judge_reason'],citations=r['citations'],judge_model=judge_model))
+                        persist_faith_case(ledger,r)
                     journal.flush()
                     if completed%10==0 or completed==len(cases):
                         print(f'completed {completed}/{len(cases)} queries; errors={sum(bool(r["error"]) for r in rows)}',flush=True)

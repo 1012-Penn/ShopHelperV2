@@ -1,6 +1,7 @@
 """Validate the labeled corpus before any quality metric is computed."""
 import json
 import argparse
+import hashlib
 from collections import Counter
 from pathlib import Path
 from app.services.knowledge.chunking import split_markdown
@@ -68,11 +69,24 @@ def load_corpus(root=Path('evaluation/ch04/corpus')):
     return drafts
 
 
+def verify_frozen_dataset(root, drafts):
+    root = Path(root)
+    manifest_path = root / 'manifest.json'
+    if not manifest_path.exists():
+        return
+    manifest = json.loads(manifest_path.read_text())
+    dataset_hash = hashlib.sha256((root / 'cases.json').read_bytes()).hexdigest()
+    corpus_hash = hashlib.sha256(''.join(d.source_key+d.answer for d in drafts).encode()).hexdigest()
+    if manifest.get('dataset_sha256') != dataset_hash or manifest.get('corpus_sha256') != corpus_hash:
+        raise ValueError('frozen dataset/corpus hash mismatch; record a versioned annotation correction')
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--dataset-dir', type=Path, default=Path('evaluation/ch04'))
     args = p.parse_args(argv)
     drafts=load_corpus(args.dataset_dir / 'corpus')
+    verify_frozen_dataset(args.dataset_dir, drafts)
     cases=json.loads((args.dataset_dir / 'cases.json').read_text())
     result = validate_dataset(cases,{d.source_key:d.category for d in drafts})
     result.update(corpus_chunks=len(drafts), filtered_cases=sum(bool(c['category']) for c in cases))

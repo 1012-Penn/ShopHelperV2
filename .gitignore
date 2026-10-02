@@ -17,3 +17,5 @@ frontend/node_modules/
 worktrees/
 evaluation/ch04/*.db
 evaluation/ch04/*.db-*
+evaluation/ch04/v2/*.db
+evaluation/ch04/v2/*.db-*

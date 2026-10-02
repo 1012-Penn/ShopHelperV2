@@ -70,3 +70,13 @@ def test_v2_cases_require_traceable_refusal_and_nonempty_facts():
               required_facts=[], should_refuse=True)], {'a': '耳机', 'b': '家电'}, minimum=1)
     with pytest.raises(ValueError, match='facts'):
         validate_dataset([labeled_case(required_facts=[' '])], {'a': '耳机', 'b': '家电'}, minimum=1)
+
+
+def test_frozen_dataset_cannot_be_silently_changed(tmp_path):
+    root = tmp_path / 'frozen'
+    root.mkdir()
+    shutil.copytree('evaluation/ch04/corpus', root / 'corpus')
+    shutil.copy('evaluation/ch04/cases.json', root / 'cases.json')
+    (root / 'manifest.json').write_text(json.dumps({'dataset_sha256': 'wrong', 'corpus_sha256': 'wrong'}))
+    with pytest.raises(ValueError, match='frozen'):
+        main(['--fixture','--dataset-dir',str(root)])
