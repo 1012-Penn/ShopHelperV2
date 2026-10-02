@@ -1,0 +1,141 @@
+{
+  "snapshots": 6,
+  "cases": [
+    {
+      "eval_id": "V2A018",
+      "strategy": "hybrid_rerank",
+      "split": "test",
+      "failed_predicates": [
+        "declared_citations_mismatch"
+      ],
+      "inline_numbers": [
+        1,
+        1
+      ],
+      "declared_numbers": [
+        1,
+        6
+      ],
+      "raw_sha256": "ef8991780b7f011d4e063e689f8a9ab672d05eb26690adb40e27483d693865ff",
+      "event_sha256": "098cdeffbdce3d9e4312b239ee2d99cacce32fc84793356c863924111637f1d7",
+      "gate_recomputed": true,
+      "prompt_and_actual_evidence_order_verified": true
+    },
+    {
+      "eval_id": "V2A040",
+      "strategy": "dense",
+      "split": "test",
+      "failed_predicates": [
+        "declared_citations_mismatch"
+      ],
+      "inline_numbers": [
+        1,
+        1,
+        1,
+        7,
+        1
+      ],
+      "declared_numbers": [
+        1
+      ],
+      "raw_sha256": "5f1dd9397a45a8a225ce09ea030abb286bbc9006e94df5067e6f7217edca9d0c",
+      "event_sha256": "49a1187d3ce6ef55c47af18714d24d9f7412cea01ba30b6f8c544ed641fdad0b",
+      "gate_recomputed": true,
+      "prompt_and_actual_evidence_order_verified": true
+    },
+    {
+      "eval_id": "V2B015",
+      "strategy": "dense",
+      "split": "test",
+      "failed_predicates": [
+        "declared_citations_mismatch"
+      ],
+      "inline_numbers": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "declared_numbers": [
+        1,
+        2
+      ],
+      "raw_sha256": "8c6749715db0e401165a7444e64e490d54fb35c6d0e2189d0a2c24a8a02052c5",
+      "event_sha256": "ad8f0a95e0123cf673cc8ceeb6af5ca85b574ec87ca664f23bc1299af5091160",
+      "gate_recomputed": true,
+      "prompt_and_actual_evidence_order_verified": true
+    },
+    {
+      "eval_id": "V2B045",
+      "strategy": "hybrid_rerank",
+      "split": "test",
+      "failed_predicates": [
+        "declared_citations_mismatch"
+      ],
+      "inline_numbers": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "declared_numbers": [
+        1,
+        3
+      ],
+      "raw_sha256": "0350f2da6fe41639ea223e0fbb31000bd68c2c6f8e427d587ad3b72bb3263558",
+      "event_sha256": "274e987a22c554d6d7cae2ad4c1d2769a26a07d10e296293df60e7cd57941848",
+      "gate_recomputed": true,
+      "prompt_and_actual_evidence_order_verified": true
+    },
+    {
+      "eval_id": "V2B060",
+      "strategy": "bm25",
+      "split": "test",
+      "failed_predicates": [
+        "declared_citations_mismatch"
+      ],
+      "inline_numbers": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "declared_numbers": [
+        1,
+        3
+      ],
+      "raw_sha256": "0662f55def42bd85b13c7c7d890a8e32f5fc7ad48564cf2ce45c8466ae87f7fd",
+      "event_sha256": "65fb0e1ea865a35a26be38c54d14cb9c09c116ad256b0de43e2395c4e75e7889",
+      "gate_recomputed": true,
+      "prompt_and_actual_evidence_order_verified": true
+    },
+    {
+      "eval_id": "V2C007",
+      "strategy": "hybrid_rerank",
+      "split": "calibration",
+      "failed_predicates": [
+        "declared_citations_mismatch"
+      ],
+      "inline_numbers": [
+        4,
+        4,
+        1,
+        5,
+        2
+      ],
+      "declared_numbers": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "raw_sha256": "6d3b4d6b551790dc39fe1e1f3aa6576ff5adb91d32763e9f13dc6115df727c1d",
+      "event_sha256": "cf77dd6c0693bdd0f7d09b8947fb729ad2d79c30247b472d3ed23ea5ec506dac",
+      "gate_recomputed": true,
+      "prompt_and_actual_evidence_order_verified": true
+    }
+  ],
+  "archive_sha256": "199d8e17c228f8ccf7105ee48238e7b99250fdcccf282bd70684f785df40b9d8",
+  "scope": "Only synthetic questions from this frozen evaluation; no production questions copied; all six have valid JSON and in-range numbers, but inline/declaration sets differ."
+}

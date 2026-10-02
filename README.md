@@ -152,3 +152,5 @@ python3 -m pytest -q tests/test_quality_generation_diagnostics.py
 ```
 
 2026-10-02 修复阶段：Query 改写保护型号、带单位/正负号数量、模糊时长与否定子句；无法确认保真则保留原话。同义词仍仅检索时扩展。独立 calibration 成对验证后，混合检索融合输出上限采用100（dense/BM25每路仍Top-50，最终bge-reranker-v2-m3精排Top-10）。该上限增加重排工作量；校准实验见 `evaluation/ch04/v2/retrieval-calibration/20261002/report.md`。新评估报告metadata记录Prompt及实现hash与实际融合上限，旧报告保留原配置。
+
+2026-10-02 修复后v2统一实跑：1200组、调用错误0，hybrid_rerank完整证据@10=0.988、正确率=0.980（test=0.979），已知误拒答6/240；其中3条引用声明不一致、2条精排丢必要证据、1条候选缺证。四策略还有6条安全协议拒答，raw已记录，不能等同于生成无问题。详见 [修复后报告](evaluation/ch04/v2/runs/20261002-171650-a36a7908/report.md) 与 [独立结果解读](evaluation/ch04/v2/runs/20261002-171650-a36a7908/analysis.md)；历史基线保留。代码版本 `f135940`，评估显示3位，rawJSON保留精度。
