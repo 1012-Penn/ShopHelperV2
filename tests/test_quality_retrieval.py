@@ -147,3 +147,51 @@ def test_normalizer_rejects_dropping_or_changing_vague_duration(raw,candidate):
     q=QueryNormalizer(lambda value:candidate).normalize(raw)
     assert q.canonical==raw
     assert q.downgrade_reason
+
+
+def test_retriever_uses_hybrid_candidate_limit_and_traces_actual_limit(db_session_factory):
+    with db_session_factory.begin() as s:
+        s.add(KnowledgeChunk(id=701,source_key='doc:limit:gold',category='耳机',
+            questions=['支持什么'],answer='USB-C',embedding_text='USB-C',
+            chapter_path=['耳机','接口'],content_type='policy',content_hash='limit-hash'))
+        s.flush()
+        s.add(HybridSync(collection='hybrid-limit',chunk_id=701,content_hash='limit-hash'))
+
+    class Embeddings:
+        def embed_query(self, query):
+            return [0.0] * 1024
+
+    class Store:
+        collection_name='hybrid-limit'
+        def __init__(self):
+            self.limits=[]
+        def search(self, vector, lexical, strategy, category=None, limit=50):
+            self.limits.append((strategy,limit))
+            return [HybridHit(701,.8,'limit-hash')]
+
+    class Ranker:
+        def __init__(self):
+            self.top_ns=[]
+        def rank(self, query, documents, top_n):
+            self.top_ns.append(top_n)
+            return [(0,.8)]
+
+    store, ranker = Store(), Ranker()
+    retriever=QualityRetriever(db_session_factory,Embeddings(),store,ranker,
+                               normalizer=QueryNormalizer())
+    expected={'hybrid':100,'hybrid_rerank':100,'dense':50,'bm25':50}
+    for strategy,limit in expected.items():
+        _, candidates, trace=retriever.retrieve_with_trace('接口是什么？',strategy)
+        assert len(candidates)==1
+        assert trace['candidate_limit']==limit
+        assert trace['fusion_output_limit']==(limit if strategy in {'hybrid','hybrid_rerank'} else None)
+    assert store.limits==[(strategy,limit) for strategy,limit in expected.items()]
+    assert ranker.top_ns==[10]
+
+
+@pytest.mark.parametrize('limit',[49,101])
+def test_retriever_rejects_hybrid_candidate_limits_outside_50_to_100(db_session_factory,limit):
+    class Store:
+        collection_name='hybrid'
+    with pytest.raises(ValueError,match='hybrid candidate limit'):
+        QualityRetriever(db_session_factory,None,Store(),None,hybrid_candidate_limit=limit)

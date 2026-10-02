@@ -22,6 +22,14 @@ def test_selected_dataset_uses_its_queries_corpus_and_output(tmp_path):
     assert result['rows'][0]['query'] == cases[0]['query']
     assert result['metadata']['dataset_sha256'] == hashlib.sha256(data).hexdigest()
     assert result['metadata']['dataset_dir'] == str(root)
+    for key in ('query_prompt_sha256','query_implementation_sha256',
+                'generation_prompt_sha256','generation_implementation_sha256'):
+        assert len(result['metadata'][key]) == 64
+    rewrite_metadata = json.loads(Path(
+        'evaluation/ch04/v2/query-fix/20261002/regression-after-semantic-review.metadata.json'
+    ).read_text())
+    assert result['metadata']['query_prompt_sha256'] == rewrite_metadata['new_prompt_sha256']
+    assert result['metadata']['hybrid_output_limit'] == 100
 
 
 def test_missing_selected_dataset_is_not_replaced_with_default(tmp_path):
@@ -104,6 +112,7 @@ def test_live_receives_two_disjoint_corpora_and_selected_category(tmp_path, monk
     def fake_build(root,drafts):
         captured.append((root,[d.source_key for d in drafts],[d.answer for d in drafts]))
         class Retriever:
+            hybrid_candidate_limit=100
             def retrieve_with_trace(self,query,strategy,category):
                 assert root.name in query and category==drafts[0].category
                 return [],[],{}

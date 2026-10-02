@@ -26,6 +26,14 @@ def test_hybrid_filter_both_paths_and_top50():
     assert all('is_active == true' in r.expr for r in reqs)
 
 
+def test_hybrid_output_limit_100_keeps_each_search_leg_at_50():
+    client=Transport()
+    store=HybridStore(client=client)
+    store.search([.1]*1024,'XH-300 续航','hybrid_rerank',limit=100)
+    assert client.request['limit']==100
+    assert [request.limit for request in client.request['reqs']]==[50,50]
+
+
 def test_upsert_preserves_model_text_and_hash():
     client=Transport()
     store=HybridStore(client=client)

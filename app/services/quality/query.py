@@ -110,6 +110,18 @@ class NormalizedQuery(BaseModel):
     canonical: str
 
 
+NORMALIZER_PROMPT=(
+    '将本轮口语客服问题归一为清晰、简短的标准问法，只处理本轮，不做指代消解或多轮推断。'
+    '逐项保留原问题中的每个型号及后缀（如 SE、Pro）、活动编号、金额和所有数字/数量及其单位、正负号与百分号、适用条件与范围。'
+    '保留用户已经提供的状态和时间背景（如已经购买/使用、已经使用几个月），保留模糊数量和模糊时长（如几个月、若干天、数年）。'
+    '比较问题必须保留每个不同的比较型号；可以合并重复提到的同一个型号，但不能删掉不同型号，也不能新增型号。'
+    '保持原问题的目标、比较对象和比较关系；不得引入用户未问的计算规则或政策维度。'
+    '否定条件和否定作用范围必须保留；任何含否定条件的子句必须逐字保持原文，不得移动、交换、弱化或新增否定。'
+    '只在信息明确且上述内容均保真时归一；无法确认等价就原样返回用户问题。'
+    '输出JSON：{"canonical":"标准问法"}。'
+)
+
+
 class QueryNormalizer:
     def __init__(self, rewrite=None):
         self.rewrite=rewrite
@@ -142,15 +154,6 @@ class QueryNormalizer:
     def from_model(cls, model):
         structured=model.with_structured_output(NormalizedQuery,method='json_mode')
         def rewrite(raw):
-            result=structured.invoke([{'role':'system','content':(
-                '将本轮口语客服问题归一为清晰、简短的标准问法，只处理本轮，不做指代消解或多轮推断。'
-                '逐项保留原问题中的每个型号及后缀（如 SE、Pro）、活动编号、金额和所有数字/数量及其单位、正负号与百分号、适用条件与范围。'
-                '保留用户已经提供的状态和时间背景（如已经购买/使用、已经使用几个月），保留模糊数量和模糊时长（如几个月、若干天、数年）。'
-                '比较问题必须保留每个不同的比较型号；可以合并重复提到的同一个型号，但不能删掉不同型号，也不能新增型号。'
-                '保持原问题的目标、比较对象和比较关系；不得引入用户未问的计算规则或政策维度。'
-                '否定条件和否定作用范围必须保留；任何含否定条件的子句必须逐字保持原文，不得移动、交换、弱化或新增否定。'
-                '只在信息明确且上述内容均保真时归一；无法确认等价就原样返回用户问题。'
-                '输出JSON：{"canonical":"标准问法"}。'
-            )}, {'role':'user','content':raw}])
+            result=structured.invoke([{'role':'system','content':NORMALIZER_PROMPT}, {'role':'user','content':raw}])
             return result.canonical
         return cls(rewrite)

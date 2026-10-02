@@ -150,3 +150,5 @@ v2 报告区分 Recall@1/5/10、完整证据@K、MRR、必要事实覆盖/答案
 # 确定性复现协议异常，核对快照与拒答行为
 python3 -m pytest -q tests/test_quality_generation_diagnostics.py
 ```
+
+2026-10-02 修复阶段：Query 改写保护型号、带单位/正负号数量、模糊时长与否定子句；无法确认保真则保留原话。同义词仍仅检索时扩展。独立 calibration 成对验证后，混合检索融合输出上限采用100（dense/BM25每路仍Top-50，最终bge-reranker-v2-m3精排Top-10）。该上限增加重排工作量；校准实验见 `evaluation/ch04/v2/retrieval-calibration/20261002/report.md`。新评估报告metadata记录Prompt及实现hash与实际融合上限，旧报告保留原配置。

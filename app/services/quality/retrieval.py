@@ -5,6 +5,8 @@ from sqlalchemy import select
 from app.db.models import KnowledgeChunk, HybridSync
 from app.services.quality.query import QueryNormalizer
 
+DEFAULT_HYBRID_CANDIDATE_LIMIT = 100
+
 
 @dataclass(frozen=True)
 class Evidence:
@@ -23,12 +25,16 @@ class Evidence:
 
 
 class QualityRetriever:
-    def __init__(self, session_factory, embeddings, store, reranker, normalizer=None):
+    def __init__(self, session_factory, embeddings, store, reranker, normalizer=None,
+                 hybrid_candidate_limit=DEFAULT_HYBRID_CANDIDATE_LIMIT):
+        if type(hybrid_candidate_limit) is not int or not 50 <= hybrid_candidate_limit <= 100:
+            raise ValueError('hybrid candidate limit must be an integer in [50, 100]')
         self.session_factory=session_factory
         self.embeddings=embeddings
         self.store=store
         self.reranker=reranker
         self.normalizer=normalizer or QueryNormalizer()
+        self.hybrid_candidate_limit=hybrid_candidate_limit
 
     def hydrate(self, hits):
         with self.session_factory() as s:
@@ -48,7 +54,9 @@ class QualityRetriever:
         normalized_at=time.monotonic()
         vector=None if strategy=='bm25' else self.embeddings.embed_query(understanding.canonical)
         embedded_at=time.monotonic()
-        hits=self.store.search(vector,understanding.lexical,strategy,category=category,limit=50)
+        is_hybrid=strategy in {'hybrid','hybrid_rerank'}
+        candidate_limit=self.hybrid_candidate_limit if is_hybrid else 50
+        hits=self.store.search(vector,understanding.lexical,strategy,category=category,limit=candidate_limit)
         recalled_at=time.monotonic()
         candidates=self.hydrate(hits)
         hydrated_at=time.monotonic()
@@ -57,7 +65,7 @@ class QualityRetriever:
             evidence=[replace(candidates[i],n=n+1,score=score) for n,(i,score) in enumerate(ranks)]
         else:
             evidence=[replace(e,n=i+1) for i,e in enumerate(candidates[:10])]
-        trace={'canonical_query':understanding.canonical,'lexical_query':understanding.lexical,'downgrade_reason':understanding.downgrade_reason,'normalization_seconds':normalized_at-started,'embedding_seconds':embedded_at-normalized_at,'recall_seconds':recalled_at-embedded_at,'hydration_seconds':hydrated_at-recalled_at,'rerank_seconds':time.monotonic()-hydrated_at}
+        trace={'canonical_query':understanding.canonical,'lexical_query':understanding.lexical,'downgrade_reason':understanding.downgrade_reason,'candidate_limit':candidate_limit,'fusion_output_limit':candidate_limit if is_hybrid else None,'normalization_seconds':normalized_at-started,'embedding_seconds':embedded_at-normalized_at,'recall_seconds':recalled_at-embedded_at,'hydration_seconds':hydrated_at-recalled_at,'rerank_seconds':time.monotonic()-hydrated_at}
         return evidence,candidates,trace
 
     def retrieve_with_candidates(self, query, strategy='hybrid_rerank', category=None):

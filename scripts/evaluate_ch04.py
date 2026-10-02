@@ -16,6 +16,9 @@ from app.services.knowledge.repository import KnowledgeRepository
 from app.services.quality.index import HybridIndexer
 from app.services.quality.runtime import build_answer_service,config
 from app.services.quality.evaluation import retrieval_metrics,summarize,calibration_threshold,metric_available
+from app.services.quality.query import NORMALIZER_PROMPT
+from app.services.quality.generation import QUALITY_PROMPT
+from app.services.quality.retrieval import DEFAULT_HYBRID_CANDIDATE_LIMIT
 from app.services.quality.ledger import QualityLedger
 from scripts.validate_ch04_dataset import load_corpus,validate_dataset,verify_frozen_dataset
 
@@ -23,6 +26,19 @@ from scripts.ch04_judging import (build_judges, judge_identity, public_endpoint,
                                   load_replay_rows, rejudge_row)
 
 STRATEGIES=['dense','bm25','hybrid','hybrid_rerank']
+
+
+def evaluation_contract_metadata():
+    project_root=Path(__file__).resolve().parents[1]
+    query_path=project_root/'app/services/quality/query.py'
+    generation_path=project_root/'app/services/quality/generation.py'
+    return {
+        'query_prompt_sha256':hashlib.sha256(NORMALIZER_PROMPT.encode('utf-8')).hexdigest(),
+        'query_implementation_sha256':hashlib.sha256(query_path.read_bytes()).hexdigest(),
+        'generation_prompt_sha256':hashlib.sha256(QUALITY_PROMPT.encode('utf-8')).hexdigest(),
+        'generation_implementation_sha256':hashlib.sha256(generation_path.read_bytes()).hexdigest(),
+        'hybrid_output_limit':DEFAULT_HYBRID_CANDIDATE_LIMIT,
+    }
 
 
 def report(rows,mode,metadata):
@@ -264,6 +280,7 @@ def main(argv=None):
     run_dir=new_run(args.output_dir or args.dataset_dir / 'runs')
     database_url, collection = evaluation_targets(args.dataset_dir, config())
     metadata={**identity,'cases':len(cases),'strategies':strategies,'split':args.split,'dataset_dir':str(args.dataset_dir),'dataset_sha256':hashlib.sha256(dataset_file.read_bytes()).hexdigest(),'corpus_sha256':hashlib.sha256(''.join(d.source_key+d.answer for d in drafts).encode()).hexdigest(), 'corpus_chunks':len(drafts), 'collection':collection, 'evaluation_database':database_url.rsplit('@',1)[-1]}
+    metadata.update(evaluation_contract_metadata())
     rows=[];resources=[];service=None;ledger=None
     try:
         if args.fixture:
@@ -272,6 +289,7 @@ def main(argv=None):
             service,judges,ledger,resources=build_live(args.dataset_dir, drafts)
             judge_model=judges[2]['judge_model']
             metadata.update(**judges[2],reranker=service.retriever.reranker.model,collection=service.retriever.store.collection_name,rerank_min_score=service.min_score)
+            metadata['hybrid_output_limit']=service.retriever.hybrid_candidate_limit
             with ThreadPoolExecutor(max_workers=args.workers) as pool, (run_dir/'rows.jsonl').open('w') as journal:
                 futures=[pool.submit(evaluate_case,c,strategies,service,judges) for c in cases]
                 for completed,future in enumerate(as_completed(futures),1):
