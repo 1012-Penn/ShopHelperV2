@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import time
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -51,17 +52,39 @@ def prepare_evaluation_corpus(repository, drafts):
     repository.deactivate_missing_documents(sources,[d.source_key for d in drafts])
 
 
-def build_live():
+def evaluation_targets(dataset_dir, values):
+    root = Path(dataset_dir)
+    if root == Path('evaluation/ch04'):
+        name = 'knowledge_ch04_eval'
+    elif root == Path('evaluation/ch04/v2'):
+        name = 'knowledge_ch04_eval_v2'
+    else:
+        slug = re.sub(r'[^a-zA-Z0-9_]', '_', root.name)[:32]
+        digest = hashlib.sha256(str(root.resolve()).encode()).hexdigest()[:8]
+        name = f'knowledge_ch04_eval_{slug}_{digest}'
+    return (values.get('EVAL_DATABASE_URL', f'sqlite:///{root}/eval.db'),
+            values.get('EVAL_HYBRID_COLLECTION', name))
+
+
+def build_live(dataset_dir=Path('evaluation/ch04'), drafts=None):
     settings=Settings.from_env()
     values=config()
-    eval_engine=make_engine(values.get('EVAL_DATABASE_URL','sqlite:///evaluation/ch04/eval.db'))
+    database_url, collection = evaluation_targets(dataset_dir, values)
+    eval_engine=make_engine(database_url)
     create_tables(eval_engine)
     sessions=make_session_factory(eval_engine)
     repository=KnowledgeRepository(sessions)
-    drafts=load_corpus()
+    drafts = drafts if drafts is not None else load_corpus(dataset_dir / 'corpus')
     prepare_evaluation_corpus(repository,drafts)
-    os.environ['HYBRID_COLLECTION']=values.get('EVAL_HYBRID_COLLECTION','knowledge_ch04_eval')
-    service=build_answer_service(sessions,settings)
+    previous = os.environ.get('HYBRID_COLLECTION')
+    os.environ['HYBRID_COLLECTION'] = collection
+    try:
+        service=build_answer_service(sessions,settings)
+    finally:
+        if previous is None:
+            os.environ.pop('HYBRID_COLLECTION', None)
+        else:
+            os.environ['HYBRID_COLLECTION'] = previous
     print('evaluation index:',HybridIndexer(sessions,service.retriever.embeddings,service.retriever.store).sync(),flush=True)
     judge_model=values.get('JUDGE_MODEL',settings.model)
     judge=FaithfulnessJudge(ChatOpenAI(model=judge_model,api_key=values.get('JUDGE_API_KEY',settings.api_key),base_url=values.get('JUDGE_API_BASE',settings.base_url),temperature=0,timeout=90,max_retries=1))
@@ -123,22 +146,25 @@ def main(argv=None):
     p.add_argument('--workers',type=int,default=12)
     p.add_argument('--limit',type=int)
     p.add_argument('--calibrate',action='store_true')
-    p.add_argument('--output-dir',type=Path,default=Path('evaluation/ch04/runs'))
+    p.add_argument('--dataset-dir', type=Path, default=Path('evaluation/ch04'))
+    p.add_argument('--output-dir',type=Path)
     args=p.parse_args(argv)
     if not 1<=args.workers<=24: p.error('workers must be 1..24')
-    cases=json.loads(Path('evaluation/ch04/cases.json').read_text())
-    drafts=load_corpus();validate_dataset(cases,{d.source_key for d in drafts})
+    dataset_file = args.dataset_dir / 'cases.json'
+    cases=json.loads(dataset_file.read_text())
+    drafts=load_corpus(args.dataset_dir / 'corpus');validate_dataset(cases,{d.source_key for d in drafts})
     cases=[c for c in cases if args.split=='all' or c['split']==args.split]
     if args.limit:cases=cases[:args.limit]
     strategies=STRATEGIES if args.strategy=='all' else [args.strategy]
-    run_dir=args.output_dir/(datetime.now().strftime('%Y%m%d-%H%M%S')+'-'+uuid4().hex[:8]);run_dir.mkdir(parents=True)
-    metadata={'cases':len(cases),'strategies':strategies,'split':args.split,'dataset_sha256':hashlib.sha256(Path('evaluation/ch04/cases.json').read_bytes()).hexdigest(),'corpus_sha256':hashlib.sha256(''.join(d.source_key+d.answer for d in drafts).encode()).hexdigest()}
+    run_dir=(args.output_dir or args.dataset_dir / 'runs')/(datetime.now().strftime('%Y%m%d-%H%M%S')+'-'+uuid4().hex[:8]);run_dir.mkdir(parents=True)
+    database_url, collection = evaluation_targets(args.dataset_dir, config())
+    metadata={'cases':len(cases),'strategies':strategies,'split':args.split,'dataset_dir':str(args.dataset_dir),'dataset_sha256':hashlib.sha256(dataset_file.read_bytes()).hexdigest(),'corpus_sha256':hashlib.sha256(''.join(d.source_key+d.answer for d in drafts).encode()).hexdigest(), 'corpus_chunks':len(drafts), 'collection':collection, 'evaluation_database':database_url.rsplit('@',1)[-1]}
     rows=[];resources=[];service=None;ledger=None
     try:
         if args.fixture:
             rows=fixture_rows(cases,strategies)
         else:
-            service,judge,ledger,judge_model,resources=build_live()
+            service,judge,ledger,judge_model,resources=build_live(args.dataset_dir, drafts)
             metadata.update(generator_model=Settings.from_env().model,judge_model=judge_model,reranker=service.retriever.reranker.model,collection=service.retriever.store.collection_name,rerank_min_score=service.min_score)
             with ThreadPoolExecutor(max_workers=args.workers) as pool, (run_dir/'rows.jsonl').open('w') as journal:
                 futures=[pool.submit(evaluate_case,c,strategies,service,judge,judge_model) for c in cases]
