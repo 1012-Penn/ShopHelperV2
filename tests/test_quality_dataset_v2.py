@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from scripts.evaluate_ch04 import main
+from scripts.validate_ch04_dataset import validate_dataset
 
 
 def test_selected_dataset_uses_its_queries_corpus_and_output(tmp_path):
@@ -38,3 +39,34 @@ def test_dataset_targets_keep_v1_v2_separate_and_expose_overrides():
         'EVAL_DATABASE_URL': 'sqlite:///custom.db',
         'EVAL_HYBRID_COLLECTION': 'custom_eval',
     }) == ('sqlite:///custom.db', 'custom_eval')
+
+
+def labeled_case(**updates):
+    row = dict(eval_id='V2A001', bucket='A_policy', difficulty='easy',
+               split='calibration', query='在耳机品类能退吗？', category='耳机',
+               relevant_source_keys=['a'], required_facts=['七天内'],
+               should_refuse=False, topic_id='a', family_id='family-a',
+               challenge_tags=['category_filter'], distractor_source_keys=['b'])
+    return {**row, **updates}
+
+
+def test_rejects_global_family_leak_across_buckets():
+    rows = [labeled_case(), labeled_case(eval_id='V2C001', query='另一个问法',
+            bucket='C_colloquial', split='test', topic_id='another-topic')]
+    with pytest.raises(ValueError, match='family'):
+        validate_dataset(rows, {'a': '耳机', 'b': '家电'}, minimum=1)
+
+
+def test_rejects_gold_outside_filter_and_gold_as_distractor():
+    with pytest.raises(ValueError, match='category'):
+        validate_dataset([labeled_case(category='家电')], {'a': '耳机', 'b': '家电'}, minimum=1)
+    with pytest.raises(ValueError, match='distractor'):
+        validate_dataset([labeled_case(distractor_source_keys=['a'])], {'a': '耳机'}, minimum=1)
+
+
+def test_v2_cases_require_traceable_refusal_and_nonempty_facts():
+    with pytest.raises(ValueError, match='refusal'):
+        validate_dataset([labeled_case(bucket='D_unknown', relevant_source_keys=[],
+              required_facts=[], should_refuse=True)], {'a': '耳机', 'b': '家电'}, minimum=1)
+    with pytest.raises(ValueError, match='facts'):
+        validate_dataset([labeled_case(required_facts=[' '])], {'a': '耳机', 'b': '家电'}, minimum=1)

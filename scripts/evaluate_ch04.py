@@ -152,7 +152,7 @@ def main(argv=None):
     if not 1<=args.workers<=24: p.error('workers must be 1..24')
     dataset_file = args.dataset_dir / 'cases.json'
     cases=json.loads(dataset_file.read_text())
-    drafts=load_corpus(args.dataset_dir / 'corpus');validate_dataset(cases,{d.source_key for d in drafts})
+    drafts=load_corpus(args.dataset_dir / 'corpus');validate_dataset(cases,{d.source_key:d.category for d in drafts})
     cases=[c for c in cases if args.split=='all' or c['split']==args.split]
     if args.limit:cases=cases[:args.limit]
     strategies=STRATEGIES if args.strategy=='all' else [args.strategy]

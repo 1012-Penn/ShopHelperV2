@@ -1,5 +1,6 @@
 """Validate the labeled corpus before any quality metric is computed."""
 import json
+import argparse
 from collections import Counter
 from pathlib import Path
 from app.services.knowledge.chunking import split_markdown
@@ -8,6 +9,7 @@ BUCKETS={'A_policy','B_model','C_colloquial','D_unknown','E_multi'}
 
 
 def validate_dataset(cases, sources, minimum=300):
+    source_keys = set(sources)
     if len(cases)<minimum:
         raise ValueError('dataset below required minimum')
     if len({c['eval_id'] for c in cases})!=len(cases) or len({c['query'].strip() for c in cases})!=len(cases):
@@ -18,10 +20,31 @@ def validate_dataset(cases, sources, minimum=300):
         if len(c['eval_id'])>16 or len(c['query'])>512 or not c['query'].strip():
             raise ValueError('invalid case length')
         truth=set(c['relevant_source_keys'])
-        if not truth<=sources or bool(truth)==c['should_refuse']:
+        if not truth<=source_keys or bool(truth)==c['should_refuse']:
             raise ValueError('missing/invalid ground truth')
-        if not c['should_refuse'] and not c.get('required_facts'):
+        if not c['should_refuse'] and (not c.get('required_facts') or any(not f.strip() for f in c['required_facts'])):
             raise ValueError('positive case requires answer facts')
+        if c.get('family_id'):
+            distractors = set(c.get('distractor_source_keys', []))
+            if not distractors <= source_keys:
+                raise ValueError('missing distractor source')
+            if truth & distractors:
+                raise ValueError('gold and distractor overlap')
+            if c.get('category'):
+                if not isinstance(sources, dict) or any(sources[k] != c['category'] for k in truth):
+                    raise ValueError('gold outside category filter')
+            if not c.get('challenge_tags'):
+                raise ValueError('missing challenge tags')
+            if c['should_refuse'] and not c.get('refusal_rationale', '').strip():
+                raise ValueError('unknown case requires refusal rationale')
+        elif c['eval_id'].startswith('V2'):
+            raise ValueError('v2 requires family id')
+    families = {}
+    for c in cases:
+        if c.get('family_id'):
+            families.setdefault(c['family_id'], set()).add(c['split'])
+    if any(len(s) > 1 for s in families.values()):
+        raise ValueError('family leaks across calibration/test globally')
     counts=Counter(c['bucket'] for c in cases)
     if minimum>=300:
         if any(counts[b]<60 for b in BUCKETS):
@@ -45,10 +68,15 @@ def load_corpus(root=Path('evaluation/ch04/corpus')):
     return drafts
 
 
-def main():
-    drafts=load_corpus()
-    cases=json.loads(Path('evaluation/ch04/cases.json').read_text())
-    print(json.dumps(validate_dataset(cases,{d.source_key for d in drafts}),ensure_ascii=False))
+def main(argv=None):
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--dataset-dir', type=Path, default=Path('evaluation/ch04'))
+    args = p.parse_args(argv)
+    drafts=load_corpus(args.dataset_dir / 'corpus')
+    cases=json.loads((args.dataset_dir / 'cases.json').read_text())
+    result = validate_dataset(cases,{d.source_key:d.category for d in drafts})
+    result.update(corpus_chunks=len(drafts), filtered_cases=sum(bool(c['category']) for c in cases))
+    print(json.dumps(result,ensure_ascii=False))
     for bucket in sorted(BUCKETS):
         for difficulty in ['easy','medium','hard']:
             c=next(c for c in cases if c['bucket']==bucket and c['difficulty']==difficulty)
