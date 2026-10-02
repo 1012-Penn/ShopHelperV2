@@ -1,0 +1,22 @@
+{
+  "stage": "initial",
+  "stage_calls": 4,
+  "total_calibration_calls": 4,
+  "stage_outcomes": {
+    "changedAccepted": 1,
+    "unchangedAccepted": 2,
+    "fallback": 1
+  },
+  "outcomes": {
+    "changedAccepted": 1,
+    "unchangedAccepted": 2,
+    "fallback": 1
+  },
+  "fallback_ids": [
+    "V2B001"
+  ],
+  "changed_ids_pending_human_review": [
+    "V2C003"
+  ],
+  "note": "Guard acceptance checks preservation predicates only; semantic equivalence requires human review."
+}

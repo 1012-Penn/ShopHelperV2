@@ -24,4 +24,7 @@ def make_session_factory(engine: Engine) -> sessionmaker[Session]:
 def create_tables(engine: Engine) -> None:
     from app.db import models  # noqa: F401 - importing registers mapped tables
 
+    from scripts.migrate_ch04 import migrate_ch04
+    migrate_ch04(engine)
     Base.metadata.create_all(engine)
+    migrate_ch04(engine)

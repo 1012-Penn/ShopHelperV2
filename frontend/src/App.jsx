@@ -22,6 +22,8 @@ import {
   Sparkles,
   Tag,
   Truck,
+  ThumbsUp,
+  ThumbsDown,
   UserRound,
   WandSparkles,
   X,
@@ -37,7 +39,7 @@ function formatTime() {
   return new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit" }).format(new Date());
 }
 
-function parseSseBlock(block, onToken, onError) {
+function parseSseBlock(block, onToken, onError, onCitations = () => {}, onDone = () => {}) {
   const event = block.match(/^event:\s*(.+)$/m)?.[1]?.trim();
   const rawData = block.match(/^data:\s*(.+)$/m)?.[1];
   if (!event || !rawData) return;
@@ -45,6 +47,8 @@ function parseSseBlock(block, onToken, onError) {
     const data = JSON.parse(rawData);
     if (event === "token") onToken(data.content || "");
     if (event === "error") onError(data.message || "上游模型调用失败");
+    if (event === "citations") onCitations(data);
+    if (event === "done") onDone(data);
   } catch {
     onError("响应格式暂时无法解析");
   }
@@ -54,13 +58,22 @@ function NavItem({ icon: Icon, label, active, badge, onClick }) {
   return <button className={`nav-item ${active ? "active" : ""}`} onClick={onClick} type="button"><Icon size={18} strokeWidth={active ? 2.2 : 1.8} /><span>{label}</span>{badge && <em>{badge}</em>}</button>;
 }
 
-function MessageBubble({ message }) {
+function MessageBubble({ message, onCitation, onFeedback }) {
   const isUser = message.role === "user";
   return <div className={`message-row ${isUser ? "from-user" : "from-assistant"}`}>
     {!isUser && <div className="mini-bot"><Bot size={16} /></div>}
     <div className="message-stack">
       <div className="message-meta"><span>{isUser ? "你" : "喵助理"}</span><time>{message.detail}</time>{!isUser && <span className="ai-chip">AI 助手</span>}</div>
-      <div className="message-bubble">{message.content || <span className="typing-dots"><i /><i /><i /></span>}</div>
+      <div className="message-bubble">{message.content ? message.content.split(/(\[\d+\])/g).map((part, index) => {
+        const match = part.match(/^\[(\d+)\]$/);
+        const citation = match && message.citations?.find((item) => item.n === Number(match[1]));
+        return citation ? <button type="button" className="citation-number" key={index} onClick={() => onCitation(citation)} aria-label={`查看引用 ${citation.n}`}>{part}</button> : <span key={index}>{part}</span>;
+      }) : <span className="typing-dots"><i /><i /><i /></span>}</div>
+      {!isUser && !message.system && !message.streaming && !message.error && message.content && <div className="answer-feedback">
+        <button type="button" aria-label="满意" aria-pressed={message.feedback === "up"} disabled={Boolean(message.feedback)} className={message.feedback === "up" ? "selected" : ""} onClick={() => onFeedback(message, "up")}><ThumbsUp size={15} /></button>
+        <button type="button" aria-label="不满意" aria-pressed={message.feedback === "down"} disabled={Boolean(message.feedback)} className={message.feedback === "down" ? "selected" : ""} onClick={() => onFeedback(message, "down")}><ThumbsDown size={15} /></button>
+        {message.feedback && <span role="status">已反馈</span>}
+      </div>}
     </div>
     {isUser && <div className="mini-user"><UserRound size={15} /></div>}
   </div>;
@@ -68,6 +81,8 @@ function MessageBubble({ message }) {
 
 function App() {
   const [messages, setMessages] = useState(initialMessages);
+  const [activeCitation, setActiveCitation] = useState(null);
+  const feedbackLocks = useRef(new Set());
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [search, setSearch] = useState("");
@@ -77,6 +92,18 @@ function App() {
   const [notice, setNotice] = useState("");
   const textareaRef = useRef(null);
   const conversationId = useRef(`web-${Date.now()}`);
+
+  const recordFeedback = (message, choice) => {
+    const key = `${conversationId.current}:${message.id}`;
+    if (feedbackLocks.current.has(key) || message.feedback) return;
+    feedbackLocks.current.add(key);
+    setMessages((current) => current.map((item) => item.id === message.id ? { ...item, feedback: choice } : item));
+    const record = { conversation_id: conversationId.current, message_id: message.serverMessageId || message.id, choice, time: new Date().toISOString() };
+    try {
+      const records = JSON.parse(localStorage.getItem("mewhelp.feedback.v1") || "[]");
+      localStorage.setItem("mewhelp.feedback.v1", JSON.stringify([...(Array.isArray(records) ? records : []), record]));
+    } catch { /* In-memory selection still locks if browser storage is unavailable. */ }
+  };
 
   const sendMessage = async (value = input) => {
     const content = value.trim();
@@ -106,13 +133,13 @@ function App() {
         buffer += decoder.decode(chunk || new Uint8Array(), { stream: !done });
         const blocks = buffer.split("\n\n");
         buffer = blocks.pop() || "";
-        blocks.forEach((block) => parseSseBlock(block, (token) => updateAssistant({ detail: "刚刚", streaming: true, append: token }), (error) => updateAssistant({ content: error, detail: "连接异常", streaming: false })));
+        blocks.forEach((block) => parseSseBlock(block, (token) => updateAssistant({ detail: "刚刚", streaming: true, append: token }), (error) => updateAssistant({ content: error, detail: "连接异常", streaming: false, error: true }), (data) => updateAssistant({ citations: data.items || [], serverMessageId: data.message_id }), (data) => updateAssistant({ streaming: false, serverMessageId: data.message_id, refused: data.refused })));
         if (done) break;
       }
-      if (buffer.trim()) parseSseBlock(buffer, (token) => updateAssistant({ detail: "刚刚", streaming: true, append: token }), (error) => updateAssistant({ content: error, detail: "连接异常", streaming: false }));
+      if (buffer.trim()) parseSseBlock(buffer, (token) => updateAssistant({ detail: "刚刚", streaming: true, append: token }), (error) => updateAssistant({ content: error, detail: "连接异常", streaming: false, error: true }), (data) => updateAssistant({ citations: data.items || [], serverMessageId: data.message_id }), (data) => updateAssistant({ streaming: false, serverMessageId: data.message_id, refused: data.refused }));
       setMessages((current) => current.map((message) => message.id === assistantId ? { ...message, streaming: false, detail: "刚刚" } : message));
     } catch (error) {
-      setMessages((current) => current.map((message) => message.id === assistantId ? { ...message, content: "暂时连接不上客服服务，请确认后端已启动后再试。", streaming: false, detail: "发送失败" } : message));
+      setMessages((current) => current.map((message) => message.id === assistantId ? { ...message, content: "暂时连接不上客服服务，请确认后端已启动后再试。", streaming: false, detail: "发送失败", error: true } : message));
       setNotice("连接失败，请确认 FastAPI 服务正在运行");
       console.error(error);
     } finally {
@@ -138,6 +165,16 @@ function App() {
   const submitChat = (event) => { event.preventDefault(); sendMessage(); };
 
   return <div className="app-shell">
+    {activeCitation && <div className="citation-overlay" onClick={() => setActiveCitation(null)}>
+      <section className="citation-panel" role="dialog" aria-modal="true" aria-label="引用来源" onClick={(event) => event.stopPropagation()}>
+        <header><strong>引用 [{activeCitation.n}] · 来源原文</strong><button type="button" aria-label="关闭来源" onClick={() => setActiveCitation(null)}><X size={20} /></button></header>
+        <div className="citation-path">{activeCitation.section_path?.join(" / ") || "未提供章节"}</div>
+        <small>以下为生成本段回答时使用的证据快照</small>
+        {activeCitation.question && <h3>{activeCitation.question}</h3>}
+        <div className="citation-original">{activeCitation.answer}</div>
+        <footer><span>Chunk #{activeCitation.chunk_id}</span>{activeCitation.source_url ? <a href={activeCitation.source_url} target="_blank" rel="noopener noreferrer">跳回原文章节 <ArrowUpRight size={15} /></a> : <span>来源为脱敏问答，无公开原文链接</span>}</footer>
+      </section>
+    </div>}
     <aside className="app-sidebar">
       <div className="sidebar-logo"><span>喵</span><small>MEOW</small></div>
       <div className="sidebar-group"><span className="sidebar-caption">WORKSPACE</span><NavItem icon={LayoutDashboard} label="概览" /><NavItem icon={MessageCircle} label="智能客服" active badge="在线" /><NavItem icon={PackageCheck} label="售后工单" badge="3" /><NavItem icon={Truck} label="物流追踪" /></div>
@@ -152,7 +189,7 @@ function App() {
 
       <div className="content-grid">
         <section className="conversation-panel panel-card" id="conversation"><div className="panel-head"><div className="panel-title"><div className="title-icon orange"><Headphones size={18} /></div><div><h2>实时对话</h2><p>AI 正在为你提供支持</p></div></div><div className="panel-head-actions"><span className="secure"><Check size={13} /> 安全连接</span><button type="button" onClick={clearChat} className="text-action"><RotateCcw size={14} /> 新对话</button></div></div>
-          <div className="conversation-body">{messages.map((message) => <MessageBubble key={message.id} message={message} />)}{notice && <div className="notice"><span>{notice}</span><button type="button" onClick={() => setNotice("")}><X size={14} /></button></div>}</div>
+          <div className="conversation-body">{messages.map((message) => <MessageBubble key={message.id} message={message} onCitation={setActiveCitation} onFeedback={recordFeedback} />)}{notice && <div className="notice"><span>{notice}</span><button type="button" onClick={() => setNotice("")}><X size={14} /></button></div>}</div>
           <div className="suggestion-row"><span>快捷提问</span>{suggestions.map((suggestion) => <button type="button" key={suggestion} onClick={() => sendMessage(suggestion)}>{suggestion}</button>)}</div>
           <form className="composer" onSubmit={submitChat}><div className="composer-input"><textarea ref={textareaRef} value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); sendMessage(); } }} placeholder="描述你的问题，喵助理会帮你处理…" rows="1" /><button className="add-attachment" type="button" title="添加附件"><Plus size={18} /></button></div><div className="composer-foot"><span><Clock3 size={13} /> 通常几秒内回复</span><button className="send-button" type="submit" disabled={sending || !input.trim()}>{sending ? "生成中" : "发送"}<Send size={15} /></button></div></form>
         </section>

@@ -1,0 +1,1342 @@
+{
+  "model": {
+    "model": "deepseek-chat",
+    "endpoint_host": "api.deepseek.com",
+    "temperature": 0,
+    "max_retries": 0,
+    "generated_at_utc": "2026-10-02T07:51:49.478120+00:00"
+  },
+  "method": "json_mode",
+  "include_raw": true,
+  "max_retries": 0,
+  "prompt_sha256": "f057f7a9792c46d1532eca87d8297ce09609c8c22cbf2a046c292d86910b3294",
+  "results": {
+    "V2B021": {
+      "query": "请核对MX-405-SE的防水等级和浸泡限制，我没问MX-405；标了防水是不是就能游泳？",
+      "historical_refusal_reason": "答案引用缺失、越界或与声明不一致",
+      "historical_answer": "抱歉，现有知识库没有足够证据回答这个问题，我无法确认。建议联系人工客服核实。",
+      "historical_evidence_sha256": "8e9aa7e4478c4e9ef405fbbad1bd498416f3ec47e726f46c6f15613d7f84a77c",
+      "historical_evidence": [
+        {
+          "n": 1,
+          "chunk_id": 158,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-405-SE 防水与使用限制"
+          ],
+          "question": "MX-405-SE 防水与使用限制",
+          "answer": "MX-405-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-405的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F07-智能手表-MX-405.md:30a0d6f21c27f20a",
+          "score": 0.9996160268783569,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F07-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-405.md#section-a8ada929d12787e6"
+        },
+        {
+          "n": 2,
+          "chunk_id": 146,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-405 防水与使用限制"
+          ],
+          "question": "MX-405 防水与使用限制",
+          "answer": "MX-405 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-405Pro的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F07-智能手表-MX-405.md:f67b72e547e8fc34",
+          "score": 0.9990106821060181,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F07-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-405.md#section-b6153ff10ee5af01"
+        },
+        {
+          "n": 3,
+          "chunk_id": 154,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-405Plus 防水与使用限制"
+          ],
+          "question": "MX-405Plus 防水与使用限制",
+          "answer": "MX-405Plus 的防水等级为无防水等级；本型号不支持游泳或浸泡。 不能用MX-405-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F07-智能手表-MX-405.md:c9e151b364d9772e",
+          "score": 0.9985471367835999,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F07-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-405.md#section-c5b4948e8e539ed4"
+        },
+        {
+          "n": 4,
+          "chunk_id": 150,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-405Pro 防水与使用限制"
+          ],
+          "question": "MX-405Pro 防水与使用限制",
+          "answer": "MX-405Pro 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-405Plus的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F07-智能手表-MX-405.md:f0e5d879aa6ff3a3",
+          "score": 0.9974606037139893,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F07-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-405.md#section-79e4400ffcde36b9"
+        },
+        {
+          "n": 5,
+          "chunk_id": 350,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-583-SE 防水与使用限制"
+          ],
+          "question": "MX-583-SE 防水与使用限制",
+          "answer": "MX-583-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-583的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F15-智能手表-MX-583.md:dbe6c67098dbbe15",
+          "score": 0.9423204064369202,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F15-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-583.md#section-95c90ab2316442cb"
+        },
+        {
+          "n": 6,
+          "chunk_id": 446,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-602-SE 防水与使用限制"
+          ],
+          "question": "MX-602-SE 防水与使用限制",
+          "answer": "MX-602-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-602的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F19-智能手表-MX-602.md:77f15912ddc2a0c2",
+          "score": 0.9401202201843262,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F19-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-602.md#section-edbc646bc1cc5d68"
+        },
+        {
+          "n": 7,
+          "chunk_id": 346,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-583Plus 防水与使用限制"
+          ],
+          "question": "MX-583Plus 防水与使用限制",
+          "answer": "MX-583Plus 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-583-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F15-智能手表-MX-583.md:7bc176073cd84018",
+          "score": 0.8839159607887268,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F15-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-583.md#section-a3d7db9e72c84c3b"
+        },
+        {
+          "n": 8,
+          "chunk_id": 254,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-588-SE 防水与使用限制"
+          ],
+          "question": "MX-588-SE 防水与使用限制",
+          "answer": "MX-588-SE 的防水等级为无防水等级；本型号不支持游泳或浸泡。 不能用MX-588的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F11-智能手表-MX-588.md:847b207cab5483f6",
+          "score": 0.8752910494804382,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F11-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-588.md#section-67adb49b34644fdd"
+        },
+        {
+          "n": 9,
+          "chunk_id": 250,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-588Plus 防水与使用限制"
+          ],
+          "question": "MX-588Plus 防水与使用限制",
+          "answer": "MX-588Plus 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-588-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F11-智能手表-MX-588.md:e82f18659675672c",
+          "score": 0.8522084355354309,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F11-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-588.md#section-e59ce5bb133463fe"
+        },
+        {
+          "n": 10,
+          "chunk_id": 338,
+          "section_path": [
+            "电商",
+            "智能手表",
+            "MX-583 防水与使用限制"
+          ],
+          "question": "MX-583 防水与使用限制",
+          "answer": "MX-583 的防水等级为无防水等级；本型号不支持游泳或浸泡。 不能用MX-583Pro的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F15-智能手表-MX-583.md:2f04b1ea7f2c658c",
+          "score": 0.8514243364334106,
+          "category": "电商 / 智能手表",
+          "source_url": "/api/v1/knowledge/source?source=F15-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-583.md#section-ad48796d3f08297a"
+        }
+      ],
+      "generation_payload_sha256": "d0d58e912c5e82cb818e16de86bc9b9a631e2963188ab6bf9af13c298af3e129",
+      "generation_payload": {
+        "question": "请核对MX-405-SE的防水等级和浸泡限制，我没问MX-405；标了防水是不是就能游泳？",
+        "evidence": [
+          {
+            "n": 1,
+            "chunk_id": 158,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-405-SE 防水与使用限制"
+            ],
+            "question": "MX-405-SE 防水与使用限制",
+            "answer": "MX-405-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-405的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F07-智能手表-MX-405.md:30a0d6f21c27f20a",
+            "score": 0.9996160268783569,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F07-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-405.md#section-a8ada929d12787e6"
+          },
+          {
+            "n": 3,
+            "chunk_id": 154,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-405Plus 防水与使用限制"
+            ],
+            "question": "MX-405Plus 防水与使用限制",
+            "answer": "MX-405Plus 的防水等级为无防水等级；本型号不支持游泳或浸泡。 不能用MX-405-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F07-智能手表-MX-405.md:c9e151b364d9772e",
+            "score": 0.9985471367835999,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F07-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-405.md#section-c5b4948e8e539ed4"
+          },
+          {
+            "n": 5,
+            "chunk_id": 350,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-583-SE 防水与使用限制"
+            ],
+            "question": "MX-583-SE 防水与使用限制",
+            "answer": "MX-583-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-583的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F15-智能手表-MX-583.md:dbe6c67098dbbe15",
+            "score": 0.9423204064369202,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F15-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-583.md#section-95c90ab2316442cb"
+          },
+          {
+            "n": 7,
+            "chunk_id": 346,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-583Plus 防水与使用限制"
+            ],
+            "question": "MX-583Plus 防水与使用限制",
+            "answer": "MX-583Plus 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-583-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F15-智能手表-MX-583.md:7bc176073cd84018",
+            "score": 0.8839159607887268,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F15-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-583.md#section-a3d7db9e72c84c3b"
+          },
+          {
+            "n": 9,
+            "chunk_id": 250,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-588Plus 防水与使用限制"
+            ],
+            "question": "MX-588Plus 防水与使用限制",
+            "answer": "MX-588Plus 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-588-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F11-智能手表-MX-588.md:e82f18659675672c",
+            "score": 0.8522084355354309,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F11-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-588.md#section-e59ce5bb133463fe"
+          },
+          {
+            "n": 10,
+            "chunk_id": 338,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-583 防水与使用限制"
+            ],
+            "question": "MX-583 防水与使用限制",
+            "answer": "MX-583 的防水等级为无防水等级；本型号不支持游泳或浸泡。 不能用MX-583Pro的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F15-智能手表-MX-583.md:2f04b1ea7f2c658c",
+            "score": 0.8514243364334106,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F15-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-583.md#section-ad48796d3f08297a"
+          },
+          {
+            "n": 8,
+            "chunk_id": 254,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-588-SE 防水与使用限制"
+            ],
+            "question": "MX-588-SE 防水与使用限制",
+            "answer": "MX-588-SE 的防水等级为无防水等级；本型号不支持游泳或浸泡。 不能用MX-588的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F11-智能手表-MX-588.md:847b207cab5483f6",
+            "score": 0.8752910494804382,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F11-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-588.md#section-67adb49b34644fdd"
+          },
+          {
+            "n": 6,
+            "chunk_id": 446,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-602-SE 防水与使用限制"
+            ],
+            "question": "MX-602-SE 防水与使用限制",
+            "answer": "MX-602-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-602的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F19-智能手表-MX-602.md:77f15912ddc2a0c2",
+            "score": 0.9401202201843262,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F19-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-602.md#section-edbc646bc1cc5d68"
+          },
+          {
+            "n": 4,
+            "chunk_id": 150,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-405Pro 防水与使用限制"
+            ],
+            "question": "MX-405Pro 防水与使用限制",
+            "answer": "MX-405Pro 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-405Plus的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F07-智能手表-MX-405.md:f0e5d879aa6ff3a3",
+            "score": 0.9974606037139893,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F07-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-405.md#section-79e4400ffcde36b9"
+          },
+          {
+            "n": 2,
+            "chunk_id": 146,
+            "section_path": [
+              "电商",
+              "智能手表",
+              "MX-405 防水与使用限制"
+            ],
+            "question": "MX-405 防水与使用限制",
+            "answer": "MX-405 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-405Pro的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F07-智能手表-MX-405.md:f67b72e547e8fc34",
+            "score": 0.9990106821060181,
+            "category": "电商 / 智能手表",
+            "source_url": "/api/v1/knowledge/source?source=F07-%E6%99%BA%E8%83%BD%E6%89%8B%E8%A1%A8-MX-405.md#section-b6153ff10ee5af01"
+          }
+        ]
+      },
+      "raw_content": "{\"sufficient\":true,\"reason\":\"证据1直接载明MX-405-SE的防水等级为IPX4，且明确不支持游泳或浸泡，并说明进水损坏不属免费保修，覆盖问题全部必要条件。\",\"answer\":\"MX-405-SE 的防水等级为 IPX4，本型号不支持游泳或浸泡[1]。标了防水并不代表可以游泳；该型号明确不支持游泳或浸泡，且进水造成的损坏不属于本场景的免费保修[1]。\",\"cited_numbers\":[1]}",
+      "parsed": {
+        "sufficient": true,
+        "reason": "证据1直接载明MX-405-SE的防水等级为IPX4，且明确不支持游泳或浸泡，并说明进水损坏不属免费保修，覆盖问题全部必要条件。",
+        "answer": "MX-405-SE 的防水等级为 IPX4，本型号不支持游泳或浸泡[1]。标了防水并不代表可以游泳；该型号明确不支持游泳或浸泡，且进水造成的损坏不属于本场景的免费保修[1]。",
+        "cited_numbers": [
+          1
+        ]
+      },
+      "parsing_error_type": null,
+      "replay_failure_predicates": [],
+      "production_guard_result": {
+        "refused": false,
+        "reason": "",
+        "answer": "MX-405-SE 的防水等级为 IPX4，本型号不支持游泳或浸泡[1]。标了防水并不代表可以游泳；该型号明确不支持游泳或浸泡，且进水造成的损坏不属于本场景的免费保修[1]。"
+      }
+    },
+    "V2B036": {
+      "query": "请核对MX-798-SE的防水等级和浸泡限制，我没问MX-798；标了防水是不是就能游泳？",
+      "historical_refusal_reason": "答案引用缺失、越界或与声明不一致",
+      "historical_answer": "抱歉，现有知识库没有足够证据回答这个问题，我无法确认。建议联系人工客服核实。",
+      "historical_evidence_sha256": "6fc0911b7e2101006e719a2ce8739d83f9bf7cb620f23432a2251f7967f9cef1",
+      "historical_evidence": [
+        {
+          "n": 1,
+          "chunk_id": 278,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798-SE 防水与使用限制"
+          ],
+          "question": "MX-798-SE 防水与使用限制",
+          "answer": "MX-798-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-798的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:82a16d861f2b4a92",
+          "score": 0.999600350856781,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-539b2848b2a31b41"
+        },
+        {
+          "n": 2,
+          "chunk_id": 266,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 防水与使用限制"
+          ],
+          "question": "MX-798 防水与使用限制",
+          "answer": "MX-798 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-798Pro的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:9ef5506abefe1971",
+          "score": 0.9989872574806213,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-77ef745b763512ce"
+        },
+        {
+          "n": 3,
+          "chunk_id": 274,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798Plus 防水与使用限制"
+          ],
+          "question": "MX-798Plus 防水与使用限制",
+          "answer": "MX-798Plus 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-798-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:13cda2b197adae56",
+          "score": 0.9988355040550232,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-a22355ff3d46392c"
+        },
+        {
+          "n": 4,
+          "chunk_id": 270,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798Pro 防水与使用限制"
+          ],
+          "question": "MX-798Pro 防水与使用限制",
+          "answer": "MX-798Pro 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-798Plus的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:bb2f6c6e8b4ec67a",
+          "score": 0.9973347783088684,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-b5d4d4ee7818632e"
+        },
+        {
+          "n": 5,
+          "chunk_id": 182,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976-SE 防水与使用限制"
+          ],
+          "question": "MX-976-SE 防水与使用限制",
+          "answer": "MX-976-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-976的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:2209ec58585ae9a6",
+          "score": 0.883911669254303,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-3b01bf597c2edf71"
+        },
+        {
+          "n": 6,
+          "chunk_id": 374,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-323-SE 防水与使用限制"
+          ],
+          "question": "MX-323-SE 防水与使用限制",
+          "answer": "MX-323-SE 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-323的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F16-扩展坞-MX-323.md:cd8fc271011a2ed0",
+          "score": 0.8322895169258118,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F16-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-323.md#section-ae30ede9866726b2"
+        },
+        {
+          "n": 7,
+          "chunk_id": 178,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976Plus 防水与使用限制"
+          ],
+          "question": "MX-976Plus 防水与使用限制",
+          "answer": "MX-976Plus 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-976-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:779e578b73ae213f",
+          "score": 0.7716765403747559,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-1489fe563a41c9eb"
+        },
+        {
+          "n": 8,
+          "chunk_id": 170,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976 防水与使用限制"
+          ],
+          "question": "MX-976 防水与使用限制",
+          "answer": "MX-976 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-976Pro的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:a4d07d5fb2c86df8",
+          "score": 0.7431773543357849,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-1c7dc6647e33a316"
+        },
+        {
+          "n": 9,
+          "chunk_id": 86,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-689-SE 防水与使用限制"
+          ],
+          "question": "MX-689-SE 防水与使用限制",
+          "answer": "MX-689-SE 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-689的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F04-扩展坞-MX-689.md:a4dadf94bfc02bbc",
+          "score": 0.7399579882621765,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F04-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-689.md#section-edc4b87eb4e87811"
+        },
+        {
+          "n": 10,
+          "chunk_id": 174,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976Pro 防水与使用限制"
+          ],
+          "question": "MX-976Pro 防水与使用限制",
+          "answer": "MX-976Pro 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-976Plus的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:39821f9cb25c8053",
+          "score": 0.7229510545730591,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-6526f92e3d7edf30"
+        }
+      ],
+      "generation_payload_sha256": "8b325f5530378736508e4b24ecb0d0aaccd495c65d7badf80874655bc70d9bdb",
+      "generation_payload": {
+        "question": "请核对MX-798-SE的防水等级和浸泡限制，我没问MX-798；标了防水是不是就能游泳？",
+        "evidence": [
+          {
+            "n": 1,
+            "chunk_id": 278,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798-SE 防水与使用限制"
+            ],
+            "question": "MX-798-SE 防水与使用限制",
+            "answer": "MX-798-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-798的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:82a16d861f2b4a92",
+            "score": 0.999600350856781,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-539b2848b2a31b41"
+          },
+          {
+            "n": 3,
+            "chunk_id": 274,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798Plus 防水与使用限制"
+            ],
+            "question": "MX-798Plus 防水与使用限制",
+            "answer": "MX-798Plus 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-798-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:13cda2b197adae56",
+            "score": 0.9988355040550232,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-a22355ff3d46392c"
+          },
+          {
+            "n": 5,
+            "chunk_id": 182,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976-SE 防水与使用限制"
+            ],
+            "question": "MX-976-SE 防水与使用限制",
+            "answer": "MX-976-SE 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-976的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:2209ec58585ae9a6",
+            "score": 0.883911669254303,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-3b01bf597c2edf71"
+          },
+          {
+            "n": 7,
+            "chunk_id": 178,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976Plus 防水与使用限制"
+            ],
+            "question": "MX-976Plus 防水与使用限制",
+            "answer": "MX-976Plus 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-976-SE的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:779e578b73ae213f",
+            "score": 0.7716765403747559,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-1489fe563a41c9eb"
+          },
+          {
+            "n": 9,
+            "chunk_id": 86,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-689-SE 防水与使用限制"
+            ],
+            "question": "MX-689-SE 防水与使用限制",
+            "answer": "MX-689-SE 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-689的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F04-扩展坞-MX-689.md:a4dadf94bfc02bbc",
+            "score": 0.7399579882621765,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F04-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-689.md#section-edc4b87eb4e87811"
+          },
+          {
+            "n": 10,
+            "chunk_id": 174,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976Pro 防水与使用限制"
+            ],
+            "question": "MX-976Pro 防水与使用限制",
+            "answer": "MX-976Pro 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-976Plus的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:39821f9cb25c8053",
+            "score": 0.7229510545730591,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-6526f92e3d7edf30"
+          },
+          {
+            "n": 8,
+            "chunk_id": 170,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976 防水与使用限制"
+            ],
+            "question": "MX-976 防水与使用限制",
+            "answer": "MX-976 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-976Pro的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:a4d07d5fb2c86df8",
+            "score": 0.7431773543357849,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-1c7dc6647e33a316"
+          },
+          {
+            "n": 6,
+            "chunk_id": 374,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-323-SE 防水与使用限制"
+            ],
+            "question": "MX-323-SE 防水与使用限制",
+            "answer": "MX-323-SE 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-323的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F16-扩展坞-MX-323.md:cd8fc271011a2ed0",
+            "score": 0.8322895169258118,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F16-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-323.md#section-ae30ede9866726b2"
+          },
+          {
+            "n": 4,
+            "chunk_id": 270,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798Pro 防水与使用限制"
+            ],
+            "question": "MX-798Pro 防水与使用限制",
+            "answer": "MX-798Pro 的防水等级为IPX4；本型号不支持游泳或浸泡。 不能用MX-798Plus的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:bb2f6c6e8b4ec67a",
+            "score": 0.9973347783088684,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-b5d4d4ee7818632e"
+          },
+          {
+            "n": 2,
+            "chunk_id": 266,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 防水与使用限制"
+            ],
+            "question": "MX-798 防水与使用限制",
+            "answer": "MX-798 的防水等级为IPX5；本型号不支持游泳或浸泡。 不能用MX-798Pro的防水信息替代本型号。 进水造成的损坏不属于本场景的免费保修。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:9ef5506abefe1971",
+            "score": 0.9989872574806213,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-77ef745b763512ce"
+          }
+        ]
+      },
+      "raw_content": "{\"sufficient\":true,\"reason\":\"证据1直接覆盖MX-798-SE的防水等级（IPX4）和浸泡限制（不支持游泳或浸泡），并明确不能以MX-798信息替代，足以回答。\",\"answer\":\"MX-798-SE 的防水等级为 IPX4，本型号不支持游泳或浸泡[1]。标了防水不等于可以游泳：该型号明确不支持游泳或浸泡[1]。另外，进水造成的损坏不属于本场景的免费保修[1]。\",\"cited_numbers\":[1]}",
+      "parsed": {
+        "sufficient": true,
+        "reason": "证据1直接覆盖MX-798-SE的防水等级（IPX4）和浸泡限制（不支持游泳或浸泡），并明确不能以MX-798信息替代，足以回答。",
+        "answer": "MX-798-SE 的防水等级为 IPX4，本型号不支持游泳或浸泡[1]。标了防水不等于可以游泳：该型号明确不支持游泳或浸泡[1]。另外，进水造成的损坏不属于本场景的免费保修[1]。",
+        "cited_numbers": [
+          1
+        ]
+      },
+      "parsing_error_type": null,
+      "replay_failure_predicates": [],
+      "production_guard_result": {
+        "refused": false,
+        "reason": "",
+        "answer": "MX-798-SE 的防水等级为 IPX4，本型号不支持游泳或浸泡[1]。标了防水不等于可以游泳：该型号明确不支持游泳或浸泡[1]。另外，进水造成的损坏不属于本场景的免费保修[1]。"
+      }
+    },
+    "V2C022": {
+      "query": "MX-976网店这单我不想要了，盒子没动过也没少东西，过了几天就不给退啦？",
+      "historical_refusal_reason": "答案引用缺失、越界或与声明不一致",
+      "historical_answer": "抱歉，现有知识库没有足够证据回答这个问题，我无法确认。建议联系人工客服核实。",
+      "historical_evidence_sha256": "157f1e5dcbc87ff1a2c38aea5547f52ac202b8e59556e99ec772bcf684dd57cd",
+      "historical_evidence": [
+        {
+          "n": 1,
+          "chunk_id": 186,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976 系列线下体验店退货规则"
+          ],
+          "question": "MX-976 系列线下体验店退货规则",
+          "answer": "MX-976系列线下体验店订单不支持非质量原因退货。 不得引用官方网店的14天未拆封退货条款判断线下购买资格。 质量问题可走独立检测流程。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:36f0d143bc61ff48",
+          "score": 0.9711869955062866,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-b90f0eb268eee8a3"
+        },
+        {
+          "n": 2,
+          "chunk_id": 192,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976 系列退款处理条件"
+          ],
+          "question": "MX-976 系列退款处理条件",
+          "answer": "MX-976系列退货退款在仓库核验商品和配件通过后才发起，按原支付渠道退回。 本文没有具体到账日期和时刻，不承诺次日到账。 物流显示签收不等于仓库核验通过。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:54d19d1db851d252",
+          "score": 0.9321678280830383,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-7781428f4e3c2ae2"
+        },
+        {
+          "n": 3,
+          "chunk_id": 191,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976 系列拆封后处理方式"
+          ],
+          "question": "MX-976 系列拆封后处理方式",
+          "answer": "MX-976系列已拆封但无质量问题的商品不支持非质量原因退货。 不要将未拆封退货天数套到已拆封商品。 若有质量问题，应先申请检测，检测确认前不能承诺退款。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:d5f2beb89703cbe9",
+          "score": 0.9312334060668945,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-c4e76733fe8ca4cd"
+        },
+        {
+          "n": 4,
+          "chunk_id": 185,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976 系列官方网店未拆封退货规则"
+          ],
+          "question": "MX-976 系列官方网店未拆封退货规则",
+          "answer": "本条仅适用于MX-976系列的官方网店订单，不适用于线下体验店。 签收后14天内，商品未拆封且配件齐全，可申请非质量原因退货。 非质量退货寄回运费由买家承担，参考寄回费用为13元。 已拆封商品不适用本条。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:d59ae8f4b977a41a",
+          "score": 0.9104340076446533,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-b3363f84057c1664"
+        },
+        {
+          "n": 5,
+          "chunk_id": 187,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976 系列质量问题检测与寄回费用"
+          ],
+          "question": "MX-976 系列质量问题检测与寄回费用",
+          "answer": "MX-976系列商品出现质量问题时，应先提交订单凭证和故障照片，经审核获得检测单后寄回。 经检测确认产品质量问题的寄回运费由商家承担；用户人为损坏的费用不能按质量问题处理。 不要在检测前承诺退款成功。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:d6b60b765c21f0ac",
+          "score": 0.7218566536903381,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-31cf232804393048"
+        },
+        {
+          "n": 6,
+          "chunk_id": 189,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976 系列保修期限与凭证"
+          ],
+          "question": "MX-976 系列保修期限与凭证",
+          "answer": "MX-976系列主机保修期为9个月，电池保修期为9个月。 保修需要订单凭证和设备序列号；进水、人为拆修以及正常耗材磨损不属于免费保修。 本条保修期不能作为退货期限。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:0aa6d97f32ad57b3",
+          "score": 0.6565975546836853,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-1b6905b1ca9c96e1"
+        },
+        {
+          "n": 7,
+          "chunk_id": 330,
+          "section_path": [
+            "电商",
+            "清洁电器",
+            "MX-936 系列线下体验店退货规则"
+          ],
+          "question": "MX-936 系列线下体验店退货规则",
+          "answer": "MX-936系列线下体验店订单不支持非质量原因退货。 不得引用官方网店的7天未拆封退货条款判断线下购买资格。 质量问题可走独立检测流程。",
+          "source_key": "doc:F14-清洁电器-MX-936.md:4e9e7ebf14c6767c",
+          "score": 0.23191411793231964,
+          "category": "电商 / 清洁电器",
+          "source_url": "/api/v1/knowledge/source?source=F14-%E6%B8%85%E6%B4%81%E7%94%B5%E5%99%A8-MX-936.md#section-51cbf1aaf8f23254"
+        },
+        {
+          "n": 8,
+          "chunk_id": 171,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976 系统和配件兼容"
+          ],
+          "question": "MX-976 系统和配件兼容",
+          "answer": "MX-976 的配套管理程序仅列明支持macOS 13 及以上。 指定替换配件编号为AC-911B；同系列不同后缀的替换配件不能直接混用，必须按型号确认。 未列明的系统兼容性不能确认。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:665751f233962924",
+          "score": 0.21106566488742828,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-8a43ccf6070c66f9"
+        },
+        {
+          "n": 9,
+          "chunk_id": 188,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-976 系列发往西藏的运费例外"
+          ],
+          "question": "MX-976 系列发往西藏的运费例外",
+          "answer": "MX-976系列官方网店订单发往西藏时，运费为19元，不参加普通地区满399元包邮。 普通地区运费为6元，满399元包邮。 不能把普通地区门槛套用到西藏。",
+          "source_key": "doc:F08-扩展坞-MX-976.md:c00421884a6acb13",
+          "score": 0.1898622065782547,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-0a764ffe6d945bb9"
+        },
+        {
+          "n": 10,
+          "chunk_id": 329,
+          "section_path": [
+            "电商",
+            "清洁电器",
+            "MX-936 系列官方网店未拆封退货规则"
+          ],
+          "question": "MX-936 系列官方网店未拆封退货规则",
+          "answer": "本条仅适用于MX-936系列的官方网店订单，不适用于线下体验店。 签收后7天内，商品未拆封且配件齐全，可申请非质量原因退货。 非质量退货寄回运费由买家承担，参考寄回费用为8元。 已拆封商品不适用本条。",
+          "source_key": "doc:F14-清洁电器-MX-936.md:bd37193fdf3c4910",
+          "score": 0.18318651616573334,
+          "category": "电商 / 清洁电器",
+          "source_url": "/api/v1/knowledge/source?source=F14-%E6%B8%85%E6%B4%81%E7%94%B5%E5%99%A8-MX-936.md#section-4b8beb2ddc55b2b5"
+        }
+      ],
+      "generation_payload_sha256": "717c7d102e7c85be87f79a37c75e2d5181b93142ea7c0c55a7ee3aac2cd13ef3",
+      "generation_payload": {
+        "question": "MX-976网店这单我不想要了，盒子没动过也没少东西，过了几天就不给退啦？",
+        "evidence": [
+          {
+            "n": 1,
+            "chunk_id": 186,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976 系列线下体验店退货规则"
+            ],
+            "question": "MX-976 系列线下体验店退货规则",
+            "answer": "MX-976系列线下体验店订单不支持非质量原因退货。 不得引用官方网店的14天未拆封退货条款判断线下购买资格。 质量问题可走独立检测流程。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:36f0d143bc61ff48",
+            "score": 0.9711869955062866,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-b90f0eb268eee8a3"
+          },
+          {
+            "n": 3,
+            "chunk_id": 191,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976 系列拆封后处理方式"
+            ],
+            "question": "MX-976 系列拆封后处理方式",
+            "answer": "MX-976系列已拆封但无质量问题的商品不支持非质量原因退货。 不要将未拆封退货天数套到已拆封商品。 若有质量问题，应先申请检测，检测确认前不能承诺退款。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:d5f2beb89703cbe9",
+            "score": 0.9312334060668945,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-c4e76733fe8ca4cd"
+          },
+          {
+            "n": 5,
+            "chunk_id": 187,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976 系列质量问题检测与寄回费用"
+            ],
+            "question": "MX-976 系列质量问题检测与寄回费用",
+            "answer": "MX-976系列商品出现质量问题时，应先提交订单凭证和故障照片，经审核获得检测单后寄回。 经检测确认产品质量问题的寄回运费由商家承担；用户人为损坏的费用不能按质量问题处理。 不要在检测前承诺退款成功。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:d6b60b765c21f0ac",
+            "score": 0.7218566536903381,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-31cf232804393048"
+          },
+          {
+            "n": 7,
+            "chunk_id": 330,
+            "section_path": [
+              "电商",
+              "清洁电器",
+              "MX-936 系列线下体验店退货规则"
+            ],
+            "question": "MX-936 系列线下体验店退货规则",
+            "answer": "MX-936系列线下体验店订单不支持非质量原因退货。 不得引用官方网店的7天未拆封退货条款判断线下购买资格。 质量问题可走独立检测流程。",
+            "source_key": "doc:F14-清洁电器-MX-936.md:4e9e7ebf14c6767c",
+            "score": 0.23191411793231964,
+            "category": "电商 / 清洁电器",
+            "source_url": "/api/v1/knowledge/source?source=F14-%E6%B8%85%E6%B4%81%E7%94%B5%E5%99%A8-MX-936.md#section-51cbf1aaf8f23254"
+          },
+          {
+            "n": 9,
+            "chunk_id": 188,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976 系列发往西藏的运费例外"
+            ],
+            "question": "MX-976 系列发往西藏的运费例外",
+            "answer": "MX-976系列官方网店订单发往西藏时，运费为19元，不参加普通地区满399元包邮。 普通地区运费为6元，满399元包邮。 不能把普通地区门槛套用到西藏。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:c00421884a6acb13",
+            "score": 0.1898622065782547,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-0a764ffe6d945bb9"
+          },
+          {
+            "n": 10,
+            "chunk_id": 329,
+            "section_path": [
+              "电商",
+              "清洁电器",
+              "MX-936 系列官方网店未拆封退货规则"
+            ],
+            "question": "MX-936 系列官方网店未拆封退货规则",
+            "answer": "本条仅适用于MX-936系列的官方网店订单，不适用于线下体验店。 签收后7天内，商品未拆封且配件齐全，可申请非质量原因退货。 非质量退货寄回运费由买家承担，参考寄回费用为8元。 已拆封商品不适用本条。",
+            "source_key": "doc:F14-清洁电器-MX-936.md:bd37193fdf3c4910",
+            "score": 0.18318651616573334,
+            "category": "电商 / 清洁电器",
+            "source_url": "/api/v1/knowledge/source?source=F14-%E6%B8%85%E6%B4%81%E7%94%B5%E5%99%A8-MX-936.md#section-4b8beb2ddc55b2b5"
+          },
+          {
+            "n": 8,
+            "chunk_id": 171,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976 系统和配件兼容"
+            ],
+            "question": "MX-976 系统和配件兼容",
+            "answer": "MX-976 的配套管理程序仅列明支持macOS 13 及以上。 指定替换配件编号为AC-911B；同系列不同后缀的替换配件不能直接混用，必须按型号确认。 未列明的系统兼容性不能确认。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:665751f233962924",
+            "score": 0.21106566488742828,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-8a43ccf6070c66f9"
+          },
+          {
+            "n": 6,
+            "chunk_id": 189,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976 系列保修期限与凭证"
+            ],
+            "question": "MX-976 系列保修期限与凭证",
+            "answer": "MX-976系列主机保修期为9个月，电池保修期为9个月。 保修需要订单凭证和设备序列号；进水、人为拆修以及正常耗材磨损不属于免费保修。 本条保修期不能作为退货期限。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:0aa6d97f32ad57b3",
+            "score": 0.6565975546836853,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-1b6905b1ca9c96e1"
+          },
+          {
+            "n": 4,
+            "chunk_id": 185,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976 系列官方网店未拆封退货规则"
+            ],
+            "question": "MX-976 系列官方网店未拆封退货规则",
+            "answer": "本条仅适用于MX-976系列的官方网店订单，不适用于线下体验店。 签收后14天内，商品未拆封且配件齐全，可申请非质量原因退货。 非质量退货寄回运费由买家承担，参考寄回费用为13元。 已拆封商品不适用本条。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:d59ae8f4b977a41a",
+            "score": 0.9104340076446533,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-b3363f84057c1664"
+          },
+          {
+            "n": 2,
+            "chunk_id": 192,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-976 系列退款处理条件"
+            ],
+            "question": "MX-976 系列退款处理条件",
+            "answer": "MX-976系列退货退款在仓库核验商品和配件通过后才发起，按原支付渠道退回。 本文没有具体到账日期和时刻，不承诺次日到账。 物流显示签收不等于仓库核验通过。",
+            "source_key": "doc:F08-扩展坞-MX-976.md:54d19d1db851d252",
+            "score": 0.9321678280830383,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F08-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-976.md#section-7781428f4e3c2ae2"
+          }
+        ]
+      },
+      "raw_content": "{\"sufficient\": true, \"reason\": \"证据覆盖MX-976系列退货规则：官方网店未拆封14天退货条件[4]、线下体验店不支持非质量退货[1]、已拆封商品不适用未拆封退货[3]、退款处理条件[2]。用户描述盒子未动过，但未说明购买渠道，需区分官方网店与线下体验店分别说明。\", \"answer\": \"需要先确认您的购买渠道：\\n\\n1. 如果是MX-976系列官方网店订单：签收后14天内，商品未拆封且配件齐全，可申请非质量原因退货；非质量退货寄回运费由买家承担，参考寄回费用为13元；已拆封商品不适用[4]。\\n\\n2. 如果是MX-976系列线下体验店订单：不支持非质量原因退货，不得引用官方网店的14天未拆封退货条款判断线下购买资格；质量问题可走独立检测流程[1]。\\n\\n另外，MX-976系列已拆封但无质量问题的商品不支持非质量原因退货，不要将未拆封退货天数套到已拆封商品；若有质量问题，应先申请检测，检测确认前不能承诺退款[3]。退货退款在仓库核验商品和配件通过后才发起，按原支付渠道退回，本文没有具体到账日期，不承诺次日到账[2]。\", \"cited_numbers\": [1, 2, 3, 4]}",
+      "parsed": {
+        "sufficient": true,
+        "reason": "证据覆盖MX-976系列退货规则：官方网店未拆封14天退货条件[4]、线下体验店不支持非质量退货[1]、已拆封商品不适用未拆封退货[3]、退款处理条件[2]。用户描述盒子未动过，但未说明购买渠道，需区分官方网店与线下体验店分别说明。",
+        "answer": "需要先确认您的购买渠道：\n\n1. 如果是MX-976系列官方网店订单：签收后14天内，商品未拆封且配件齐全，可申请非质量原因退货；非质量退货寄回运费由买家承担，参考寄回费用为13元；已拆封商品不适用[4]。\n\n2. 如果是MX-976系列线下体验店订单：不支持非质量原因退货，不得引用官方网店的14天未拆封退货条款判断线下购买资格；质量问题可走独立检测流程[1]。\n\n另外，MX-976系列已拆封但无质量问题的商品不支持非质量原因退货，不要将未拆封退货天数套到已拆封商品；若有质量问题，应先申请检测，检测确认前不能承诺退款[3]。退货退款在仓库核验商品和配件通过后才发起，按原支付渠道退回，本文没有具体到账日期，不承诺次日到账[2]。",
+        "cited_numbers": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "parsing_error_type": null,
+      "replay_failure_predicates": [],
+      "production_guard_result": {
+        "refused": false,
+        "reason": "",
+        "answer": "需要先确认您的购买渠道：\n\n1. 如果是MX-976系列官方网店订单：签收后14天内，商品未拆封且配件齐全，可申请非质量原因退货；非质量退货寄回运费由买家承担，参考寄回费用为13元；已拆封商品不适用[4]。\n\n2. 如果是MX-976系列线下体验店订单：不支持非质量原因退货，不得引用官方网店的14天未拆封退货条款判断线下购买资格；质量问题可走独立检测流程[1]。\n\n另外，MX-976系列已拆封但无质量问题的商品不支持非质量原因退货，不要将未拆封退货天数套到已拆封商品；若有质量问题，应先申请检测，检测确认前不能承诺退款[3]。退货退款在仓库核验商品和配件通过后才发起，按原支付渠道退回，本文没有具体到账日期，不承诺次日到账[2]。"
+      }
+    },
+    "V2C034": {
+      "query": "MX-798网店这单我不想要了，盒子没动过也没少东西，过了几天就不给退啦？",
+      "historical_refusal_reason": "生成输出无法解析或不符合结构约束",
+      "historical_answer": "抱歉，现有知识库没有足够证据回答这个问题，我无法确认。建议联系人工客服核实。",
+      "historical_evidence_sha256": "c1fbd95093c2b1364c2a4843e97d1ee082ec6701a88fb9c4451e7c1cb3e8e272",
+      "historical_evidence": [
+        {
+          "n": 1,
+          "chunk_id": 282,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 系列线下体验店退货规则"
+          ],
+          "question": "MX-798 系列线下体验店退货规则",
+          "answer": "MX-798系列线下体验店订单不支持非质量原因退货。 不得引用官方网店的21天未拆封退货条款判断线下购买资格。 质量问题可走独立检测流程。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:4f0b9f5a146fbfc2",
+          "score": 0.9569813013076782,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-9a0ab83869fb5fe6"
+        },
+        {
+          "n": 2,
+          "chunk_id": 288,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 系列退款处理条件"
+          ],
+          "question": "MX-798 系列退款处理条件",
+          "answer": "MX-798系列退货退款在仓库核验商品和配件通过后才发起，按原支付渠道退回。 本文没有具体到账日期和时刻，不承诺次日到账。 物流显示签收不等于仓库核验通过。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:53e223fec429f09a",
+          "score": 0.9024584889411926,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-1b2e7074c8cd5235"
+        },
+        {
+          "n": 3,
+          "chunk_id": 287,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 系列拆封后处理方式"
+          ],
+          "question": "MX-798 系列拆封后处理方式",
+          "answer": "MX-798系列已拆封但无质量问题的商品不支持非质量原因退货。 不要将未拆封退货天数套到已拆封商品。 若有质量问题，应先申请检测，检测确认前不能承诺退款。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:f1ddc866488d6c11",
+          "score": 0.8944573402404785,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-ddce32c0c694e576"
+        },
+        {
+          "n": 4,
+          "chunk_id": 281,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 系列官方网店未拆封退货规则"
+          ],
+          "question": "MX-798 系列官方网店未拆封退货规则",
+          "answer": "本条仅适用于MX-798系列的官方网店订单，不适用于线下体验店。 签收后21天内，商品未拆封且配件齐全，可申请非质量原因退货。 非质量退货寄回运费由买家承担，参考寄回费用为13元。 已拆封商品不适用本条。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:704ca88ce4f0a456",
+          "score": 0.8799644708633423,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-84a0b07aa1c36083"
+        },
+        {
+          "n": 5,
+          "chunk_id": 283,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 系列质量问题检测与寄回费用"
+          ],
+          "question": "MX-798 系列质量问题检测与寄回费用",
+          "answer": "MX-798系列商品出现质量问题时，应先提交订单凭证和故障照片，经审核获得检测单后寄回。 经检测确认产品质量问题的寄回运费由商家承担；用户人为损坏的费用不能按质量问题处理。 不要在检测前承诺退款成功。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:56168db482a31457",
+          "score": 0.585296094417572,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-4e2288d879ebe277"
+        },
+        {
+          "n": 6,
+          "chunk_id": 285,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 系列保修期限与凭证"
+          ],
+          "question": "MX-798 系列保修期限与凭证",
+          "answer": "MX-798系列主机保修期为12个月，电池保修期为6个月。 保修需要订单凭证和设备序列号；进水、人为拆修以及正常耗材磨损不属于免费保修。 本条保修期不能作为退货期限。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:be3e6af996015275",
+          "score": 0.5690722465515137,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-cfa6538b22b7583a"
+        },
+        {
+          "n": 7,
+          "chunk_id": 267,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 系统和配件兼容"
+          ],
+          "question": "MX-798 系统和配件兼容",
+          "answer": "MX-798 的配套管理程序仅列明支持macOS 13 及以上。 指定替换配件编号为AC-737B；同系列不同后缀的替换配件不能直接混用，必须按型号确认。 未列明的系统兼容性不能确认。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:0a3fd688a1b5a287",
+          "score": 0.1500798761844635,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-6fe3a8ba505717d2"
+        },
+        {
+          "n": 8,
+          "chunk_id": 268,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 包装清单"
+          ],
+          "question": "MX-798 包装清单",
+          "answer": "MX-798 的标准包装包含主机、操作说明和对应电源连接线，不含充电器，需另购。 包装清单不代表可随意换用其他型号的连接线。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:5f1276c361f06688",
+          "score": 0.13738121092319489,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-477041a25862ea36"
+        },
+        {
+          "n": 9,
+          "chunk_id": 284,
+          "section_path": [
+            "电商",
+            "扩展坞",
+            "MX-798 系列发往海南的运费例外"
+          ],
+          "question": "MX-798 系列发往海南的运费例外",
+          "answer": "MX-798系列官方网店订单发往海南时，运费为35元，不参加普通地区满349元包邮。 普通地区运费为6元，满349元包邮。 不能把普通地区门槛套用到海南。",
+          "source_key": "doc:F12-扩展坞-MX-798.md:abe2a054eefcc6e1",
+          "score": 0.1278076320886612,
+          "category": "电商 / 扩展坞",
+          "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-5141315377d237d1"
+        },
+        {
+          "n": 10,
+          "chunk_id": 209,
+          "section_path": [
+            "电商",
+            "耳机",
+            "MX-820 系列官方网店未拆封退货规则"
+          ],
+          "question": "MX-820 系列官方网店未拆封退货规则",
+          "answer": "本条仅适用于MX-820系列的官方网店订单，不适用于线下体验店。 签收后7天内，商品未拆封且配件齐全，可申请非质量原因退货。 非质量退货寄回运费由买家承担，参考寄回费用为11元。 已拆封商品不适用本条。",
+          "source_key": "doc:F09-耳机-MX-820.md:8cf635da3528ed3d",
+          "score": 0.1009029671549797,
+          "category": "电商 / 耳机",
+          "source_url": "/api/v1/knowledge/source?source=F09-%E8%80%B3%E6%9C%BA-MX-820.md#section-a13b487c46e0f9b9"
+        }
+      ],
+      "generation_payload_sha256": "6178317a1dcf3f62c75f8296066c1b23e895fffe151d0a155981fff530b2c778",
+      "generation_payload": {
+        "question": "MX-798网店这单我不想要了，盒子没动过也没少东西，过了几天就不给退啦？",
+        "evidence": [
+          {
+            "n": 1,
+            "chunk_id": 282,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 系列线下体验店退货规则"
+            ],
+            "question": "MX-798 系列线下体验店退货规则",
+            "answer": "MX-798系列线下体验店订单不支持非质量原因退货。 不得引用官方网店的21天未拆封退货条款判断线下购买资格。 质量问题可走独立检测流程。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:4f0b9f5a146fbfc2",
+            "score": 0.9569813013076782,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-9a0ab83869fb5fe6"
+          },
+          {
+            "n": 3,
+            "chunk_id": 287,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 系列拆封后处理方式"
+            ],
+            "question": "MX-798 系列拆封后处理方式",
+            "answer": "MX-798系列已拆封但无质量问题的商品不支持非质量原因退货。 不要将未拆封退货天数套到已拆封商品。 若有质量问题，应先申请检测，检测确认前不能承诺退款。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:f1ddc866488d6c11",
+            "score": 0.8944573402404785,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-ddce32c0c694e576"
+          },
+          {
+            "n": 5,
+            "chunk_id": 283,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 系列质量问题检测与寄回费用"
+            ],
+            "question": "MX-798 系列质量问题检测与寄回费用",
+            "answer": "MX-798系列商品出现质量问题时，应先提交订单凭证和故障照片，经审核获得检测单后寄回。 经检测确认产品质量问题的寄回运费由商家承担；用户人为损坏的费用不能按质量问题处理。 不要在检测前承诺退款成功。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:56168db482a31457",
+            "score": 0.585296094417572,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-4e2288d879ebe277"
+          },
+          {
+            "n": 7,
+            "chunk_id": 267,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 系统和配件兼容"
+            ],
+            "question": "MX-798 系统和配件兼容",
+            "answer": "MX-798 的配套管理程序仅列明支持macOS 13 及以上。 指定替换配件编号为AC-737B；同系列不同后缀的替换配件不能直接混用，必须按型号确认。 未列明的系统兼容性不能确认。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:0a3fd688a1b5a287",
+            "score": 0.1500798761844635,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-6fe3a8ba505717d2"
+          },
+          {
+            "n": 9,
+            "chunk_id": 284,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 系列发往海南的运费例外"
+            ],
+            "question": "MX-798 系列发往海南的运费例外",
+            "answer": "MX-798系列官方网店订单发往海南时，运费为35元，不参加普通地区满349元包邮。 普通地区运费为6元，满349元包邮。 不能把普通地区门槛套用到海南。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:abe2a054eefcc6e1",
+            "score": 0.1278076320886612,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-5141315377d237d1"
+          },
+          {
+            "n": 10,
+            "chunk_id": 209,
+            "section_path": [
+              "电商",
+              "耳机",
+              "MX-820 系列官方网店未拆封退货规则"
+            ],
+            "question": "MX-820 系列官方网店未拆封退货规则",
+            "answer": "本条仅适用于MX-820系列的官方网店订单，不适用于线下体验店。 签收后7天内，商品未拆封且配件齐全，可申请非质量原因退货。 非质量退货寄回运费由买家承担，参考寄回费用为11元。 已拆封商品不适用本条。",
+            "source_key": "doc:F09-耳机-MX-820.md:8cf635da3528ed3d",
+            "score": 0.1009029671549797,
+            "category": "电商 / 耳机",
+            "source_url": "/api/v1/knowledge/source?source=F09-%E8%80%B3%E6%9C%BA-MX-820.md#section-a13b487c46e0f9b9"
+          },
+          {
+            "n": 8,
+            "chunk_id": 268,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 包装清单"
+            ],
+            "question": "MX-798 包装清单",
+            "answer": "MX-798 的标准包装包含主机、操作说明和对应电源连接线，不含充电器，需另购。 包装清单不代表可随意换用其他型号的连接线。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:5f1276c361f06688",
+            "score": 0.13738121092319489,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-477041a25862ea36"
+          },
+          {
+            "n": 6,
+            "chunk_id": 285,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 系列保修期限与凭证"
+            ],
+            "question": "MX-798 系列保修期限与凭证",
+            "answer": "MX-798系列主机保修期为12个月，电池保修期为6个月。 保修需要订单凭证和设备序列号；进水、人为拆修以及正常耗材磨损不属于免费保修。 本条保修期不能作为退货期限。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:be3e6af996015275",
+            "score": 0.5690722465515137,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-cfa6538b22b7583a"
+          },
+          {
+            "n": 4,
+            "chunk_id": 281,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 系列官方网店未拆封退货规则"
+            ],
+            "question": "MX-798 系列官方网店未拆封退货规则",
+            "answer": "本条仅适用于MX-798系列的官方网店订单，不适用于线下体验店。 签收后21天内，商品未拆封且配件齐全，可申请非质量原因退货。 非质量退货寄回运费由买家承担，参考寄回费用为13元。 已拆封商品不适用本条。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:704ca88ce4f0a456",
+            "score": 0.8799644708633423,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-84a0b07aa1c36083"
+          },
+          {
+            "n": 2,
+            "chunk_id": 288,
+            "section_path": [
+              "电商",
+              "扩展坞",
+              "MX-798 系列退款处理条件"
+            ],
+            "question": "MX-798 系列退款处理条件",
+            "answer": "MX-798系列退货退款在仓库核验商品和配件通过后才发起，按原支付渠道退回。 本文没有具体到账日期和时刻，不承诺次日到账。 物流显示签收不等于仓库核验通过。",
+            "source_key": "doc:F12-扩展坞-MX-798.md:53e223fec429f09a",
+            "score": 0.9024584889411926,
+            "category": "电商 / 扩展坞",
+            "source_url": "/api/v1/knowledge/source?source=F12-%E6%89%A9%E5%B1%95%E5%9D%9E-MX-798.md#section-1b2e7074c8cd5235"
+          }
+        ]
+      },
+      "raw_content": "{\"sufficient\":true,\"reason\":\"证据覆盖MX-798系列退货规则：区分官方网店与线下体验店，未拆封非质量退货仅适用于官方网店订单，线下体验店不支持非质量原因退货；已拆封商品不适用未拆封退货条款。用户称盒子没动过但未说明购买渠道，需按渠道判断。\",\"answer\":\"需要先确认您的购买渠道：如果是MX-798系列官方网店订单，签收后21天内、商品未拆封且配件齐全，可申请非质量原因退货，非质量退货寄回运费由买家承担，参考寄回费用为13元[4]；如果是MX-798系列线下体验店订单，不支持非质量原因退货，不能引用官方网店的21天未拆封退货条款判断线下购买资格[1]。若商品已拆封且无质量问题，也不支持非质量原因退货，不能把未拆封退货天数套到已拆封商品[3]。如有质量问题，应先提交订单凭证和故障照片，经审核获得检测单后寄回，检测确认前不能承诺退款[5]。退货退款需仓库核验商品和配件通过后才发起，按原支付渠道退回，本文没有具体到账日期，不承诺次日到账[2]。\",\"cited_numbers\":[1,4,3,5,2]}",
+      "parsed": {
+        "sufficient": true,
+        "reason": "证据覆盖MX-798系列退货规则：区分官方网店与线下体验店，未拆封非质量退货仅适用于官方网店订单，线下体验店不支持非质量原因退货；已拆封商品不适用未拆封退货条款。用户称盒子没动过但未说明购买渠道，需按渠道判断。",
+        "answer": "需要先确认您的购买渠道：如果是MX-798系列官方网店订单，签收后21天内、商品未拆封且配件齐全，可申请非质量原因退货，非质量退货寄回运费由买家承担，参考寄回费用为13元[4]；如果是MX-798系列线下体验店订单，不支持非质量原因退货，不能引用官方网店的21天未拆封退货条款判断线下购买资格[1]。若商品已拆封且无质量问题，也不支持非质量原因退货，不能把未拆封退货天数套到已拆封商品[3]。如有质量问题，应先提交订单凭证和故障照片，经审核获得检测单后寄回，检测确认前不能承诺退款[5]。退货退款需仓库核验商品和配件通过后才发起，按原支付渠道退回，本文没有具体到账日期，不承诺次日到账[2]。",
+        "cited_numbers": [
+          1,
+          4,
+          3,
+          5,
+          2
+        ]
+      },
+      "parsing_error_type": null,
+      "replay_failure_predicates": [],
+      "production_guard_result": {
+        "refused": false,
+        "reason": "",
+        "answer": "需要先确认您的购买渠道：如果是MX-798系列官方网店订单，签收后21天内、商品未拆封且配件齐全，可申请非质量原因退货，非质量退货寄回运费由买家承担，参考寄回费用为13元[4]；如果是MX-798系列线下体验店订单，不支持非质量原因退货，不能引用官方网店的21天未拆封退货条款判断线下购买资格[1]。若商品已拆封且无质量问题，也不支持非质量原因退货，不能把未拆封退货天数套到已拆封商品[3]。如有质量问题，应先提交订单凭证和故障照片，经审核获得检测单后寄回，检测确认前不能承诺退款[5]。退货退款需仓库核验商品和配件通过后才发起，按原支付渠道退回，本文没有具体到账日期，不承诺次日到账[2]。"
+      }
+    }
+  }
+}

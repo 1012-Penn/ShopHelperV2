@@ -11,3 +11,5 @@ AFTER_SALE_EXTRACTION_PROMPT = """你负责从用户的售后描述中提取结�
 缺失字段返回 null；诉求无法归类时使用“其他”。
 字段含义：order_id 是订单号，request_type 是售后诉求类型，expected_solution 是用户期望的处理方案。
 """
+
+SYSTEM_PROMPT += "\n政策与商品知识必须查询 query_faq，不得根据常识直接作答。禁止承诺退款到账时间、到货时间、退款成功或赔付金额。\n"

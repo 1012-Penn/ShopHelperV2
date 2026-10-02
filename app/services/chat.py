@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Callable, Iterator
 from uuid import uuid4
 
@@ -27,11 +28,13 @@ class ChatService:
         model_factory: ModelFactory,
         tool_runner_factory: ToolRunnerFactory,
         faq_retriever=None,
+        knowledge_answer_service=None,
     ) -> None:
         self.session_factory = session_factory
         self.model_factory = model_factory
         self.tool_runner_factory = tool_runner_factory
         self.faq_retriever = faq_retriever
+        self.knowledge_answer_service = knowledge_answer_service
 
     def stream_events(self, request: ChatRequest) -> Iterator[dict]:
         try:
@@ -49,6 +52,9 @@ class ChatService:
                 return
 
             if not tool_calls:
+                if self.knowledge_answer_service and not self._safe_nonknowledge(request.message, self._chunk_text(response)):
+                    yield from self._knowledge_events(request)
+                    return
                 answer_parts = [self._chunk_text(chunk) for chunk in chunks]
                 answer_parts = [part for part in answer_parts if part]
                 for part in answer_parts:
@@ -66,6 +72,10 @@ class ChatService:
             assistant_message = AIMessage(content=response.content or "", tool_calls=[call])
             self._persist_tool_request(request.conversation_id, assistant_message, tool_call_id)
             yield {"event": "tool_status", "data": {"tool_name": tool_name, "status": "running"}}
+
+            if tool_name == "query_faq" and self.knowledge_answer_service:
+                yield from self._knowledge_events(request, tool_call_id)
+                return
 
             try:
                 result = runner.run(tool_name, args, tool_call_id)
@@ -175,9 +185,34 @@ class ChatService:
                 )
             )
 
-    def _persist_assistant(self, conversation_id: str, answer: str) -> None:
+    def _persist_assistant(self, conversation_id: str, answer: str, citations=None):
         with self.session_factory.begin() as session:
-            session.add(Message(conversation_id=conversation_id, role="assistant", content=answer))
+            message = Message(conversation_id=conversation_id, role="assistant", content=answer, citations=citations)
+            session.add(message)
+            session.flush()
+            return message.id
+
+    @staticmethod
+    def _safe_nonknowledge(question, answer):
+        if re.fullmatch(r"[\s你好您好谢谢再见嗨哈喽！!。,.，]+", question):
+            return True
+        # Only narrow requests for missing identifiers; factual policy prose stays gated.
+        return bool(re.fullmatch(r"(?:请|麻烦|烦请)(?:提供|补充|告知)(?:一下|您的|你的)?(?:订单号|商品链接|完整型号|使用场景|收货地区|支付渠道)(?:[，,。\s]*(?:我(?:来)?帮(?:您|你)查询|以便核查|方便核查))?[。！!？?\s]*", answer))
+
+    def _knowledge_events(self, request, tool_call_id=None):
+        try:
+            result = self.knowledge_answer_service.answer(request.message, request.conversation_id, category=request.category)
+        except Exception:
+            if tool_call_id:
+                self._persist_tool_result(request.conversation_id, ToolResult("query_faq", tool_call_id, "知识服务暂时不可用。", True))
+            raise
+        if tool_call_id:
+            self._persist_tool_result(request.conversation_id, ToolResult("query_faq", tool_call_id, json.dumps({"matched": not result.refused, "evidence": result.citations}, ensure_ascii=False), False))
+        message_id = self._persist_assistant(request.conversation_id, result.answer, result.citations)
+        yield {"event": "citations", "data": {"items": result.citations, "message_id": message_id}}
+        yield {"event": "token", "data": {"content": result.answer}}
+        yield {"event": "done", "data": {"conversation_id": request.conversation_id, "message_id": message_id, "refused": result.refused}}
+
 
     @staticmethod
     def _error_event() -> dict:

@@ -52,7 +52,14 @@ class KnowledgeIndexer:
             self.repository.clear_deleted_vector_ids(list(chunk_ids))
         return self.repository.upsert_drafts(drafts)
 
-    def sync_pending(self, batch_size: int) -> SyncSummary:
+    def sync_pending(self, batch_size: int):
+        summary = self._sync_pending_dense(batch_size)
+        hybrid = getattr(self, "hybrid_indexer", None)
+        if hybrid is not None:
+            hybrid.sync(batch_size=batch_size)
+        return summary
+
+    def _sync_pending_dense(self, batch_size: int) -> SyncSummary:
         if batch_size < 1:
             raise ValueError("batch_size must be positive")
         if self.embeddings is None or self.vector_store is None:
@@ -116,6 +123,9 @@ class KnowledgeIndexer:
         self.repository.mark_vectorized(chunk.id, vector_id)
 
     def close(self) -> None:
+        hybrid = getattr(self, "hybrid_indexer", None)
+        if hybrid is not None:
+            hybrid.store.close()
         for service in (self.embeddings, self.vector_store):
             close = getattr(service, "close", None)
             if callable(close):

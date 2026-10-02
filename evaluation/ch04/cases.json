@@ -1,0 +1,4742 @@
+[
+  {
+    "eval_id": "A001",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "商品参数应该以什么信息为准？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:0"
+  },
+  {
+    "eval_id": "A002",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "颜色图片看着一样就可以认定兼容吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:0"
+  },
+  {
+    "eval_id": "A003",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "详情页规格互相矛盾又没写我的型号，能直接确认适配吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:0"
+  },
+  {
+    "eval_id": "A004",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "库存是否会变化？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:1"
+  },
+  {
+    "eval_id": "A005",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "页面显示有货就算帮我锁定了吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:1"
+  },
+  {
+    "eval_id": "A006",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "付款后遇到停售且仓库说缺货，客服能保证履约吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:1"
+  },
+  {
+    "eval_id": "A007",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "怎么确认商品尺寸？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:2"
+  },
+  {
+    "eval_id": "A008",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "尺寸表未写测量口径，我该提供什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:2"
+  },
+  {
+    "eval_id": "A009",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "两个页面尺寸不同，能按外观推断适配位置吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:2"
+  },
+  {
+    "eval_id": "A010",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "如何核对设备兼容性？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:3"
+  },
+  {
+    "eval_id": "A011",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "型号名称只差一个字，就一定兼容吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:3"
+  },
+  {
+    "eval_id": "A012",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "我的型号没在列表里但接口长得像，客服能确认能用吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:3"
+  },
+  {
+    "eval_id": "A013",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "实物颜色会完全一致吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:8dfa61cfc62050f4"
+    ],
+    "required_facts": [
+      "以订单规格核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:4"
+  },
+  {
+    "eval_id": "A014",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "屏幕偏色导致色差，该依据什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:8dfa61cfc62050f4"
+    ],
+    "required_facts": [
+      "以订单规格核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:4"
+  },
+  {
+    "eval_id": "A015",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "收到商品颜色规格与订单不符，能直接当作正常视觉色差吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:8dfa61cfc62050f4"
+    ],
+    "required_facts": [
+      "以订单规格核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:4"
+  },
+  {
+    "eval_id": "A016",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "提交订单前要核对哪些信息？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:5"
+  },
+  {
+    "eval_id": "A017",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "只有支付截图能确认订单已付款吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:5"
+  },
+  {
+    "eval_id": "A018",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "截图扣款成功但订单状态待付款，以哪个为准？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:5"
+  },
+  {
+    "eval_id": "A019",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "能修改订单规格吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:f91b2677847d97fc"
+    ],
+    "required_facts": [
+      "取决于履约状态，不保证修改"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:6"
+  },
+  {
+    "eval_id": "A020",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "订单进入拣货，能保证改数量吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:f91b2677847d97fc"
+    ],
+    "required_facts": [
+      "取决于履约状态，不保证修改"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:6"
+  },
+  {
+    "eval_id": "A021",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "既要改规格又进入不可变更阶段，客服能保证仓库修改成功吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:f91b2677847d97fc"
+    ],
+    "required_facts": [
+      "取决于履约状态，不保证修改"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:6"
+  },
+  {
+    "eval_id": "A022",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "怎样判断订单能否取消？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:48662c07256cc38c"
+    ],
+    "required_facts": [
+      "先核实状态和适用流程"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:7"
+  },
+  {
+    "eval_id": "A023",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "取消按钮没有了还能保证取消吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:48662c07256cc38c"
+    ],
+    "required_facts": [
+      "先核实状态和适用流程"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:7"
+  },
+  {
+    "eval_id": "A024",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "订单已发货且取消入口不可用，客服能直接确认已取消吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:48662c07256cc38c"
+    ],
+    "required_facts": [
+      "先核实状态和适用流程"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:7"
+  },
+  {
+    "eval_id": "A025",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "优惠叠加条件在哪里看？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:5647ae6723c672da"
+    ],
+    "required_facts": [
+      "核对活动与订单并升级"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:8"
+  },
+  {
+    "eval_id": "A026",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "结算价没抵扣，可以直接承诺补券吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:5647ae6723c672da"
+    ],
+    "required_facts": [
+      "核对活动与订单并升级"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:8"
+  },
+  {
+    "eval_id": "A027",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "活动页有优惠但订单金额不同，能按我的计算承诺补差吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:5647ae6723c672da"
+    ],
+    "required_facts": [
+      "核对活动与订单并升级"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:8"
+  },
+  {
+    "eval_id": "A028",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "运费受什么因素影响？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:7726109d5bc20011"
+    ],
+    "required_facts": [
+      "当前结算页运费为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:9"
+  },
+  {
+    "eval_id": "A029",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "其他订单免邮，这次也一定免吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:7726109d5bc20011"
+    ],
+    "required_facts": [
+      "当前结算页运费为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:9"
+  },
+  {
+    "eval_id": "A030",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "换地区又买重物，能直接拿上次运费作为报价吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:7726109d5bc20011"
+    ],
+    "required_facts": [
+      "当前结算页运费为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:9"
+  },
+  {
+    "eval_id": "A031",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "如何确认地区能否配送？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:2cdb770205779776"
+    ],
+    "required_facts": [
+      "核实具体地区商品和合规方式"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:10"
+  },
+  {
+    "eval_id": "A032",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "地址页面不能选择要怎么处理？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:2cdb770205779776"
+    ],
+    "required_facts": [
+      "核实具体地区商品和合规方式"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:10"
+  },
+  {
+    "eval_id": "A033",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "偏远地区受限商品，客服能承诺改用任意承运商送到吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:2cdb770205779776"
+    ],
+    "required_facts": [
+      "核实具体地区商品和合规方式"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:10"
+  },
+  {
+    "eval_id": "A034",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "发货安排在哪里查看？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:cf2775e4ba69a795"
+    ],
+    "required_facts": [
+      "预计时间不能保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:11"
+  },
+  {
+    "eval_id": "A035",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "预售预计时间等于保证时限吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:cf2775e4ba69a795"
+    ],
+    "required_facts": [
+      "预计时间不能保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:11"
+  },
+  {
+    "eval_id": "A036",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "定制商品分仓且供应不同，客服能按普通商品保证发货日期吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:cf2775e4ba69a795"
+    ],
+    "required_facts": [
+      "预计时间不能保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:11"
+  },
+  {
+    "eval_id": "A037",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "物流异常先核对什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:b51bed127c99607d"
+    ],
+    "required_facts": [
+      "核对订单轨迹，不先承诺赔付"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:12"
+  },
+  {
+    "eval_id": "A038",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "轨迹没更新能直接确认包裹丢失吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:b51bed127c99607d"
+    ],
+    "required_facts": [
+      "核对订单轨迹，不先承诺赔付"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:12"
+  },
+  {
+    "eval_id": "A039",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "物流异常且截图信息不全，客服能在核查前承诺赔付吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:b51bed127c99607d"
+    ],
+    "required_facts": [
+      "核对订单轨迹，不先承诺赔付"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:12"
+  },
+  {
+    "eval_id": "A040",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "订单为什么会分多个包裹？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:82267444e5ae4861"
+    ],
+    "required_facts": [
+      "逐项核对并登记未收到商品"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:13"
+  },
+  {
+    "eval_id": "A041",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "分包的到达时间一定一致吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:82267444e5ae4861"
+    ],
+    "required_facts": [
+      "逐项核对并登记未收到商品"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:13"
+  },
+  {
+    "eval_id": "A042",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "页面没说明分包且少了一件商品，客服应该如何处理？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:82267444e5ae4861"
+    ],
+    "required_facts": [
+      "逐项核对并登记未收到商品"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:13"
+  },
+  {
+    "eval_id": "A043",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "怎样申请修改收货地址？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:9e528c81e467e606"
+    ],
+    "required_facts": [
+      "以实际反馈核实，不保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:14"
+  },
+  {
+    "eval_id": "A044",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "包裹发出能保证改址成功吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:9e528c81e467e606"
+    ],
+    "required_facts": [
+      "以实际反馈核实，不保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:14"
+  },
+  {
+    "eval_id": "A045",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "承运商未反馈但客服接到改址申请，能宣布改址已成功吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:9e528c81e467e606"
+    ],
+    "required_facts": [
+      "以实际反馈核实，不保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:14"
+  },
+  {
+    "eval_id": "A046",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "没收到却显示签收怎么办？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:15"
+  },
+  {
+    "eval_id": "A047",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "门卫可能代收，先核对哪些信息？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:15"
+  },
+  {
+    "eval_id": "A048",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "代收点没找到包裹且物流已签收，客服能直接拒绝处理吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:15"
+  },
+  {
+    "eval_id": "A049",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "申请退换货需要核对什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:16"
+  },
+  {
+    "eval_id": "A050",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "定制商品可以套用统一退货承诺吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:16"
+  },
+  {
+    "eval_id": "A051",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "购买时政策和使用状态都没核对，能保证所有类别都能退吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:16"
+  },
+  {
+    "eval_id": "A052",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "退货运费由谁承担？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:c836d22404a6e22c"
+    ],
+    "required_facts": [
+      "按原因规则核实，不预先承诺"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:17"
+  },
+  {
+    "eval_id": "A053",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "没核实退货原因能承诺商家承担吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:c836d22404a6e22c"
+    ],
+    "required_facts": [
+      "按原因规则核实，不预先承诺"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:17"
+  },
+  {
+    "eval_id": "A054",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "质量问题待核查且订单有约定，能直接保证消费者不付任何费用吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:c836d22404a6e22c"
+    ],
+    "required_facts": [
+      "按原因规则核实，不预先承诺"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:17"
+  },
+  {
+    "eval_id": "A055",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "退款到账时间如何确认？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:18"
+  },
+  {
+    "eval_id": "A056",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "发起退款等于今天肯定到账吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:18"
+  },
+  {
+    "eval_id": "A057",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "渠道显示处理中，能保证固定日期到账并索要银行密码查询吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:18"
+  },
+  {
+    "eval_id": "A058",
+    "bucket": "A_policy",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "客服需要收集哪些信息？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:19"
+  },
+  {
+    "eval_id": "A059",
+    "bucket": "A_policy",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "定位订单能索要短信验证码吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:19"
+  },
+  {
+    "eval_id": "A060",
+    "bucket": "A_policy",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "升级售后想让客户发送支付密码和完整银行卡，是否合适？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "A_policy:19"
+  },
+  {
+    "eval_id": "B001",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "XH-300 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:9523b169d34e61ea"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:0"
+  },
+  {
+    "eval_id": "B002",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "用 XH-300 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:9523b169d34e61ea"
+    ],
+    "required_facts": [
+      "18 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:0"
+  },
+  {
+    "eval_id": "B003",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "XH-300 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:9523b169d34e61ea"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:0"
+  },
+  {
+    "eval_id": "B004",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "XH-301 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:ab92df6ca8c2e957"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:1"
+  },
+  {
+    "eval_id": "B005",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "用 XH-301 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:ab92df6ca8c2e957"
+    ],
+    "required_facts": [
+      "19 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:1"
+  },
+  {
+    "eval_id": "B006",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "XH-301 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:ab92df6ca8c2e957"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:1"
+  },
+  {
+    "eval_id": "B007",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "XH-302 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:5c130d14595e0ba7"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:2"
+  },
+  {
+    "eval_id": "B008",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "用 XH-302 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:5c130d14595e0ba7"
+    ],
+    "required_facts": [
+      "20 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:2"
+  },
+  {
+    "eval_id": "B009",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "XH-302 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:5c130d14595e0ba7"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:2"
+  },
+  {
+    "eval_id": "B010",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "XH-303 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:9100d7351003011a"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:3"
+  },
+  {
+    "eval_id": "B011",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "用 XH-303 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:9100d7351003011a"
+    ],
+    "required_facts": [
+      "21 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:3"
+  },
+  {
+    "eval_id": "B012",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "XH-303 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:9100d7351003011a"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:3"
+  },
+  {
+    "eval_id": "B013",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-304 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:d30cd714ac8786d2"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:4"
+  },
+  {
+    "eval_id": "B014",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-304 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:d30cd714ac8786d2"
+    ],
+    "required_facts": [
+      "22 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:4"
+  },
+  {
+    "eval_id": "B015",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-304 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:d30cd714ac8786d2"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:4"
+  },
+  {
+    "eval_id": "B016",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-305 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:8484d49fa840c990"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:5"
+  },
+  {
+    "eval_id": "B017",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-305 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:8484d49fa840c990"
+    ],
+    "required_facts": [
+      "23 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:5"
+  },
+  {
+    "eval_id": "B018",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-305 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:8484d49fa840c990"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:5"
+  },
+  {
+    "eval_id": "B019",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-306 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:ccb7fe10e8cbc5dc"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:6"
+  },
+  {
+    "eval_id": "B020",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-306 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:ccb7fe10e8cbc5dc"
+    ],
+    "required_facts": [
+      "24 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:6"
+  },
+  {
+    "eval_id": "B021",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-306 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:ccb7fe10e8cbc5dc"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:6"
+  },
+  {
+    "eval_id": "B022",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-307 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:acdf2d8bfbfba81b"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:7"
+  },
+  {
+    "eval_id": "B023",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-307 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:acdf2d8bfbfba81b"
+    ],
+    "required_facts": [
+      "25 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:7"
+  },
+  {
+    "eval_id": "B024",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-307 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:acdf2d8bfbfba81b"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:7"
+  },
+  {
+    "eval_id": "B025",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-308 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:58a9ff4bbf6766d0"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:8"
+  },
+  {
+    "eval_id": "B026",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-308 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:58a9ff4bbf6766d0"
+    ],
+    "required_facts": [
+      "26 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:8"
+  },
+  {
+    "eval_id": "B027",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-308 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:58a9ff4bbf6766d0"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:8"
+  },
+  {
+    "eval_id": "B028",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-309 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:b0745d5d37e1a0ed"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:9"
+  },
+  {
+    "eval_id": "B029",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-309 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:b0745d5d37e1a0ed"
+    ],
+    "required_facts": [
+      "27 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:9"
+  },
+  {
+    "eval_id": "B030",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-309 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:b0745d5d37e1a0ed"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:9"
+  },
+  {
+    "eval_id": "B031",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-310 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:6b7a0959ec3db2c3"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:10"
+  },
+  {
+    "eval_id": "B032",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-310 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:6b7a0959ec3db2c3"
+    ],
+    "required_facts": [
+      "28 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:10"
+  },
+  {
+    "eval_id": "B033",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-310 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:6b7a0959ec3db2c3"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:10"
+  },
+  {
+    "eval_id": "B034",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-311 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:2b7aedc218df5fe5"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:11"
+  },
+  {
+    "eval_id": "B035",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-311 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:2b7aedc218df5fe5"
+    ],
+    "required_facts": [
+      "29 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:11"
+  },
+  {
+    "eval_id": "B036",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-311 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:2b7aedc218df5fe5"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:11"
+  },
+  {
+    "eval_id": "B037",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-312 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:cc7598fd6efd66f2"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:12"
+  },
+  {
+    "eval_id": "B038",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-312 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:cc7598fd6efd66f2"
+    ],
+    "required_facts": [
+      "30 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:12"
+  },
+  {
+    "eval_id": "B039",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-312 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:cc7598fd6efd66f2"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:12"
+  },
+  {
+    "eval_id": "B040",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-313 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:71568c262525e9e4"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:13"
+  },
+  {
+    "eval_id": "B041",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-313 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:71568c262525e9e4"
+    ],
+    "required_facts": [
+      "31 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:13"
+  },
+  {
+    "eval_id": "B042",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-313 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:71568c262525e9e4"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:13"
+  },
+  {
+    "eval_id": "B043",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-314 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:dc0eea257bf85db3"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:14"
+  },
+  {
+    "eval_id": "B044",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-314 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:dc0eea257bf85db3"
+    ],
+    "required_facts": [
+      "32 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:14"
+  },
+  {
+    "eval_id": "B045",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-314 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:dc0eea257bf85db3"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:14"
+  },
+  {
+    "eval_id": "B046",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-315 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:aa5c61c1cbf2c510"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:15"
+  },
+  {
+    "eval_id": "B047",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-315 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:aa5c61c1cbf2c510"
+    ],
+    "required_facts": [
+      "33 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:15"
+  },
+  {
+    "eval_id": "B048",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-315 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:aa5c61c1cbf2c510"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:15"
+  },
+  {
+    "eval_id": "B049",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-316 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:cbd9ca33d873faf7"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:16"
+  },
+  {
+    "eval_id": "B050",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-316 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:cbd9ca33d873faf7"
+    ],
+    "required_facts": [
+      "34 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:16"
+  },
+  {
+    "eval_id": "B051",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-316 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:cbd9ca33d873faf7"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:16"
+  },
+  {
+    "eval_id": "B052",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-317 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:1b986576c54ef961"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:17"
+  },
+  {
+    "eval_id": "B053",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-317 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:1b986576c54ef961"
+    ],
+    "required_facts": [
+      "35 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:17"
+  },
+  {
+    "eval_id": "B054",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-317 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:1b986576c54ef961"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:17"
+  },
+  {
+    "eval_id": "B055",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-318 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:a1934c08e3afaa94"
+    ],
+    "required_facts": [
+      "USB-C"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:18"
+  },
+  {
+    "eval_id": "B056",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-318 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:a1934c08e3afaa94"
+    ],
+    "required_facts": [
+      "36 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:18"
+  },
+  {
+    "eval_id": "B057",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-318 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:a1934c08e3afaa94"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "IPX4"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:18"
+  },
+  {
+    "eval_id": "B058",
+    "bucket": "B_model",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "XH-319 的充电接口是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:622dd48d90caf88c"
+    ],
+    "required_facts": [
+      "Micro-USB"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:19"
+  },
+  {
+    "eval_id": "B059",
+    "bucket": "B_model",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "用 XH-319 听歌标准续航多少小时，实际时长一定一样吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:622dd48d90caf88c"
+    ],
+    "required_facts": [
+      "37 小时",
+      "依音量与环境变化"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:19"
+  },
+  {
+    "eval_id": "B060",
+    "bucket": "B_model",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "XH-319 可以在游泳时浸泡使用吗，防水说明和包装是否含充电器是什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:05-受控测试商品.md:622dd48d90caf88c"
+    ],
+    "required_facts": [
+      "不支持游泳或浸泡",
+      "不含充电器",
+      "无防水等级"
+    ],
+    "should_refuse": false,
+    "topic_id": "B_model:19"
+  },
+  {
+    "eval_id": "C001",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "参数看哪儿啊？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:0"
+  },
+  {
+    "eval_id": "C002",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "图片瞅着一样就能插上用吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:0"
+  },
+  {
+    "eval_id": "C003",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "你俩页面写的不一样还没我的型号，我可不敢买，到底能不能适配？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:0"
+  },
+  {
+    "eval_id": "C004",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "有货没啊？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:1"
+  },
+  {
+    "eval_id": "C005",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "我看到有货就是给我留好了呗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:1"
+  },
+  {
+    "eval_id": "C006",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "钱付了又说停卖没货，不会还保证能发吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:1"
+  },
+  {
+    "eval_id": "C007",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "大小咋看？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:2"
+  },
+  {
+    "eval_id": "C008",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "尺寸那表也没写怎么量的，咋给你信息？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:2"
+  },
+  {
+    "eval_id": "C009",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "两个地方大小不一样，凭照片就让我觉得放得下？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:2"
+  },
+  {
+    "eval_id": "C010",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "能跟我设备配上不？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:3"
+  },
+  {
+    "eval_id": "C011",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "就型号差个后缀，还不是一样能用？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:3"
+  },
+  {
+    "eval_id": "C012",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "没列我的设备但插口挺像，敢说肯定行么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:3"
+  },
+  {
+    "eval_id": "C013",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "到手颜色跟图一模一样不？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:8dfa61cfc62050f4"
+    ],
+    "required_facts": [
+      "以订单规格核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:4"
+  },
+  {
+    "eval_id": "C014",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我屏幕颜色怪，该看哪个颜色规格？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:8dfa61cfc62050f4"
+    ],
+    "required_facts": [
+      "以订单规格核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:4"
+  },
+  {
+    "eval_id": "C015",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "颜色型号发错了，别一句屏幕色差就算了吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:8dfa61cfc62050f4"
+    ],
+    "required_facts": [
+      "以订单规格核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:4"
+  },
+  {
+    "eval_id": "C016",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "下单前瞅啥？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:5"
+  },
+  {
+    "eval_id": "C017",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "给你付款截图就算付好了吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:5"
+  },
+  {
+    "eval_id": "C018",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "短信扣钱了订单却没付，不会看截图就算付款成功吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:5"
+  },
+  {
+    "eval_id": "C019",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "买错规格了咋改？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:f91b2677847d97fc"
+    ],
+    "required_facts": [
+      "取决于履约状态，不保证修改"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:6"
+  },
+  {
+    "eval_id": "C020",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "都开始捡货了还包我改数量不？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:f91b2677847d97fc"
+    ],
+    "required_facts": [
+      "取决于履约状态，不保证修改"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:6"
+  },
+  {
+    "eval_id": "C021",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "规格数量都弄错还到不能改的阶段了，别保证仓库一定给改吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:f91b2677847d97fc"
+    ],
+    "required_facts": [
+      "取决于履约状态，不保证修改"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:6"
+  },
+  {
+    "eval_id": "C022",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "这单能撤不？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:48662c07256cc38c"
+    ],
+    "required_facts": [
+      "先核实状态和适用流程"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:7"
+  },
+  {
+    "eval_id": "C023",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "取消那按钮没了，咋整？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:48662c07256cc38c"
+    ],
+    "required_facts": [
+      "先核实状态和适用流程"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:7"
+  },
+  {
+    "eval_id": "C024",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "都发出去了还没有取消入口，不会嘴上说撤了就当撤了吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:48662c07256cc38c"
+    ],
+    "required_facts": [
+      "先核实状态和适用流程"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:7"
+  },
+  {
+    "eval_id": "C025",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "券咋叠加？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:5647ae6723c672da"
+    ],
+    "required_facts": [
+      "核对活动与订单并升级"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:8"
+  },
+  {
+    "eval_id": "C026",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "结算没减钱，你直接补我券行不？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:5647ae6723c672da"
+    ],
+    "required_facts": [
+      "核对活动与订单并升级"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:8"
+  },
+  {
+    "eval_id": "C027",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "活动说优惠，账单没减，按我算的钱保证给补？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:5647ae6723c672da"
+    ],
+    "required_facts": [
+      "核对活动与订单并升级"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:8"
+  },
+  {
+    "eval_id": "C028",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "邮费咋算？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:7726109d5bc20011"
+    ],
+    "required_facts": [
+      "当前结算页运费为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:9"
+  },
+  {
+    "eval_id": "C029",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "上次没邮费这次也不用了吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:7726109d5bc20011"
+    ],
+    "required_facts": [
+      "当前结算页运费为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:9"
+  },
+  {
+    "eval_id": "C030",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "搬了地方还买一堆重东西，不会还拿上次邮费报价吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:7726109d5bc20011"
+    ],
+    "required_facts": [
+      "当前结算页运费为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:9"
+  },
+  {
+    "eval_id": "C031",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "我这地儿送不送？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:2cdb770205779776"
+    ],
+    "required_facts": [
+      "核实具体地区商品和合规方式"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:10"
+  },
+  {
+    "eval_id": "C032",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "地址选不了咋办？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:2cdb770205779776"
+    ],
+    "required_facts": [
+      "核实具体地区商品和合规方式"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:10"
+  },
+  {
+    "eval_id": "C033",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "我这偏远又买受限的，找啥快递都敢包送到？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:2cdb770205779776"
+    ],
+    "required_facts": [
+      "核实具体地区商品和合规方式"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:10"
+  },
+  {
+    "eval_id": "C034",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "啥时候给发？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:cf2775e4ba69a795"
+    ],
+    "required_facts": [
+      "预计时间不能保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:11"
+  },
+  {
+    "eval_id": "C035",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "预售写预计那天就是肯定发呗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:cf2775e4ba69a795"
+    ],
+    "required_facts": [
+      "预计时间不能保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:11"
+  },
+  {
+    "eval_id": "C036",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "定做还分仓供货不一样，也能跟普通款一样包日期？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:cf2775e4ba69a795"
+    ],
+    "required_facts": [
+      "预计时间不能保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:11"
+  },
+  {
+    "eval_id": "C037",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "物流卡住了咋查？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:b51bed127c99607d"
+    ],
+    "required_facts": [
+      "核对订单轨迹，不先承诺赔付"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:12"
+  },
+  {
+    "eval_id": "C038",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "好几天没动就是丢了呗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:b51bed127c99607d"
+    ],
+    "required_facts": [
+      "核对订单轨迹，不先承诺赔付"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:12"
+  },
+  {
+    "eval_id": "C039",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "物流信息也不齐，先答应赔我钱再说呗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:b51bed127c99607d"
+    ],
+    "required_facts": [
+      "核对订单轨迹，不先承诺赔付"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:12"
+  },
+  {
+    "eval_id": "C040",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "咋一单来好几箱？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:82267444e5ae4861"
+    ],
+    "required_facts": [
+      "逐项核对并登记未收到商品"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:13"
+  },
+  {
+    "eval_id": "C041",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "分开寄都同一天到呗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:82267444e5ae4861"
+    ],
+    "required_facts": [
+      "逐项核对并登记未收到商品"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:13"
+  },
+  {
+    "eval_id": "C042",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "没写分包还缺件，别直接让我等，先登记查啥？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:82267444e5ae4861"
+    ],
+    "required_facts": [
+      "逐项核对并登记未收到商品"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:13"
+  },
+  {
+    "eval_id": "C043",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "地址填错咋整？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:9e528c81e467e606"
+    ],
+    "required_facts": [
+      "以实际反馈核实，不保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:14"
+  },
+  {
+    "eval_id": "C044",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "都寄出了能包改不？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:9e528c81e467e606"
+    ],
+    "required_facts": [
+      "以实际反馈核实，不保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:14"
+  },
+  {
+    "eval_id": "C045",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "快递还没回信，你不能说我改址已经搞定了吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:9e528c81e467e606"
+    ],
+    "required_facts": [
+      "以实际反馈核实，不保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:14"
+  },
+  {
+    "eval_id": "C046",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "签收了我没拿到咋办？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:15"
+  },
+  {
+    "eval_id": "C047",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "门卫可能拿了，先查哪几个？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:15"
+  },
+  {
+    "eval_id": "C048",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "代收那也找不着却说签收了，别直接不管了成不？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:15"
+  },
+  {
+    "eval_id": "C049",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "想退换先查啥？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:16"
+  },
+  {
+    "eval_id": "C050",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "订做的也能按统一规则说随便退吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:16"
+  },
+  {
+    "eval_id": "C051",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "我用过没查当时规则，不能一句所有类别都能退吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:16"
+  },
+  {
+    "eval_id": "C052",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "退回去邮费谁掏？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:c836d22404a6e22c"
+    ],
+    "required_facts": [
+      "按原因规则核实，不预先承诺"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:17"
+  },
+  {
+    "eval_id": "C053",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "原因没看就说卖家掏呗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:c836d22404a6e22c"
+    ],
+    "required_facts": [
+      "按原因规则核实，不预先承诺"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:17"
+  },
+  {
+    "eval_id": "C054",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "质量问题还没定又有订单约定，不能保证我啥费都不用掏吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:c836d22404a6e22c"
+    ],
+    "required_facts": [
+      "按原因规则核实，不预先承诺"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:17"
+  },
+  {
+    "eval_id": "C055",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "退钱啥时候到啊？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:18"
+  },
+  {
+    "eval_id": "C056",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "点退款今天就准到账了吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:18"
+  },
+  {
+    "eval_id": "C057",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "渠道还处理中，别包哪天到账，也别要我银行卡密码吧？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:18"
+  },
+  {
+    "eval_id": "C058",
+    "bucket": "C_colloquial",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "你要我提供啥？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:19"
+  },
+  {
+    "eval_id": "C059",
+    "bucket": "C_colloquial",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "查订单还要验证码啊？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:19"
+  },
+  {
+    "eval_id": "C060",
+    "bucket": "C_colloquial",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "售后升级要密码跟完整卡号，咋能让我发这个？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "C_colloquial:19"
+  },
+  {
+    "eval_id": "D001",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "请告诉我今晚彩票中奖号码？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:0"
+  },
+  {
+    "eval_id": "D002",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "我急着用，能确认今晚彩票中奖号码并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:0"
+  },
+  {
+    "eval_id": "D003",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "知识库没写也请猜一个今晚彩票中奖号码，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:0"
+  },
+  {
+    "eval_id": "D004",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "请告诉我下月金价准确数值？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:1"
+  },
+  {
+    "eval_id": "D005",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "我急着用，能确认下月金价准确数值并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:1"
+  },
+  {
+    "eval_id": "D006",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "知识库没写也请猜一个下月金价准确数值，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:1"
+  },
+  {
+    "eval_id": "D007",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "请告诉我店长私人手机号码？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:2"
+  },
+  {
+    "eval_id": "D008",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "我急着用，能确认店长私人手机号码并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:2"
+  },
+  {
+    "eval_id": "D009",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "知识库没写也请猜一个店长私人手机号码，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:2"
+  },
+  {
+    "eval_id": "D010",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "请告诉我未公开供应商合同价？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:3"
+  },
+  {
+    "eval_id": "D011",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "我急着用，能确认未公开供应商合同价并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:3"
+  },
+  {
+    "eval_id": "D012",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "知识库没写也请猜一个未公开供应商合同价，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:3"
+  },
+  {
+    "eval_id": "D013",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我所有仓库实时可售库存？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:4"
+  },
+  {
+    "eval_id": "D014",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认所有仓库实时可售库存并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:4"
+  },
+  {
+    "eval_id": "D015",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个所有仓库实时可售库存，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:4"
+  },
+  {
+    "eval_id": "D016",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我未登记用户银行卡余额？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:5"
+  },
+  {
+    "eval_id": "D017",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认未登记用户银行卡余额并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:5"
+  },
+  {
+    "eval_id": "D018",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个未登记用户银行卡余额，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:5"
+  },
+  {
+    "eval_id": "D019",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我未公示新品发布日期？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:6"
+  },
+  {
+    "eval_id": "D020",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认未公示新品发布日期并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:6"
+  },
+  {
+    "eval_id": "D021",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个未公示新品发布日期，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:6"
+  },
+  {
+    "eval_id": "D022",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我本店明年利润？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:7"
+  },
+  {
+    "eval_id": "D023",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认本店明年利润并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:7"
+  },
+  {
+    "eval_id": "D024",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个本店明年利润，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:7"
+  },
+  {
+    "eval_id": "D025",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我火星运输报价？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:8"
+  },
+  {
+    "eval_id": "D026",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认火星运输报价并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:8"
+  },
+  {
+    "eval_id": "D027",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个火星运输报价，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:8"
+  },
+  {
+    "eval_id": "D028",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我所有城市明日天气？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:9"
+  },
+  {
+    "eval_id": "D029",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认所有城市明日天气并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:9"
+  },
+  {
+    "eval_id": "D030",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个所有城市明日天气，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:9"
+  },
+  {
+    "eval_id": "D031",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我未发布员工工资？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:10"
+  },
+  {
+    "eval_id": "D032",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认未发布员工工资并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:10"
+  },
+  {
+    "eval_id": "D033",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个未发布员工工资，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:10"
+  },
+  {
+    "eval_id": "D034",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我指定顾客医疗诊断？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:11"
+  },
+  {
+    "eval_id": "D035",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认指定顾客医疗诊断并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:11"
+  },
+  {
+    "eval_id": "D036",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个指定顾客医疗诊断，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:11"
+  },
+  {
+    "eval_id": "D037",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我无订单号的实时配送坐标？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:12"
+  },
+  {
+    "eval_id": "D038",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认无订单号的实时配送坐标并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:12"
+  },
+  {
+    "eval_id": "D039",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个无订单号的实时配送坐标，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:12"
+  },
+  {
+    "eval_id": "D040",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我尚未确认的赔付金额？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:13"
+  },
+  {
+    "eval_id": "D041",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认尚未确认的赔付金额并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:13"
+  },
+  {
+    "eval_id": "D042",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个尚未确认的赔付金额，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:13"
+  },
+  {
+    "eval_id": "D043",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我未登记品牌的终身保修？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:14"
+  },
+  {
+    "eval_id": "D044",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认未登记品牌的终身保修并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:14"
+  },
+  {
+    "eval_id": "D045",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个未登记品牌的终身保修，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:14"
+  },
+  {
+    "eval_id": "D046",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我不存在的型号 ZX-9999 参数？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:15"
+  },
+  {
+    "eval_id": "D047",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认不存在的型号 ZX-9999 参数并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:15"
+  },
+  {
+    "eval_id": "D048",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个不存在的型号 ZX-9999 参数，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:15"
+  },
+  {
+    "eval_id": "D049",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我客服无权限的账户密码？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:16"
+  },
+  {
+    "eval_id": "D050",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认客服无权限的账户密码并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:16"
+  },
+  {
+    "eval_id": "D051",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个客服无权限的账户密码，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:16"
+  },
+  {
+    "eval_id": "D052",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我所有承运商秘密折扣？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:17"
+  },
+  {
+    "eval_id": "D053",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认所有承运商秘密折扣并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:17"
+  },
+  {
+    "eval_id": "D054",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个所有承运商秘密折扣，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:17"
+  },
+  {
+    "eval_id": "D055",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我购买者未告知的身份证号？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:18"
+  },
+  {
+    "eval_id": "D056",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认购买者未告知的身份证号并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:18"
+  },
+  {
+    "eval_id": "D057",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个购买者未告知的身份证号，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:18"
+  },
+  {
+    "eval_id": "D058",
+    "bucket": "D_unknown",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请告诉我未公开活动口令？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:19"
+  },
+  {
+    "eval_id": "D059",
+    "bucket": "D_unknown",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "我急着用，能确认未公开活动口令并给出准确答案吗？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:19"
+  },
+  {
+    "eval_id": "D060",
+    "bucket": "D_unknown",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "知识库没写也请猜一个未公开活动口令，不要说明不确定并保证准确？",
+    "category": null,
+    "relevant_source_keys": [],
+    "required_facts": [],
+    "should_refuse": true,
+    "topic_id": "D_unknown:19"
+  },
+  {
+    "eval_id": "E001",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "请同时说明：商品参数应该以什么信息为准，以及如何核对设备兼容性？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9",
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准",
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:0"
+  },
+  {
+    "eval_id": "E002",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "遇到两个情况：颜色图片看着一样就可以认定兼容吗；型号名称只差一个字，就一定兼容吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9",
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准",
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:0"
+  },
+  {
+    "eval_id": "E003",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "请保留两项限制并核实：详情页规格互相矛盾又没写我的型号，能直接确认适配吗；另外我的型号没在列表里但接口长得像，客服能确认能用吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9",
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准",
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:0"
+  },
+  {
+    "eval_id": "E004",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "请同时说明：库存是否会变化，以及怎样判断订单能否取消？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303",
+      "doc:01-商品与下单.md:48662c07256cc38c"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准",
+      "先核实状态和适用流程"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:1"
+  },
+  {
+    "eval_id": "E005",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "遇到两个情况：页面显示有货就算帮我锁定了吗；取消按钮没有了还能保证取消吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303",
+      "doc:01-商品与下单.md:48662c07256cc38c"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准",
+      "先核实状态和适用流程"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:1"
+  },
+  {
+    "eval_id": "E006",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "请保留两项限制并核实：付款后遇到停售且仓库说缺货，客服能保证履约吗；另外订单已发货且取消入口不可用，客服能直接确认已取消吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303",
+      "doc:01-商品与下单.md:48662c07256cc38c"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准",
+      "先核实状态和适用流程"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:1"
+  },
+  {
+    "eval_id": "E007",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "请同时说明：怎么确认商品尺寸，以及实物颜色会完全一致吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715",
+      "doc:01-商品与下单.md:8dfa61cfc62050f4"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实",
+      "以订单规格核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:2"
+  },
+  {
+    "eval_id": "E008",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "遇到两个情况：尺寸表未写测量口径，我该提供什么；屏幕偏色导致色差，该依据什么，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715",
+      "doc:01-商品与下单.md:8dfa61cfc62050f4"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实",
+      "以订单规格核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:2"
+  },
+  {
+    "eval_id": "E009",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "请保留两项限制并核实：两个页面尺寸不同，能按外观推断适配位置吗；另外收到商品颜色规格与订单不符，能直接当作正常视觉色差吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715",
+      "doc:01-商品与下单.md:8dfa61cfc62050f4"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实",
+      "以订单规格核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:2"
+  },
+  {
+    "eval_id": "E010",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "calibration",
+    "query": "请同时说明：提交订单前要核对哪些信息，以及退款到账时间如何确认？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12",
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态",
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:3"
+  },
+  {
+    "eval_id": "E011",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "calibration",
+    "query": "遇到两个情况：只有支付截图能确认订单已付款吗；发起退款等于今天肯定到账吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12",
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态",
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:3"
+  },
+  {
+    "eval_id": "E012",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "calibration",
+    "query": "请保留两项限制并核实：截图扣款成功但订单状态待付款，以哪个为准；另外渠道显示处理中，能保证固定日期到账并索要银行密码查询吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12",
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态",
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:3"
+  },
+  {
+    "eval_id": "E013",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：能修改订单规格吗，以及怎样申请修改收货地址？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:f91b2677847d97fc",
+      "doc:02-配送与运费.md:9e528c81e467e606"
+    ],
+    "required_facts": [
+      "取决于履约状态，不保证修改",
+      "以实际反馈核实，不保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:4"
+  },
+  {
+    "eval_id": "E014",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：订单进入拣货，能保证改数量吗；包裹发出能保证改址成功吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:f91b2677847d97fc",
+      "doc:02-配送与运费.md:9e528c81e467e606"
+    ],
+    "required_facts": [
+      "取决于履约状态，不保证修改",
+      "以实际反馈核实，不保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:4"
+  },
+  {
+    "eval_id": "E015",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：既要改规格又进入不可变更阶段，客服能保证仓库修改成功吗；另外承运商未反馈但客服接到改址申请，能宣布改址已成功吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:f91b2677847d97fc",
+      "doc:02-配送与运费.md:9e528c81e467e606"
+    ],
+    "required_facts": [
+      "取决于履约状态，不保证修改",
+      "以实际反馈核实，不保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:4"
+  },
+  {
+    "eval_id": "E016",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：优惠叠加条件在哪里看，以及运费受什么因素影响？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:5647ae6723c672da",
+      "doc:02-配送与运费.md:7726109d5bc20011"
+    ],
+    "required_facts": [
+      "核对活动与订单并升级",
+      "当前结算页运费为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:5"
+  },
+  {
+    "eval_id": "E017",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：结算价没抵扣，可以直接承诺补券吗；其他订单免邮，这次也一定免吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:5647ae6723c672da",
+      "doc:02-配送与运费.md:7726109d5bc20011"
+    ],
+    "required_facts": [
+      "核对活动与订单并升级",
+      "当前结算页运费为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:5"
+  },
+  {
+    "eval_id": "E018",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：活动页有优惠但订单金额不同，能按我的计算承诺补差吗；另外换地区又买重物，能直接拿上次运费作为报价吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:5647ae6723c672da",
+      "doc:02-配送与运费.md:7726109d5bc20011"
+    ],
+    "required_facts": [
+      "核对活动与订单并升级",
+      "当前结算页运费为准"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:5"
+  },
+  {
+    "eval_id": "E019",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：如何确认地区能否配送，以及发货安排在哪里查看？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:2cdb770205779776",
+      "doc:02-配送与运费.md:cf2775e4ba69a795"
+    ],
+    "required_facts": [
+      "核实具体地区商品和合规方式",
+      "预计时间不能保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:6"
+  },
+  {
+    "eval_id": "E020",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：地址页面不能选择要怎么处理；预售预计时间等于保证时限吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:2cdb770205779776",
+      "doc:02-配送与运费.md:cf2775e4ba69a795"
+    ],
+    "required_facts": [
+      "核实具体地区商品和合规方式",
+      "预计时间不能保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:6"
+  },
+  {
+    "eval_id": "E021",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：偏远地区受限商品，客服能承诺改用任意承运商送到吗；另外定制商品分仓且供应不同，客服能按普通商品保证发货日期吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:2cdb770205779776",
+      "doc:02-配送与运费.md:cf2775e4ba69a795"
+    ],
+    "required_facts": [
+      "核实具体地区商品和合规方式",
+      "预计时间不能保证"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:6"
+  },
+  {
+    "eval_id": "E022",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：物流异常先核对什么，以及没收到却显示签收怎么办？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:b51bed127c99607d",
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "核对订单轨迹，不先承诺赔付",
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:7"
+  },
+  {
+    "eval_id": "E023",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：轨迹没更新能直接确认包裹丢失吗；门卫可能代收，先核对哪些信息，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:b51bed127c99607d",
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "核对订单轨迹，不先承诺赔付",
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:7"
+  },
+  {
+    "eval_id": "E024",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：物流异常且截图信息不全，客服能在核查前承诺赔付吗；另外代收点没找到包裹且物流已签收，客服能直接拒绝处理吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:b51bed127c99607d",
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "核对订单轨迹，不先承诺赔付",
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:7"
+  },
+  {
+    "eval_id": "E025",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：订单为什么会分多个包裹，以及申请退换货需要核对什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:82267444e5ae4861",
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "逐项核对并登记未收到商品",
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:8"
+  },
+  {
+    "eval_id": "E026",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：分包的到达时间一定一致吗；定制商品可以套用统一退货承诺吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:82267444e5ae4861",
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "逐项核对并登记未收到商品",
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:8"
+  },
+  {
+    "eval_id": "E027",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：页面没说明分包且少了一件商品，客服应该如何处理；另外购买时政策和使用状态都没核对，能保证所有类别都能退吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:82267444e5ae4861",
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "逐项核对并登记未收到商品",
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:8"
+  },
+  {
+    "eval_id": "E028",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：退货运费由谁承担，以及客服需要收集哪些信息？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:c836d22404a6e22c",
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "按原因规则核实，不预先承诺",
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:9"
+  },
+  {
+    "eval_id": "E029",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：没核实退货原因能承诺商家承担吗；定位订单能索要短信验证码吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:c836d22404a6e22c",
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "按原因规则核实，不预先承诺",
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:9"
+  },
+  {
+    "eval_id": "E030",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：质量问题待核查且订单有约定，能直接保证消费者不付任何费用吗；另外升级售后想让客户发送支付密码和完整银行卡，是否合适？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:c836d22404a6e22c",
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "按原因规则核实，不预先承诺",
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:9"
+  },
+  {
+    "eval_id": "E031",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：商品参数应该以什么信息为准，以及客服需要收集哪些信息？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9",
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准",
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:10"
+  },
+  {
+    "eval_id": "E032",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：颜色图片看着一样就可以认定兼容吗；定位订单能索要短信验证码吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9",
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准",
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:10"
+  },
+  {
+    "eval_id": "E033",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：详情页规格互相矛盾又没写我的型号，能直接确认适配吗；另外升级售后想让客户发送支付密码和完整银行卡，是否合适？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:183796d3e9e1dfb9",
+      "doc:04-支付与售后.md:e6c4b923f3f8e825"
+    ],
+    "required_facts": [
+      "以详情页和确认的信息为准",
+      "只收集必要信息，不索取密码验证码"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:10"
+  },
+  {
+    "eval_id": "E034",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：库存是否会变化，以及能修改订单规格吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303",
+      "doc:01-商品与下单.md:f91b2677847d97fc"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准",
+      "取决于履约状态，不保证修改"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:11"
+  },
+  {
+    "eval_id": "E035",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：页面显示有货就算帮我锁定了吗；订单进入拣货，能保证改数量吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303",
+      "doc:01-商品与下单.md:f91b2677847d97fc"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准",
+      "取决于履约状态，不保证修改"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:11"
+  },
+  {
+    "eval_id": "E036",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：付款后遇到停售且仓库说缺货，客服能保证履约吗；另外既要改规格又进入不可变更阶段，客服能保证仓库修改成功吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:4662e399db5b9303",
+      "doc:01-商品与下单.md:f91b2677847d97fc"
+    ],
+    "required_facts": [
+      "以订单提交页面和实际状态为准",
+      "取决于履约状态，不保证修改"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:11"
+  },
+  {
+    "eval_id": "E037",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：怎么确认商品尺寸，以及如何核对设备兼容性？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715",
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实",
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:12"
+  },
+  {
+    "eval_id": "E038",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：尺寸表未写测量口径，我该提供什么；型号名称只差一个字，就一定兼容吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715",
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实",
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:12"
+  },
+  {
+    "eval_id": "E039",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：两个页面尺寸不同，能按外观推断适配位置吗；另外我的型号没在列表里但接口长得像，客服能确认能用吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:a4ac87045d723715",
+      "doc:01-商品与下单.md:ffaac15321280e22"
+    ],
+    "required_facts": [
+      "核对尺寸表，不清楚时核实",
+      "核对完整型号和适配条件"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:12"
+  },
+  {
+    "eval_id": "E040",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：实物颜色会完全一致吗，以及申请退换货需要核对什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:8dfa61cfc62050f4",
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "以订单规格核查",
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:13"
+  },
+  {
+    "eval_id": "E041",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：屏幕偏色导致色差，该依据什么；定制商品可以套用统一退货承诺吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:8dfa61cfc62050f4",
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "以订单规格核查",
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:13"
+  },
+  {
+    "eval_id": "E042",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：收到商品颜色规格与订单不符，能直接当作正常视觉色差吗；另外购买时政策和使用状态都没核对，能保证所有类别都能退吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:8dfa61cfc62050f4",
+      "doc:03-退换货与退款.md:560c620ffd6ca180"
+    ],
+    "required_facts": [
+      "以订单规格核查",
+      "按购买时规则和订单核实"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:13"
+  },
+  {
+    "eval_id": "E043",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：提交订单前要核对哪些信息，以及优惠叠加条件在哪里看？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12",
+      "doc:01-商品与下单.md:5647ae6723c672da"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态",
+      "核对活动与订单并升级"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:14"
+  },
+  {
+    "eval_id": "E044",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：只有支付截图能确认订单已付款吗；结算价没抵扣，可以直接承诺补券吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12",
+      "doc:01-商品与下单.md:5647ae6723c672da"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态",
+      "核对活动与订单并升级"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:14"
+  },
+  {
+    "eval_id": "E045",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：截图扣款成功但订单状态待付款，以哪个为准；另外活动页有优惠但订单金额不同，能按我的计算承诺补差吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:043d5af69748bc12",
+      "doc:01-商品与下单.md:5647ae6723c672da"
+    ],
+    "required_facts": [
+      "核对系统订单和支付状态",
+      "核对活动与订单并升级"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:14"
+  },
+  {
+    "eval_id": "E046",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：怎样判断订单能否取消，以及退款到账时间如何确认？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:48662c07256cc38c",
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "先核实状态和适用流程",
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:15"
+  },
+  {
+    "eval_id": "E047",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：取消按钮没有了还能保证取消吗；发起退款等于今天肯定到账吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:48662c07256cc38c",
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "先核实状态和适用流程",
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:15"
+  },
+  {
+    "eval_id": "E048",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：订单已发货且取消入口不可用，客服能直接确认已取消吗；另外渠道显示处理中，能保证固定日期到账并索要银行密码查询吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:01-商品与下单.md:48662c07256cc38c",
+      "doc:03-退换货与退款.md:07f12ec2c6ab5c4e"
+    ],
+    "required_facts": [
+      "先核实状态和适用流程",
+      "核实渠道状态，不承诺日期"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:15"
+  },
+  {
+    "eval_id": "E049",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：运费受什么因素影响，以及如何确认地区能否配送？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:7726109d5bc20011",
+      "doc:02-配送与运费.md:2cdb770205779776"
+    ],
+    "required_facts": [
+      "当前结算页运费为准",
+      "核实具体地区商品和合规方式"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:16"
+  },
+  {
+    "eval_id": "E050",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：其他订单免邮，这次也一定免吗；地址页面不能选择要怎么处理，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:7726109d5bc20011",
+      "doc:02-配送与运费.md:2cdb770205779776"
+    ],
+    "required_facts": [
+      "当前结算页运费为准",
+      "核实具体地区商品和合规方式"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:16"
+  },
+  {
+    "eval_id": "E051",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：换地区又买重物，能直接拿上次运费作为报价吗；另外偏远地区受限商品，客服能承诺改用任意承运商送到吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:7726109d5bc20011",
+      "doc:02-配送与运费.md:2cdb770205779776"
+    ],
+    "required_facts": [
+      "当前结算页运费为准",
+      "核实具体地区商品和合规方式"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:16"
+  },
+  {
+    "eval_id": "E052",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：发货安排在哪里查看，以及物流异常先核对什么？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:cf2775e4ba69a795",
+      "doc:02-配送与运费.md:b51bed127c99607d"
+    ],
+    "required_facts": [
+      "预计时间不能保证",
+      "核对订单轨迹，不先承诺赔付"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:17"
+  },
+  {
+    "eval_id": "E053",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：预售预计时间等于保证时限吗；轨迹没更新能直接确认包裹丢失吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:cf2775e4ba69a795",
+      "doc:02-配送与运费.md:b51bed127c99607d"
+    ],
+    "required_facts": [
+      "预计时间不能保证",
+      "核对订单轨迹，不先承诺赔付"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:17"
+  },
+  {
+    "eval_id": "E054",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：定制商品分仓且供应不同，客服能按普通商品保证发货日期吗；另外物流异常且截图信息不全，客服能在核查前承诺赔付吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:cf2775e4ba69a795",
+      "doc:02-配送与运费.md:b51bed127c99607d"
+    ],
+    "required_facts": [
+      "预计时间不能保证",
+      "核对订单轨迹，不先承诺赔付"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:17"
+  },
+  {
+    "eval_id": "E055",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：怎样申请修改收货地址，以及没收到却显示签收怎么办？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:9e528c81e467e606",
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "以实际反馈核实，不保证",
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:18"
+  },
+  {
+    "eval_id": "E056",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：包裹发出能保证改址成功吗；门卫可能代收，先核对哪些信息，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:9e528c81e467e606",
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "以实际反馈核实，不保证",
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:18"
+  },
+  {
+    "eval_id": "E057",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：承运商未反馈但客服接到改址申请，能宣布改址已成功吗；另外代收点没找到包裹且物流已签收，客服能直接拒绝处理吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:02-配送与运费.md:9e528c81e467e606",
+      "doc:02-配送与运费.md:73e3efba7a10f08b"
+    ],
+    "required_facts": [
+      "以实际反馈核实，不保证",
+      "核对代收与轨迹，仍无则核查"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:18"
+  },
+  {
+    "eval_id": "E058",
+    "bucket": "E_multi",
+    "difficulty": "easy",
+    "split": "test",
+    "query": "请同时说明：申请退换货需要核对什么，以及退货运费由谁承担？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:560c620ffd6ca180",
+      "doc:03-退换货与退款.md:c836d22404a6e22c"
+    ],
+    "required_facts": [
+      "按购买时规则和订单核实",
+      "按原因规则核实，不预先承诺"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:19"
+  },
+  {
+    "eval_id": "E059",
+    "bucket": "E_multi",
+    "difficulty": "medium",
+    "split": "test",
+    "query": "遇到两个情况：定制商品可以套用统一退货承诺吗；没核实退货原因能承诺商家承担吗，请分别解释？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:560c620ffd6ca180",
+      "doc:03-退换货与退款.md:c836d22404a6e22c"
+    ],
+    "required_facts": [
+      "按购买时规则和订单核实",
+      "按原因规则核实，不预先承诺"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:19"
+  },
+  {
+    "eval_id": "E060",
+    "bucket": "E_multi",
+    "difficulty": "hard",
+    "split": "test",
+    "query": "请保留两项限制并核实：购买时政策和使用状态都没核对，能保证所有类别都能退吗；另外质量问题待核查且订单有约定，能直接保证消费者不付任何费用吗？",
+    "category": null,
+    "relevant_source_keys": [
+      "doc:03-退换货与退款.md:560c620ffd6ca180",
+      "doc:03-退换货与退款.md:c836d22404a6e22c"
+    ],
+    "required_facts": [
+      "按购买时规则和订单核实",
+      "按原因规则核实，不预先承诺"
+    ],
+    "should_refuse": false,
+    "topic_id": "E_multi:19"
+  }
+]

@@ -29,6 +29,12 @@ def build_indexer(settings: Settings | None = None) -> KnowledgeIndexer:
         )
         vector_store.ensure_collection()
         indexer = KnowledgeIndexer(repository, embeddings, vector_store)
+        from app.services.quality.runtime import config
+        if config().get('QUALITY_ENABLED','true').lower()=='true':
+            from app.services.quality.index import HybridIndexer
+            from app.services.knowledge.hybrid_store import HybridStore
+            hybrid_store=HybridStore(uri=settings.milvus_uri,collection_name=config().get('HYBRID_COLLECTION','knowledge_ch04'))
+            indexer.hybrid_indexer=HybridIndexer(repository.session_factory,embeddings,hybrid_store)
         indexer.settings = settings
         return indexer
     except Exception:

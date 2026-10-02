@@ -1,0 +1,54 @@
+{
+  "stage": "remaining",
+  "stage_calls": 56,
+  "total_calibration_calls": 60,
+  "stage_outcomes": {
+    "changedAccepted": 15,
+    "unchangedAccepted": 24,
+    "fallback": 17
+  },
+  "outcomes": {
+    "changedAccepted": 16,
+    "unchangedAccepted": 26,
+    "fallback": 18
+  },
+  "fallback_ids": [
+    "V2B001",
+    "V2B003",
+    "V2B004",
+    "V2B006",
+    "V2B007",
+    "V2B009",
+    "V2B010",
+    "V2B012",
+    "V2C002",
+    "V2C004",
+    "V2C005",
+    "V2C007",
+    "V2C008",
+    "V2C010",
+    "V2E003",
+    "V2E006",
+    "V2E009",
+    "V2E012"
+  ],
+  "changed_ids_pending_human_review": [
+    "V2C003",
+    "V2A002",
+    "V2A005",
+    "V2A008",
+    "V2B011",
+    "V2C006",
+    "V2C009",
+    "V2C012",
+    "V2D003",
+    "V2D006",
+    "V2D009",
+    "V2D012",
+    "V2E002",
+    "V2E005",
+    "V2E008",
+    "V2E011"
+  ],
+  "note": "Guard acceptance checks preservation predicates only; semantic equivalence requires human review."
+}
