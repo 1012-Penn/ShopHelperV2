@@ -61,6 +61,8 @@ def paired_comparisons(rows):
 
 
 def markdown_report(result):
+    def display(value):
+        return 'N/A' if value is None else f'{value:.3f}'
     meta=result['metadata']
     identity='同模型裁判基线，存在自评偏差' if meta.get('same_model_judge') is True else ('不同模型/端点配置的裁判，仍需人工抽查' if meta.get('same_model_judge') is False else '裁判独立性未确认')
     lines=['# ch04 四策略评估', '', '模式：'+result['mode'], '', identity,
@@ -68,15 +70,15 @@ def markdown_report(result):
            '| 策略 | 题数 | Recall@1 | Recall@5 | Recall@10 | 完整证据@10 | MRR | 答案正确率 | Faithfulness | 错误 |',
            '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|']
     for strategy,m in result['summary'].items():
-        lines.append(f"| {strategy} | {m['cases']} | {m.get('recall@1')} | {m.get('recall@5')} | {m.get('recall@10')} | {m.get('all_evidence@10')} | {m.get('mrr')} | {m['answer_accuracy']} | {m['faithfulness']} | {m['error_count']} |")
+        lines.append(f"| {strategy} | {m['cases']} | {display(m.get('recall@1'))} | {display(m.get('recall@5'))} | {display(m.get('recall@10'))} | {display(m.get('all_evidence@10'))} | {display(m.get('mrr'))} | {display(m['answer_accuracy'])} | {display(m['faithfulness'])} | {m['error_count']} |")
     for strategy,groups in result['groups'].items():
         lines+=['', '## '+strategy+' 按类型', '', '| 桶 | Recall@5 | 完整证据@10 | MRR | 正确率 | Faithfulness | 未知拒答率 | 已知误拒答率 |','|---|---:|---:|---:|---:|---:|---:|---:|']
         for bucket,m in groups['bucket'].items():
-            lines.append(f"| {bucket} | {m.get('recall@5')} | {m.get('all_evidence@10')} | {m.get('mrr')} | {m['answer_accuracy']} | {m['faithfulness']} | {m['unknown_refusal_rate']} | {m['known_false_refusal_rate']} |")
+            lines.append(f"| {bucket} | {display(m.get('recall@5'))} | {display(m.get('all_evidence@10'))} | {display(m.get('mrr'))} | {display(m['answer_accuracy'])} | {display(m['faithfulness'])} | {display(m['unknown_refusal_rate'])} | {display(m['known_false_refusal_rate'])} |")
     lines+=['','## Test 同题配对差异','','| 左 vs 右 | 指标 | 配对数 | 左胜 | 平 | 右胜 | 右减左均值 |','|---|---|---:|---:|---:|---:|---:|']
     for pair,metrics in result['paired_comparisons']['test'].items():
         for name,m in metrics.items():
-            lines.append(f"| {pair} | {name} | {m['pairs']} | {m['left_wins']} | {m['ties']} | {m['right_wins']} | {m['mean_delta_right_minus_left']} |")
+            lines.append(f"| {pair} | {name} | {m['pairs']} | {m['left_wins']} | {m['ties']} | {m['right_wins']} | {display(m['mean_delta_right_minus_left'])} |")
     lines+=['','拒答无事实声明记 N/A，不计为忠实度通过。正例误拒答的正确性为0；未知题按显式拒答判定。正确性与证据忠实度分开，不共享 ground-truth 输入。',
             '错误按出错行及各裁判分别计数；两项裁判独立尝试，有效判定不受另一裁判失败影响。分母及事实覆盖率保存在JSON。检索指标保留已完成检索的行。',
             '类型、难度、挑战标签、test及calibration分组分别保存于JSON。受控虚构语料尚未经业务专家独立复核；不得按test成绩筛题或调参。']

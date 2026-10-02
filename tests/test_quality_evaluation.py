@@ -212,3 +212,24 @@ def test_judge_failures_do_not_discard_or_skip_the_other_metric():
     summary=summarize([correct_success])
     assert summary['answer_accuracy']==1. and summary['answer_accuracy_cases']==1
     assert summary['faithfulness'] is None and summary['error_count']==1
+
+
+def test_markdown_metrics_use_three_decimals_without_rounding_raw_results():
+    import copy
+    import re
+    from scripts.evaluate_ch04 import report, markdown_report
+    rows=[]
+    for strategy,value in [('dense', .933333333333), ('hybrid', .966666666667)]:
+        rows.append(dict(eval_id='q1', split='test', bucket='A_policy', difficulty='hard',
+            strategy=strategy, metrics={'recall@1':value,'recall@5':value,
+                'recall@10':value,'all_evidence@10':value,'mrr':value},
+            should_refuse=False,refused=False,answer='a',faithfulness=1.,correctness=value,error=None))
+    result=report(rows,'fixture',{})
+    original=copy.deepcopy(result)
+    rendered=markdown_report(result)
+    assert not re.search(r'\d+\.\d{4,}',rendered)
+    assert '| dense | 1 | 0.933 |' in rendered
+    assert '| hybrid | 1 | 0.967 |' in rendered
+    assert '| 1.000 |' in rendered
+    assert '| 0.033 |' in rendered
+    assert result==original
