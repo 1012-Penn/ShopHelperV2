@@ -180,3 +180,35 @@ def test_record_fabrication_even_when_later_correctness_judge_failed():
     assert ledger.cases[0]['eval_id'] == row['eval_id']
     persist_faith_case(ledger, {**row,'strategy':'dense'})
     assert len(ledger.cases) == 1
+
+
+@pytest.mark.parametrize('base,alias', [
+    ('https://api.deepseek.com','https://api.deepseek.com:443/v1/'),
+    ('http://model.example','http://model.example:80/v1'),
+])
+def test_default_ports_cannot_bypass_independent_judge_guard(base, alias):
+    from scripts.ch04_judging import judge_identity
+    from types import SimpleNamespace
+    settings=SimpleNamespace(model='same',base_url=base,api_key='x')
+    with pytest.raises(ValueError,match='independent'):
+        judge_identity(settings,{'JUDGE_MODEL':'same','JUDGE_API_BASE':alias},True)
+
+
+def test_judge_failures_do_not_discard_or_skip_the_other_metric():
+    from scripts.ch04_judging import score_answer
+    from types import SimpleNamespace
+    base=dict(query='q',answer='a',citations=[{'answer':'事实'}],required_facts=['事实'],
+              refused=False,should_refuse=False,error=None,metrics={})
+    def good_faith(payload):return {'claims':[dict(claim='a',supported=False,reason='没证据')]}
+    def good_correct(payload):return {'facts':[dict(index=0,covered=True,contradicted=False,reason='答到了')]}
+    def bad(payload):raise RuntimeError('judge unavailable')
+    faith_success=score_answer(dict(base),good_faith,bad,'judge')
+    assert faith_success['faithfulness']==0.
+    summary=summarize([faith_success])
+    assert summary['faithfulness']==0. and summary['faithfulness_cases']==1
+    assert summary['faithfulness_claims']==1 and summary['error_count']==1
+    correct_success=score_answer(dict(base),bad,good_correct,'judge')
+    assert correct_success['correctness']==1.
+    summary=summarize([correct_success])
+    assert summary['answer_accuracy']==1. and summary['answer_accuracy_cases']==1
+    assert summary['faithfulness'] is None and summary['error_count']==1

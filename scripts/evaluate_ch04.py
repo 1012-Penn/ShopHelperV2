@@ -15,7 +15,7 @@ from app.db.session import create_tables,make_engine,make_session_factory
 from app.services.knowledge.repository import KnowledgeRepository
 from app.services.quality.index import HybridIndexer
 from app.services.quality.runtime import build_answer_service,config
-from app.services.quality.evaluation import retrieval_metrics,summarize,calibration_threshold
+from app.services.quality.evaluation import retrieval_metrics,summarize,calibration_threshold,metric_available
 from app.services.quality.ledger import QualityLedger
 from scripts.validate_ch04_dataset import load_corpus,validate_dataset,verify_frozen_dataset
 
@@ -49,7 +49,7 @@ def paired_comparisons(rows):
                 values=[]
                 for id in sorted(by_strategy[left].keys() & by_strategy[right].keys()):
                     a,b=by_strategy[left][id],by_strategy[right][id]
-                    if metric=='correctness' and (a.get('error') or b.get('error')):continue
+                    if metric=='correctness' and (not metric_available(a,'correctness') or not metric_available(b,'correctness')):continue
                     av=a.get('correctness') if metric=='correctness' else a.get('metrics',{}).get(metric)
                     bv=b.get('correctness') if metric=='correctness' else b.get('metrics',{}).get(metric)
                     if av is not None and bv is not None:values.append(bv-av)
@@ -78,7 +78,7 @@ def markdown_report(result):
         for name,m in metrics.items():
             lines.append(f"| {pair} | {name} | {m['pairs']} | {m['left_wins']} | {m['ties']} | {m['right_wins']} | {m['mean_delta_right_minus_left']} |")
     lines+=['','拒答无事实声明记 N/A，不计为忠实度通过。正例误拒答的正确性为0；未知题按显式拒答判定。正确性与证据忠实度分开，不共享 ground-truth 输入。',
-            '错误单独计数；正确性排除错误，分母及事实覆盖率保存在JSON。检索指标可保留已完成检索但裁判失败的行。',
+            '错误按出错行及各裁判分别计数；两项裁判独立尝试，有效判定不受另一裁判失败影响。分母及事实覆盖率保存在JSON。检索指标保留已完成检索的行。',
             '类型、难度、挑战标签、test及calibration分组分别保存于JSON。受控虚构语料尚未经业务专家独立复核；不得按test成绩筛题或调参。']
     return '\n'.join(lines)+'\n'
 

@@ -12,17 +12,27 @@ def retrieval_metrics(ranked_ids, relevant_ids, ks=(1,5,10)):
     return metrics
 
 
+def metric_available(row, metric):
+    if row.get(metric) is None:
+        return False
+    if not row.get('error'):
+        return True
+    # Successful independent verdicts survive the other judge's failure.
+    return (metric+'_error' in row and row[metric+'_error'] is None
+            and row.get('error_stage') in {'faithfulness_judge','correctness_judge'})
+
+
 def summarize(rows):
     def mean(values):
         values=[v for v in values if v is not None]
         return sum(values)/len(values) if values else None
-    faith=[r['faithfulness'] for r in rows if r.get('faithfulness') is not None and not r.get('error')]
+    faith=[r['faithfulness'] for r in rows if metric_available(r,'faithfulness')]
     known=[r for r in rows if not r['should_refuse']]
     unknown=[r for r in rows if r['should_refuse']]
     names=set().union(*(r.get('metrics',{}).keys() for r in rows)) if rows else set()
-    claims=[c for r in rows if not r.get('error') for c in r.get('claims',[])]
-    correctness = [r['correctness'] for r in rows if r.get('correctness') is not None and not r.get('error')]
-    return {'answer_accuracy':mean(correctness), 'answer_accuracy_cases':len(correctness), 'fact_coverage':mean([r.get('fact_coverage') for r in rows if not r.get('error')]), 'retrieval_cases':sum(r.get('metrics',{}).get('mrr') is not None for r in rows), 'known_cases':len(known), 'unknown_cases':len(unknown), 'empty_answer_rate':mean([int(not r.get('answer','').strip()) for r in rows]), 'faithfulness_claims':len(claims), 'faithfulness_micro':mean([int(c['supported']) for c in claims]), 'latency_seconds':mean([r.get('latency_seconds') for r in rows]), 'cases':len(rows),'error_count':sum(bool(r.get('error')) for r in rows),'faithfulness':mean(faith),'faithfulness_cases':len(faith),
+    claims=[c for r in rows if metric_available(r,'faithfulness') for c in r.get('claims',[])]
+    correctness = [r['correctness'] for r in rows if metric_available(r,'correctness')]
+    return {'faithfulness_error_count':sum(bool(r.get('faithfulness_error')) for r in rows), 'correctness_error_count':sum(bool(r.get('correctness_error')) for r in rows), 'answer_accuracy':mean(correctness), 'answer_accuracy_cases':len(correctness), 'fact_coverage':mean([r.get('fact_coverage') for r in rows if metric_available(r,'correctness')]), 'retrieval_cases':sum(r.get('metrics',{}).get('mrr') is not None for r in rows), 'known_cases':len(known), 'unknown_cases':len(unknown), 'empty_answer_rate':mean([int(not r.get('answer','').strip()) for r in rows]), 'faithfulness_claims':len(claims), 'faithfulness_micro':mean([int(c['supported']) for c in claims]), 'latency_seconds':mean([r.get('latency_seconds') for r in rows]), 'cases':len(rows),'error_count':sum(bool(r.get('error')) for r in rows),'faithfulness':mean(faith),'faithfulness_cases':len(faith),
             'known_false_refusal_rate':mean([int(r['refused']) for r in known]),'unknown_refusal_rate':mean([int(r['refused']) for r in unknown]),
             **{name:mean([r.get('metrics',{}).get(name) for r in rows]) for name in sorted(names)}}
 

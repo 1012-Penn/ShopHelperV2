@@ -128,3 +128,16 @@ fixture 仅验证指标/接线，不能替代真实质量结果。每轮报告�
 BM25 的 60 道型号题 Recall@1=100%。最终 hybrid_rerank 未知题拒答率 100%，已知题误拒答率 10.42%（独立 test 为 9.38%），检索排名提升并不意味着所有问题都能回答。RERANK_MIN_SCORE=0.05 来自 60 条校准题，需针对真实店铺重新校准。数据由助手构建，未经业务专家独立复核，跨桶相同政策仍可能语义相关。
 
 开发过程与独立评审修复详见 [dev-notes/ch04.md](dev-notes/ch04.md)。
+
+2026-10-02 新增 [v2 挑战集](evaluation/ch04/v2/README.md)：300 题、480 个有效 chunk、140 道品类过滤题。近似型号、渠道/地域/状态例外、口语问法及 2—3 条必要证据分别标注；全局场景家族不跨 calibration/test。v1 题库和历史报告保留，两个版本默认使用独立 SQLite、Milvus 集合和报告目录。
+
+```bash
+python3 -m scripts.validate_ch04_dataset --dataset-dir evaluation/ch04/v2
+python3 -m scripts.evaluate_ch04 --live --dataset-dir evaluation/ch04/v2 --split all --workers 8
+# 填入实际运行目录后，仅重新判分，保留原生成答案和证据
+python3 -m scripts.evaluate_ch04 --judge-only evaluation/ch04/v2/runs/<run_id>/rows.jsonl --workers 8
+# 已配置 JUDGE_MODEL/JUDGE_API_BASE/JUDGE_API_KEY 后，可强制检查独立裁判身份
+python3 -m scripts.evaluate_ch04 --judge-only evaluation/ch04/v2/runs/<run_id>/rows.jsonl --require-independent-judge
+```
+
+v2 报告区分 Recall@1/5/10、完整证据@K、MRR、必要事实覆盖/答案正确性、Faithfulness 和拒答质量，并给 test 同题配对差异。正确性裁判可看必要事实标注；忠实度裁判仍只看当轮证据，生成模型不接触 ground-truth。正例误拒答正确性为 0，未知题明确拒答正确性为 1；裁判失败单列错误和有效样本数。冻结后的题库/语料 hash 不一致会拒绝运行，防止按 test 成绩删题或改标注。不同难度的数据集不能直接按总分比较是否退化；当前裁判仍是同模型基线，未做业务专家盲审。

@@ -15,7 +15,7 @@ from app.services.quality.evaluation import (
 def public_endpoint(value):
     parsed = urlsplit(value.strip())
     host = (parsed.hostname or '').lower()
-    if parsed.port:
+    if parsed.port and (parsed.scheme.lower(), parsed.port) not in {('https',443),('http',80)}:
         host += f':{parsed.port}'
     path = parsed.path.rstrip('/')
     if path.endswith('/v1'):
@@ -53,21 +53,31 @@ def build_judges(settings=None, values=None, require_independent=False, generato
 
 def score_answer(row, faith_judge, correctness_judge, judge_model):
     row.update(faithfulness=None, correctness=None, fact_coverage=None,
-               judge_model=judge_model, claims=[], correctness_facts=[])
+               judge_model=judge_model, claims=[], correctness_facts=[],
+               faithfulness_error=None, correctness_error=None, error=None)
+    row.pop('error_stage', None)
+    failures=[]
     if not row['refused']:
         started = time.monotonic()
-        row['error_stage'] = 'faithfulness_judge'
-        verdict = judge_faithfulness(faith_judge, row['query'], row['answer'], row['citations'])
-        row.update(faithfulness=verdict['score'], judge_reason=verdict['reason'], claims=verdict['claims'])
+        try:
+            verdict = judge_faithfulness(faith_judge, row['query'], row['answer'], row['citations'])
+            row.update(faithfulness=verdict['score'], judge_reason=verdict['reason'], claims=verdict['claims'])
+        except Exception as e:
+            row['faithfulness_error']=type(e).__name__
+            failures.append(('faithfulness_judge',type(e).__name__))
         row['judge_seconds'] = time.monotonic()-started
     started = time.monotonic()
-    row['error_stage'] = 'correctness_judge'
-    verdict = judge_correctness(correctness_judge, row['query'], row['answer'],
-                                 row['required_facts'], row['should_refuse'], row['refused'])
-    row.update(correctness=verdict['score'], fact_coverage=verdict['fact_coverage'],
-               correctness_reason=verdict['reason'], correctness_facts=verdict['facts'])
+    try:
+        verdict = judge_correctness(correctness_judge, row['query'], row['answer'],
+                                     row['required_facts'], row['should_refuse'], row['refused'])
+        row.update(correctness=verdict['score'], fact_coverage=verdict['fact_coverage'],
+                   correctness_reason=verdict['reason'], correctness_facts=verdict['facts'])
+    except Exception as e:
+        row['correctness_error']=type(e).__name__
+        failures.append(('correctness_judge',type(e).__name__))
     row['correctness_judge_seconds'] = time.monotonic()-started
-    row.pop('error_stage', None)
+    if failures:
+        row['error_stage'],row['error']=failures[0]
     return row
 
 
