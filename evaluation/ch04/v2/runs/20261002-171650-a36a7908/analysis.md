@@ -56,7 +56,7 @@
 ## 验证与演示
 
 ```bash
-cd /root/.codex/worktrees/ch04-rag-quality/MewHelp
+cd /root/workplace/MewHelp
 python3 -m pytest -q
 python3 -m scripts.validate_ch04_dataset --dataset-dir evaluation/ch04/v2
 python3 evaluation/ch04/v2/runs/20261002-171650-a36a7908/parent_audit.py
@@ -65,3 +65,5 @@ python3 -m scripts.evaluate_ch04 --live --dataset-dir evaluation/ch04/v2 --split
 # 既有配置下启动聊天页，来源引用/反馈/拒答池演示见README
 python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
+
+2026-10-02 后续状态：用户授权后已通过 `0ffe9de` 本地合并到main，合并后197项测试、前端构建和本审计通过。上文代码版本/运行状态描述的是评估当时快照；报告raw及指标保持不变，演示命令已更新为main路径。
