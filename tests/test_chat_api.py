@@ -1,5 +1,4 @@
 import json
-import re
 
 from fastapi.testclient import TestClient
 
@@ -73,18 +72,16 @@ def test_chat_stream_rejects_blank_message():
     assert response.status_code == 422
 
 
-def test_root_serves_built_react_workbench_and_assets():
+def test_root_serves_native_chat_even_when_react_dist_exists():
     app = create_app(chat_service=FakeChatService([]))
     client = TestClient(app)
 
     page = client.get("/")
 
     assert page.status_code == 200
-    assert "喵助理 · 智能客服工作台" in page.text
-    asset_path = re.search(r'src="(/assets/[^\"]+\.js)"', page.text).group(1)
-    asset = client.get(asset_path)
-    assert asset.status_code == 200
-    assert "多轮" in asset.text
+    assert 'id="chat-form"' in page.text
+    assert "/src/main.jsx" not in page.text
+    assert 'type="module" src="/assets/' not in page.text
 
 
 def test_after_sale_extract_returns_fixed_json_fields():

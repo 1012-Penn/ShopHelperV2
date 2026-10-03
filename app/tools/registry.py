@@ -91,7 +91,12 @@ class ToolRunner:
                 safe_error = "工具执行超时，请稍后再试。"
                 break
             except Exception:
+                if name == "create_ticket":
+                    return ToolResult(name, tool_call_id, "工单提交结果暂未确认，请勿重复提交；请联系人工客服核查。", True)
                 if attempt == self.max_retries:
                     break
 
         return ToolResult(name, tool_call_id, safe_error, True)
+
+    def close(self) -> None:
+        self._executor.shutdown(wait=False, cancel_futures=True)

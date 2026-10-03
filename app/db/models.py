@@ -62,6 +62,7 @@ class Message(Base):
     role: Mapped[str] = mapped_column(String(16), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     citations: Mapped[list[dict] | None] = mapped_column(JSON, nullable=True)
+    actions: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     tool_calls: Mapped[list[dict] | None] = mapped_column(JSON, nullable=True)
     tool_call_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())

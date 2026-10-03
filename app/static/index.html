@@ -50,6 +50,26 @@
     .send { width: 40px; height: 40px; flex: 0 0 40px; border: 0; border-radius: 12px; background: #244d3a; color: white; font-size: 18px; cursor: pointer; }
     .send:disabled { background: #a7b5aa; cursor: wait; }
     .hint { margin: 9px 0 0; color: #89938c; text-align: center; font-size: 11px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .action-button { padding: 8px 12px; border: 1px solid #bfd2c2; border-radius: 9px; color: #315b43; background: #f7fbf6; font: inherit; font-size: 12px; cursor: pointer; }
+    .action-button.ticket { border-color: #d9c9ae; color: #765b30; background: #fffbf3; }
+    .action-button:disabled { cursor: default; opacity: .55; }
+    .action-result, .feedback { margin-top: 8px; color: #657369; font-size: 12px; }
+    .feedback { display: flex; align-items: center; gap: 7px; font-size: 11px; }
+    .feedback button { padding: 5px 7px; border: 0; border-radius: 6px; color: #718078; background: transparent; cursor: pointer; }
+    .feedback button[aria-pressed="true"] { color: #315b43; background: #e7f0e6; }
+    .feedback button:disabled { cursor: default; }
+    .citation-number { display: inline; padding: 1px 5px; border: 0; border-radius: 5px; color: #8b5a26; background: #fff0dd; font: inherit; font-size: .85em; cursor: pointer; }
+    .citation-overlay { position: fixed; inset: 0; z-index: 10; display: flex; justify-content: flex-end; padding: 24px; background: #20352a66; }
+    .citation-overlay[hidden] { display: none; }
+    .citation-panel { width: min(560px, 100%); max-height: 100%; overflow: auto; padding: 24px; border-radius: 16px; color: #35423b; background: #fffdf8; box-shadow: 0 16px 70px #10231f44; }
+    .citation-panel header, .citation-panel footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .citation-panel header { margin-bottom: 16px; }
+    .citation-panel header button { padding: 6px; border: 0; background: transparent; cursor: pointer; }
+    .citation-path { margin-bottom: 12px; padding: 11px; border-radius: 8px; background: #f1f3e8; font-size: 13px; }
+    .citation-original { white-space: pre-wrap; font-size: 14px; line-height: 1.8; }
+    .citation-panel footer { margin-top: 20px; padding-top: 14px; border-top: 1px solid #e5e8df; color: #818b80; font-size: 12px; }
+    .citation-panel footer a { color: #a65d1c; }
     @keyframes pulse { 50% { opacity: .35; } }
     @media (max-width: 560px) { .app { padding: 0 16px; } header { padding: 17px 0; } main { padding: 22px 0; } .message { max-width: 96%; } .session { max-width: 115px; overflow: hidden; text-overflow: ellipsis; } }
   </style>
@@ -84,20 +104,19 @@
       <p class="hint">回答由客服助手生成，涉及账户或敏感问题时请联系人工客服。</p>
     </footer>
   </div>
+  <div class="citation-overlay" id="citation-overlay" hidden>
+    <section class="citation-panel" role="dialog" aria-modal="true" aria-label="引用来源">
+      <header><strong id="citation-title">引用来源</strong><button id="citation-close" type="button" aria-label="关闭来源">×</button></header>
+      <div class="citation-path" id="citation-path"></div>
+      <div class="citation-original" id="citation-original"></div>
+      <footer id="citation-footer"></footer>
+    </section>
+  </div>
   <script>
-    const labels = {
-      query_order: "查询订单",
-      query_product: "查询商品",
-      query_logistics: "查询物流",
-      query_faq: "查询常见问题",
-      create_ticket: "创建人工工单",
-    };
+    const labels = { query_order: "查询订单", query_product: "查询商品", query_logistics: "查询物流", query_faq: "查询常见问题", create_ticket: "创建人工工单" };
     const newId = () => crypto.randomUUID ? crypto.randomUUID() : `chat-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     let conversationId = localStorage.getItem("mewhelp-conversation-id");
-    if (!conversationId) {
-      conversationId = newId();
-      localStorage.setItem("mewhelp-conversation-id", conversationId);
-    }
+    if (!conversationId) { conversationId = newId(); localStorage.setItem("mewhelp-conversation-id", conversationId); }
     document.getElementById("session-label").textContent = `会话 ${conversationId.slice(0, 8)}`;
 
     const form = document.getElementById("chat-form");
@@ -105,140 +124,187 @@
     const sendButton = document.getElementById("send-button");
     const messages = document.getElementById("messages");
     const transcript = document.getElementById("transcript");
+    const assistantRowsById = new Map();
+    const pendingActions = new Map();
 
     function addMessage(role, text = "") {
       document.getElementById("welcome")?.remove();
-      const row = document.createElement("div");
-      row.className = `message ${role}`;
-      const avatar = document.createElement("div");
-      avatar.className = "avatar";
-      avatar.textContent = role === "assistant" ? "✳" : "你";
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      if (role === "assistant") {
-        const trace = document.createElement("div");
-        trace.className = "trace";
-        bubble.append(trace);
-        row.trace = trace;
-      }
-      const body = document.createElement("span");
-      body.textContent = text;
-      bubble.append(body);
-      row.body = body;
-      row.append(avatar, bubble);
-      messages.append(row);
-      transcript.scrollTop = transcript.scrollHeight;
+      const row = document.createElement("div"); row.className = `message ${role}`;
+      const avatar = document.createElement("div"); avatar.className = "avatar"; avatar.textContent = role === "assistant" ? "✳" : "你";
+      const bubble = document.createElement("div"); bubble.className = "bubble";
+      if (role === "assistant") { const trace = document.createElement("div"); trace.className = "trace"; bubble.append(trace); row.trace = trace; }
+      const body = document.createElement("span"); body.textContent = text; bubble.append(body);
+      row.body = body; row.content = text; row.localId = newId(); row.citations = [];
+      row.append(avatar, bubble); messages.append(row); transcript.scrollTop = transcript.scrollHeight;
       return row;
     }
 
     function showToolStatus(row, name, status) {
-      let badge = row.trace.querySelector(".badge");
+      let badge = Array.from(row.trace.querySelectorAll(".badge")).find((item) => item.dataset.toolName === name);
       if (!badge) {
-        badge = document.createElement("span");
-        badge.className = "badge";
-        badge.innerHTML = '<span class="dot"></span><span class="label"></span>';
-        row.trace.append(badge);
+        badge = document.createElement("span"); badge.className = "badge"; badge.dataset.toolName = name;
+        const dot = document.createElement("span"); dot.className = "dot";
+        const label = document.createElement("span"); label.className = "label";
+        badge.append(dot, label); row.trace.append(badge);
       }
-      badge.dataset.toolName = name;
       badge.className = `badge ${status === "running" ? "running" : status === "failed" ? "failed" : ""}`;
-      const statusText = status === "running" ? "查询中" : status === "failed" ? "未完成" : "已调用";
-      badge.querySelector(".label").textContent = `${labels[name] || name} · ${statusText}`;
+      badge.querySelector(".label").textContent = `${labels[name] || name} · ${status === "running" ? "查询中" : status === "failed" ? "未完成" : "已调用"}`;
+    }
+
+    function safeSourceUrl(value) {
+      if (typeof value !== "string") return null;
+      try { const url = new URL(value, location.origin); return url.origin === location.origin && url.pathname === "/api/v1/knowledge/source" ? `${url.pathname}${url.search}${url.hash}` : null; }
+      catch { return null; }
+    }
+
+    function renderAssistantBody(row) {
+      row.body.replaceChildren();
+      for (const part of row.content.split(/(\[\d+\])/g)) {
+        const match = part.match(/^\[(\d+)\]$/);
+        const citation = match && row.citations.find((item) => item.n === Number(match[1]));
+        if (!citation) { row.body.append(document.createTextNode(part)); continue; }
+        const button = document.createElement("button"); button.type = "button"; button.className = "citation-number";
+        button.textContent = part; button.setAttribute("aria-label", `查看引用 ${citation.n}`);
+        button.addEventListener("click", () => openCitation(citation)); row.body.append(button);
+      }
+    }
+
+    function openCitation(citation) {
+      document.getElementById("citation-title").textContent = `引用 [${citation.n}] · 来源原文`;
+      document.getElementById("citation-path").textContent = Array.isArray(citation.section_path) ? citation.section_path.join(" / ") : "未提供章节";
+      document.getElementById("citation-original").textContent = citation.answer || "未提供原文";
+      const footer = document.getElementById("citation-footer"); footer.replaceChildren();
+      const chunk = document.createElement("span"); chunk.textContent = citation.chunk_id ? `Chunk #${citation.chunk_id}` : "来源原文"; footer.append(chunk);
+      const sourceUrl = safeSourceUrl(citation.source_url);
+      if (sourceUrl) {
+        const link = document.createElement("a"); link.href = sourceUrl; link.target = "_blank"; link.rel = "noopener noreferrer";
+        link.textContent = "跳回原文章节"; footer.append(link);
+      } else { const note = document.createElement("span"); note.textContent = "来源原文链接不可用"; footer.append(note); }
+      document.getElementById("citation-overlay").hidden = false;
+    }
+
+    function setActionResult(row, text) {
+      if (!row.actionResult) { row.actionResult = document.createElement("div"); row.actionResult.className = "action-result"; row.actionResult.setAttribute("role", "status"); row.append(row.actionResult); }
+      row.actionResult.textContent = text;
+    }
+
+    function addLocalHandoffMessages() {
+      addMessage("assistant", "已转接人工客服");
+      addMessage("assistant", "您好，我是客服小猫，请问有什么可以帮您的");
+    }
+
+    function showActions(row, payload) {
+      if (!Array.isArray(payload.items)) return;
+      row.messageId = payload.message_id; assistantRowsById.set(String(payload.message_id), row);
+      row.actionsEl?.remove();
+      const actions = document.createElement("div"); actions.className = "actions"; row.actionsEl = actions;
+      for (const action of payload.items) {
+        if (!action || !["handoff", "create_ticket"].includes(action.type)) continue;
+        const button = document.createElement("button"); button.type = "button";
+        button.className = `action-button ${action.type === "create_ticket" ? "ticket" : "handoff"}`;
+        button.dataset.actionType = action.type; button.textContent = action.label || (action.type === "handoff" ? "转人工" : "建工单");
+        button.addEventListener("click", async () => {
+          if (button.disabled || !window.confirm(action.type === "handoff" ? "确认模拟转接人工客服吗？" : "确认提交人工工单吗？")) return;
+          if (action.type === "handoff") { button.disabled = true; addLocalHandoffMessages(); return; }
+          button.disabled = true; setActionResult(row, "工单提交中…");
+          try {
+            const response = await fetch("/api/v1/tickets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conversation_id: conversationId, user_id: "demo-user", message_id: payload.message_id }) });
+            const result = await response.json();
+            if (response.ok && result.status === "created" && result.ticket_no) setActionResult(row, `工单已创建：${result.ticket_no}`);
+            else setActionResult(row, result.message || (result.status === "submitting" ? "工单仍在处理中，请勿重复提交。" : "工单结果待核查，请勿重复提交。"));
+          } catch { setActionResult(row, "工单结果待核查，请勿重复提交。"); }
+        });
+        actions.append(button);
+      }
+      if (actions.childElementCount) row.append(actions);
+    }
+
+    function enableFeedback(row) {
+      if (row.feedbackEl || !row.content.trim()) return;
+      const feedback = document.createElement("div"); feedback.className = "feedback";
+      const up = document.createElement("button"); up.type = "button"; up.setAttribute("aria-label", "满意"); up.setAttribute("aria-pressed", "false"); up.textContent = "👍";
+      const down = document.createElement("button"); down.type = "button"; down.setAttribute("aria-label", "不满意"); down.setAttribute("aria-pressed", "false"); down.textContent = "👎";
+      const select = (choice, selected) => {
+        if (row.feedback) return; row.feedback = choice;
+        let records = [];
+        try { const stored = JSON.parse(localStorage.getItem("mewhelp.feedback.v1") || "[]"); if (Array.isArray(stored)) records = stored; } catch { /* Storage may be unavailable. */ }
+        records.push({ conversation_id: conversationId, message_id: row.messageId || row.localId, choice, time: new Date().toISOString() });
+        try { localStorage.setItem("mewhelp.feedback.v1", JSON.stringify(records)); } catch { /* Keep the selection in this page. */ }
+        feedback.querySelectorAll("button").forEach((item) => { item.disabled = true; }); selected.setAttribute("aria-pressed", "true");
+        const status = document.createElement("span"); status.textContent = "已反馈"; feedback.append(status);
+      };
+      up.addEventListener("click", () => select("up", up)); down.addEventListener("click", () => select("down", down));
+      feedback.append(up, down); row.feedbackEl = feedback; row.append(feedback);
+    }
+
+    function bindMessageId(row, messageId) {
+      if (messageId === undefined || messageId === null) return;
+      row.messageId = messageId; assistantRowsById.set(String(messageId), row);
+      const queued = pendingActions.get(String(messageId));
+      if (queued) { pendingActions.delete(String(messageId)); showActions(row, queued); }
     }
 
     async function readEvents(response, assistantRow) {
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let completed = false;
-
+      const reader = response.body.getReader(); const decoder = new TextDecoder(); let buffer = ""; let completed = false; let hadError = false;
       const handleFrame = (frame) => {
-        let eventName = "message";
-        let data = "";
-        for (const line of frame.split(/\r?\n/)) {
-          if (line.startsWith("event: ")) eventName = line.slice(7);
-          if (line.startsWith("data: ")) data += line.slice(6);
-        }
+        let eventName = "message"; let data = "";
+        for (const line of frame.split(/\r?\n/)) { if (line.startsWith("event: ")) eventName = line.slice(7); if (line.startsWith("data: ")) data += line.slice(6); }
         if (!data) return;
         const payload = JSON.parse(data);
-        if (eventName === "tool_status") showToolStatus(assistantRow, payload.tool_name, "running");
-        if (eventName === "token") assistantRow.body.textContent += payload.content || "";
-        if (eventName === "done") {
-          completed = true;
-          const badge = assistantRow.trace.querySelector(".badge.running");
-          if (badge) showToolStatus(assistantRow, badge.dataset.toolName || "", "done");
+        if (eventName === "tool_status") showToolStatus(assistantRow, payload.tool_name, payload.status || "running");
+        if (eventName === "token") { assistantRow.content += payload.content || ""; renderAssistantBody(assistantRow); }
+        if (eventName === "citations") { assistantRow.citations = Array.isArray(payload.items) ? payload.items : []; bindMessageId(assistantRow, payload.message_id); renderAssistantBody(assistantRow); }
+        if (eventName === "actions") {
+          const id = String(payload.message_id);
+          const target = assistantRowsById.get(id) || (assistantRow.messageId == null || String(assistantRow.messageId) === id ? assistantRow : null);
+          if (target) showActions(target, payload); else pendingActions.set(id, payload);
         }
+        if (eventName === "done") { completed = true; bindMessageId(assistantRow, payload.message_id); enableFeedback(assistantRow); }
         if (eventName === "error") {
-          completed = true;
-          const running = assistantRow.trace.querySelector(".badge.running");
-          if (running) running.classList.replace("running", "failed");
-          assistantRow.body.textContent += payload.message || "这次没有处理成功，请稍后再试。";
+          completed = true; hadError = true; assistantRow.content += payload.message || "这次没有处理成功，请稍后再试。"; renderAssistantBody(assistantRow);
+          for (const badge of assistantRow.trace.querySelectorAll(".badge.running")) showToolStatus(assistantRow, badge.dataset.toolName, "failed");
         }
         transcript.scrollTop = transcript.scrollHeight;
       };
-
       while (true) {
-        const { value, done } = await reader.read();
-        buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+        const { value, done } = await reader.read(); buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
         let boundary;
-        while ((boundary = buffer.indexOf("\n\n")) !== -1) {
-          handleFrame(buffer.slice(0, boundary));
-          buffer = buffer.slice(boundary + 2);
-        }
+        while ((boundary = /\r?\n\r?\n/.exec(buffer)) !== null) { handleFrame(buffer.slice(0, boundary.index)); buffer = buffer.slice(boundary.index + boundary[0].length); }
         if (done) break;
       }
       if (buffer.trim()) handleFrame(buffer);
-      if (!completed && !assistantRow.body.textContent) assistantRow.body.textContent = "连接中断，请稍后重试。";
-      const badge = assistantRow.trace.querySelector(".badge.running");
-      if (badge) {
-        const label = badge.querySelector(".label").textContent.replace("查询中", "已调用");
-        badge.className = "badge";
-        badge.querySelector(".label").textContent = label;
+      if (!completed) {
+        hadError = true; assistantRow.content += "\n连接中断，以上回复尚未完成，请稍后重试。"; renderAssistantBody(assistantRow);
+        for (const badge of assistantRow.trace.querySelectorAll(".badge.running")) showToolStatus(assistantRow, badge.dataset.toolName, "failed");
+      }
+      if (!hadError) {
+        for (const badge of assistantRow.trace.querySelectorAll(".badge.running")) {
+          badge.className = "badge"; badge.querySelector(".label").textContent = badge.querySelector(".label").textContent.replace("查询中", "已调用");
+        }
       }
     }
 
     async function sendMessage(text) {
-      const message = text.trim();
-      if (!message || sendButton.disabled) return;
-      addMessage("user", message);
-      const assistantRow = addMessage("assistant");
-      input.value = "";
-      input.style.height = "auto";
-      sendButton.disabled = true;
+      const message = text.trim(); if (!message || sendButton.disabled) return;
+      addMessage("user", message); const assistantRow = addMessage("assistant"); input.value = ""; input.style.height = "auto"; sendButton.disabled = true;
       try {
-        const response = await fetch("/api/v1/chat/stream", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ conversation_id: conversationId, user_id: "demo-user", message }),
-        });
-        if (!response.ok) throw new Error("chat request failed");
+        const response = await fetch("/api/v1/chat/stream", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conversation_id: conversationId, user_id: "demo-user", message }) });
+        if (!response.ok || !response.body) throw new Error("chat request failed");
         await readEvents(response, assistantRow);
-      } catch (_error) {
-        assistantRow.body.textContent = "连接暂时不可用，请稍后重试。";
-        const badge = assistantRow.trace.querySelector(".badge.running");
-        if (badge) badge.classList.replace("running", "failed");
-      } finally {
-        sendButton.disabled = false;
-        input.focus();
-      }
+      } catch {
+        assistantRow.content = "连接暂时不可用，请稍后重试。"; renderAssistantBody(assistantRow);
+        for (const running of assistantRow.trace.querySelectorAll(".badge.running")) showToolStatus(assistantRow, running.dataset.toolName, "failed");
+      } finally { sendButton.disabled = false; input.focus(); }
     }
 
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      sendMessage(input.value);
-    });
-    input.addEventListener("input", () => {
-      input.style.height = "auto";
-      input.style.height = `${Math.min(input.scrollHeight, 130)}px`;
-    });
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        form.requestSubmit();
-      }
-    });
-    document.querySelectorAll(".suggestion").forEach((button) => {
-      button.addEventListener("click", () => sendMessage(button.textContent));
-    });
+    form.addEventListener("submit", (event) => { event.preventDefault(); sendMessage(input.value); });
+    input.addEventListener("input", () => { input.style.height = "auto"; input.style.height = `${Math.min(input.scrollHeight, 130)}px`; });
+    input.addEventListener("keydown", (event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); form.requestSubmit(); } });
+    document.querySelectorAll(".suggestion").forEach((button) => button.addEventListener("click", () => sendMessage(button.textContent)));
+    const citationOverlay = document.getElementById("citation-overlay");
+    document.getElementById("citation-close").addEventListener("click", () => { citationOverlay.hidden = true; });
+    citationOverlay.addEventListener("click", (event) => { if (event.target === citationOverlay) citationOverlay.hidden = true; });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") citationOverlay.hidden = true; });
   </script>
 </body>
 </html>
