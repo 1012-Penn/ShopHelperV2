@@ -169,3 +169,17 @@ test("citation snapshots open the safe source link and feedback stays in localSt
     time: feedback[0].time,
   });
 });
+
+test("EOF without terminal event preserves partial text and marks interruption", async (t) => {
+  const page = await openPage(t, [[
+    frame("tool_status", { tool_name: "query_order", status: "running" }),
+    frame("token", { content: "查询结果：您的订单" }),
+  ]]);
+  await page.locator("#message-input").fill("查询订单1001");
+  await page.locator("#chat-form button[type=submit]").click();
+  const answer = page.locator("#messages .message.assistant").last();
+  await answer.getByText("连接中断", { exact: false }).waitFor();
+  assert.match(await answer.textContent(), /查询结果：您的订单/);
+  assert.equal(await answer.locator(".badge.running").count(), 0);
+  assert.doesNotMatch(await answer.locator(".badge").textContent(), /已调用/);
+});

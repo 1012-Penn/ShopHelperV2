@@ -320,6 +320,7 @@ class WorkflowService:
                         {
                             **initial,
                             **latest,
+                            **getattr(error, "usage_update", {}),
                             "path": observed_path,
                             "stop_reason": "service_error",
                         },

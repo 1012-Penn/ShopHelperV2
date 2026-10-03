@@ -5,7 +5,9 @@ from dataclasses import dataclass
 
 
 class BudgetExceeded(ValueError):
-    pass
+    def __init__(self, reason, usage_update=None):
+        super().__init__(reason)
+        self.usage_update = usage_update or {}
 
 
 @dataclass(frozen=True)

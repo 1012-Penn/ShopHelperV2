@@ -1,0 +1,265 @@
+{
+  "mode": "live",
+  "synthetic": false,
+  "checks": {
+    "agent_answers_completed": true,
+    "all_completed": true,
+    "policy_forced_retrieval": true,
+    "logistics_agent_tool": true,
+    "complaint_two_suggestions": true,
+    "chitchat_zero_model": true,
+    "complex_multiple_tools": true
+  },
+  "accepted": true,
+  "cases": [
+    {
+      "case": "policy",
+      "question": "退货政策是什么",
+      "conversation_id": "ch05-demo-5765db751c4d",
+      "answer": "退货政策不是统一的固定规则，具体以你购买时适用的法律规定、店铺公示政策、商品页面和订单详情为准。商品类别、是否定制、使用状态、活动条件等都可能影响能否退换及处理方式。[1]\n\n一般流程和注意点：\n- **申请入口**：在订单页面选择适用的售后类型并填写真实原因；页面无法操作时可联系在线客服。[4]\n- **退货资格**：需先核对订单、商品状态和申请原因，不能一概而论。已使用或拆封的商品能否退，取决于商品类别、质量问题及公示规则。[1][7]\n- **运费承担**：根据退货原因、适用政策、订单约定和核实结果确定，未核对前无法承诺由哪一方承担。[3]\n- **退款去向**：通常按订单和支付渠道的退款流程处理，具体以订单退款详情及支付渠道记录为准。[2]\n- **退回验收**：退回商品可能需要验收，结果以售后规则和实际核查为准。[9]\n\n如果你告诉我具体商品和退货原因，我可以帮你进一步核对适用规则。",
+      "completed": true,
+      "intent": "退款退货",
+      "route": "knowledge",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "retrieve",
+        "gate",
+        "agent",
+        "agent_answer",
+        "log"
+      ],
+      "gate_passed": true,
+      "gate_score": 0.4899352192878723,
+      "decisions": 1,
+      "tool_calls": 0,
+      "tokens": 5869,
+      "usage": [
+        {
+          "stage": "classify",
+          "tokens": 134,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 2992,
+          "estimated": false
+        },
+        {
+          "stage": "agent_answer",
+          "tokens": 2743,
+          "estimated": false
+        }
+      ],
+      "tool_trace": [],
+      "stop_reason": "answer",
+      "message_id": 56,
+      "actions": [],
+      "errors": []
+    },
+    {
+      "case": "logistics",
+      "question": "订单 1001 的物流到哪了",
+      "conversation_id": "ch05-demo-9e7d2aba555f",
+      "answer": "订单 1001 的物流信息如下（模拟数据）：\n\n- 快递公司：中通快递\n- 当前状态：已签收\n- 最后更新：刚刚\n\n如需查看具体签收地点或签收人，建议您再提供一下收件人信息或直接在快递官网核实。",
+      "completed": true,
+      "intent": "物流",
+      "route": "business",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "agent",
+        "tools",
+        "agent",
+        "agent_answer",
+        "log"
+      ],
+      "gate_passed": false,
+      "gate_score": null,
+      "decisions": 2,
+      "tool_calls": 1,
+      "tokens": 1962,
+      "usage": [
+        {
+          "stage": "classify",
+          "tokens": 140,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 701,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 767,
+          "estimated": false
+        },
+        {
+          "stage": "agent_answer",
+          "tokens": 354,
+          "estimated": false
+        }
+      ],
+      "tool_trace": [
+        {
+          "name": "query_logistics",
+          "call_id": "call_00_hasfUIKjz5DSLV8NAhCZ6488",
+          "is_error": false,
+          "seconds": 0.0032278930011671036
+        }
+      ],
+      "stop_reason": "answer",
+      "message_id": 60,
+      "actions": [],
+      "errors": []
+    },
+    {
+      "case": "complaint",
+      "question": "我要投诉",
+      "conversation_id": "ch05-demo-753cff67f797",
+      "answer": "很抱歉给您带来不好的体验，我们重视您的反馈。您可以选择转人工客服或创建工单跟进。",
+      "completed": true,
+      "intent": "投诉",
+      "route": "complaint",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "fixed",
+        "log"
+      ],
+      "gate_passed": false,
+      "gate_score": null,
+      "decisions": 0,
+      "tool_calls": 0,
+      "tokens": 132,
+      "usage": [
+        {
+          "stage": "classify",
+          "tokens": 132,
+          "estimated": false
+        }
+      ],
+      "tool_trace": [],
+      "stop_reason": "complaint",
+      "message_id": 62,
+      "actions": [
+        {
+          "message_id": 62,
+          "items": [
+            {
+              "type": "handoff",
+              "label": "转人工"
+            },
+            {
+              "type": "create_ticket",
+              "label": "建工单"
+            }
+          ]
+        }
+      ],
+      "errors": []
+    },
+    {
+      "case": "chitchat",
+      "question": "你好",
+      "conversation_id": "ch05-demo-320cb67fca11",
+      "answer": "您好，我是客服小猫，可以帮您查询订单、物流、商品信息和售后问题。",
+      "completed": true,
+      "intent": "闲聊",
+      "route": "chitchat",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "fixed",
+        "log"
+      ],
+      "gate_passed": false,
+      "gate_score": null,
+      "decisions": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "usage": [],
+      "tool_trace": [],
+      "stop_reason": "chitchat",
+      "message_id": 64,
+      "actions": [],
+      "errors": []
+    },
+    {
+      "case": "complex",
+      "question": "先查订单1001状态，再查询它的物流轨迹",
+      "conversation_id": "ch05-demo-5046d17b40fa",
+      "answer": "订单 1001 的查询结果如下（均为模拟数据）：\n\n- **订单状态**：待发货，订单金额 251.34\n- **物流轨迹**：承运商顺丰速运，当前状态为“派送中”，最后更新时间为“刚刚”\n\n需要说明的是，订单状态显示“待发货”，而物流显示“派送中”，两者存在不一致，建议您以实际物流信息为准或进一步核实。",
+      "completed": true,
+      "intent": "订单",
+      "route": "business",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "agent",
+        "tools",
+        "agent",
+        "tools",
+        "agent",
+        "agent_answer",
+        "log"
+      ],
+      "gate_passed": false,
+      "gate_score": null,
+      "decisions": 3,
+      "tool_calls": 2,
+      "tokens": 2952,
+      "usage": [
+        {
+          "stage": "classify",
+          "tokens": 142,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 704,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 788,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 852,
+          "estimated": false
+        },
+        {
+          "stage": "agent_answer",
+          "tokens": 466,
+          "estimated": false
+        }
+      ],
+      "tool_trace": [
+        {
+          "name": "query_order",
+          "call_id": "call_00_jNhnvxHJkLeKzHXexJWx5546",
+          "is_error": false,
+          "seconds": 0.001632223000342492
+        },
+        {
+          "name": "query_logistics",
+          "call_id": "call_00_Ox0y4t3wAcoD9ZWV05u53057",
+          "is_error": false,
+          "seconds": 0.001802131999284029
+        }
+      ],
+      "stop_reason": "answer",
+      "message_id": 70,
+      "actions": [],
+      "errors": []
+    }
+  ]
+}

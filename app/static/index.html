@@ -273,7 +273,10 @@
         if (done) break;
       }
       if (buffer.trim()) handleFrame(buffer);
-      if (!completed && !assistantRow.content) { assistantRow.content = "连接中断，请稍后重试。"; renderAssistantBody(assistantRow); }
+      if (!completed) {
+        hadError = true; assistantRow.content += "\n连接中断，以上回复尚未完成，请稍后重试。"; renderAssistantBody(assistantRow);
+        for (const badge of assistantRow.trace.querySelectorAll(".badge.running")) showToolStatus(assistantRow, badge.dataset.toolName, "failed");
+      }
       if (!hadError) {
         for (const badge of assistantRow.trace.querySelectorAll(".badge.running")) {
           badge.className = "badge"; badge.querySelector(".label").textContent = badge.querySelector(".label").textContent.replace("查询中", "已调用");

@@ -1,0 +1,4 @@
+{
+  "accepted": false,
+  "reason": "Historical evaluator accepted tool count despite complex-case stop_reason=invalid_agent_signal. Retained raw original report for audit. Updated evaluator requires answer completion; indexed/final reports use corrected check."
+}

@@ -277,3 +277,104 @@ def test_error_log_preserves_completed_decision_and_tool_usage(tmp_path):
     assert record["tool_calls"] == 1
     assert record["tokens"] > 0
     service.close()
+
+
+@pytest.mark.parametrize("boundary", ["persist", "runner_factory", "runner_close"])
+def test_failed_tool_node_does_not_poison_followup_protocol(tmp_path, boundary):
+    model = ScriptedModel("订单", [call("query_order", "orphan", order_id="1001")])
+    service = make_workflow(tmp_path, model)
+    original_save, original_factory = (
+        service.store.save_tool_pair,
+        service.runner_factory,
+    )
+
+    def fail(*args):
+        raise RuntimeError("transient failure")
+
+    if boundary == "persist":
+        service.store.save_tool_pair = fail
+    elif boundary == "runner_factory":
+        service.runner_factory = fail
+    else:
+
+        def factory(tools):
+            runner = original_factory(tools)
+            runner.close = fail
+            return runner
+
+        service.runner_factory = factory
+    try:
+        events = list(
+            service.stream_events(
+                ChatRequest(conversation_id="c", message="查订单1001")
+            )
+        )
+        assert events[-1]["event"] == "error"
+        service.store.save_tool_pair, service.runner_factory = (
+            original_save,
+            original_factory,
+        )
+        events = list(
+            service.stream_events(
+                ChatRequest(conversation_id="c", message="再查询订单1001")
+            )
+        )
+        assert events[-1]["event"] == "done"
+        for messages in model.calls:
+            pending = set()
+            for message in messages:
+                if message.type == "ai":
+                    pending.update(c["id"] for c in message.tool_calls)
+                elif message.type == "tool":
+                    pending.discard(message.tool_call_id)
+                elif message.type == "human":
+                    assert not pending, "follow-up sent before tool observations"
+            assert not pending, "model received orphaned tool request"
+    finally:
+        service.close()
+
+
+@pytest.mark.parametrize("actual_usage", [False, True])
+def test_final_stream_over_budget_is_error_without_success_save(tmp_path, actual_usage):
+    class OverBudget(ScriptedModel):
+        def invoke(self, messages):
+            response = super().invoke(messages)
+            response.usage_metadata = {
+                "input_tokens": 1,
+                "output_tokens": 1,
+                "total_tokens": 2,
+            }
+            return response
+
+        def stream(self, messages):
+            if actual_usage:
+                yield AIMessageChunk(
+                    content="部分回复",
+                    usage_metadata={
+                        "input_tokens": 5000,
+                        "output_tokens": 10,
+                        "total_tokens": 5010,
+                    },
+                )
+            else:
+                yield AIMessageChunk(content="查询结果" * 1000)
+
+    service = make_workflow(
+        tmp_path, OverBudget("订单"), limits=Limits(max_tokens=5000)
+    )
+    try:
+        events = list(
+            service.stream_events(
+                ChatRequest(conversation_id="c", message="订单1001状态")
+            )
+        )
+        assert events[-1]["event"] == "error"
+        assert not any(e["event"] == "done" for e in events)
+        assert state(service).get("message_id") is None
+        records = [
+            json.loads(line)
+            for line in (tmp_path / "workflow.jsonl").read_text().splitlines()
+        ]
+        assert records[-1]["tokens"] > 5000
+    finally:
+        service.close()

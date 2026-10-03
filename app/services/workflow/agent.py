@@ -89,7 +89,6 @@ class AgentNodes:
             update.update(
                 pending={"calls": calls},
                 agent_next="tools",
-                messages=[AIMessage(content="", tool_calls=calls)],
             )
             return update
         try:
@@ -204,7 +203,7 @@ class AgentNodes:
             observations,
         )
         return {
-            "messages": observations,
+            "messages": [AIMessage(content="", tool_calls=pending), *observations],
             "tool_calls": count,
             "seen_calls": seen,
             "pending": None,
@@ -245,12 +244,17 @@ class AgentNodes:
         count, approximate = measured_usage(
             full, input_estimate, estimate_tokens(answer)
         )
+        usage = [
+            *state["usage"],
+            {"stage": "agent_answer", "tokens": count, "estimated": approximate},
+        ]
+        if state["tokens"] + count > self.service.limits.max_tokens:
+            raise BudgetExceeded(
+                "token_budget", {"tokens": state["tokens"] + count, "usage": usage}
+            )
         return {
             "answer": answer,
             "tokens": state["tokens"] + count,
-            "usage": [
-                *state["usage"],
-                {"stage": "agent_answer", "tokens": count, "estimated": approximate},
-            ],
+            "usage": usage,
             "stop_reason": "clarify" if state["agent_next"] == "clarify" else "answer",
         }
