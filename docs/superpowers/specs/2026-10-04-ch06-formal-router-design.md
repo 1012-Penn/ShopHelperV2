@@ -63,7 +63,7 @@ flowchart TD
 
 - 使用无新增依赖的固定演示订单记录取代本流程的随机订单读取；卡片显示演示标识、订单号、商品摘要、日期、订单状态及金额。已有不受本章影响的物流随机工具继续明确标为模拟数据。
 - 订单选择事件和退款表单事件均绑定会话、当前 assistant message 与服务端生成的一次性 request ID。退款表单只包含订单号、退款/退货方向、固定原因下拉（商品质量问题、错发/漏发、不想要/不合适、其他）和提交按钮；不询问自由文本原因。
-- 新增只用于演示的本地退款申请记录和提交端点，校验 owner、挂起/展示的订单、固定原因枚举及一次性 request ID；重复 request ID 返回原结果，不重复插入。表单成功回执明确显示“演示申请已记录”，不称退款已批准或资金已退回。
+- 新增只用于演示的本地退款申请记录和提交端点，校验 owner、已展示表单的 assistant message、挂起/展示的订单、固定原因枚举及一次性 request ID；重复 request ID 返回原结果，不重复插入。表单成功回执明确显示“演示申请已记录”，不称退款已批准或资金已退回。
 - 不新增 npm/pip 组件，不连接真实商户 API、支付接口或订单服务。
 
 ## API 与前端事件
@@ -97,6 +97,8 @@ flowchart TD
 
 - 已用 Context7 查阅 LangGraph Python 官方 interrupt/resume 指南：挂起依赖 checkpointer 与 `thread_id`，用 `Command(resume=value)` 恢复；interrupt 前节点代码在恢复时会重跑，故选择校验不能依赖已执行的副作用。
 - 已用 Context7 查阅 LangChain Python structured output 文档：`json_schema` / `json_mode` 与 provider 支持有关；具体调用形式必须按当前 `langchain` 1.4、`langchain-openai` 1.6 和现有 DeepSeek-compatible `ChatOpenAI` 配置核实，不臆造 provider schema 能力。
+- 已用 Context7 查阅 SQLAlchemy 2.0 官方 Declarative、`create_all` 和 dialect-specific upsert 文档：`create_all` 只建缺失表，不做现有表迁移；SQLite/MySQL upsert 都是 dialect-specific API，所以此处使用主键与事务，不依赖方言特有 upsert。
+- 已用 Context7 查阅 FastAPI 官方 Pydantic 请求体及同步 `StreamingResponse`/SSE 文档；保留仓库现有 `StreamingResponse` 与同步迭代器写法，不切换较新版本专属事件流 API。
 - 项目锁定范围见 `pyproject.toml`：LangChain `>=1.4,<1.5`、LangGraph `>=1.2,<1.3`、SQLAlchemy `>=2.0`、FastAPI `>=0.115`。正式实现前继续对涉及的确切 API 查询 Context7。
 
 ## 决策记录
