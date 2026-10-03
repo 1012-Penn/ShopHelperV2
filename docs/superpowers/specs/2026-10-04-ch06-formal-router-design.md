@@ -45,7 +45,7 @@ flowchart TD
 
 ### 指代消解与规范化
 
-`refer` 节点读取同一会话近期用户/助手消息及本轮原问句，调用独立的 JSON prompt。输出对象只有 `question` 字段。若本轮没有上下文指代且已表达完整，输出必须与原文逐字相同；否则将必要上下文补入并把口语问法归一成一句完整、可独立理解的问题。此节点不新增跨会话记忆，不读取工具消息作为指令。
+`refer` 节点读取同一会话近期用户/助手消息及本轮原问句，调用独立的 JSON prompt，严格输出 `{"question":"...","reference_resolved":true}` 两个字段。若本轮没有上下文指代且已表达完整，输出必须与原文逐字相同且 `reference_resolved=true`；若代词可由当前会话唯一消解，则补足必要对象并把口语问法归一成独立问题；若指代无法消解，不得猜测，原文逐字保留并设 `reference_resolved=false`。无历史的“它多少钱？”仍可判为商品咨询，但应将原问句交主力 Agent 澄清；“它能退吗”仍可判退款退货并进入订单选择/政策流程，再由主力 Agent 澄清缺失的商品对象。指代无法消解本身不改写成 `其他`，也不让 refer 节点提澄清问题；只有确实无法识别用户想做什么或意图解析无效时才落入 `其他`/低置信兜底。此节点不新增跨会话记忆，不读取工具消息作为指令。
 
 ### 意图识别
 
@@ -53,7 +53,7 @@ flowchart TD
 
 ### 专用订单及政策子流程
 
-- 高风险意图统一进入退款/售后子图。输入显式提到的订单 ID 可直接用；否则通过 LangGraph `interrupt()` 暂停，向聊天流发送 `order_choices` 事件。当前演示订单清单为固定、可复现记录，不使用随机工具值。浏览器点击后以现有聊天 POST 带回 `selected_order_id`；服务端确认该对话确有待恢复节点并验证 ID 属于订单清单，再用 `Command(resume=...)` 恢复原 thread。重复、过期、伪造或跨会话选择一律拒绝，不能把选择内容当成新自然语言对话写入历史。
+- 高风险意图统一进入退款/售后子图。输入显式提到的订单 ID 可直接用；否则生成 `request_id`，先将订单选项作为 assistant `Message.actions` 持久化以取得 `message_id`，再通过 LangGraph `interrupt()` 暂停并发出包含 `conversation_id`、`message_id`、`request_id` 和展示选项的 `order_choices` 事件。浏览器点击后以现有聊天 POST 带回 `selected_order_id`、`selection_message_id` 和 `request_id`；服务端必须核验相同会话里仍待恢复的 interrupt 与已持久化 offer/message/request 绑定，并验证订单属于固定清单，再用 `Command(resume=...)` 恢复原 thread。重复、过期、伪造或跨会话选择一律拒绝，不能把选择内容当成新自然语言对话写入历史。
 - 订单校验后使用订单详情构造意图相关的决策问题。退款退货使用“这一单能不能退”；售后问题仅要求判断该订单按已述售后诉求是否适用。原因字段不进对话澄清步骤。
 - 专用扩写调用必须返回 JSON 对象且字段只有 `queries` 数组；数组项为不同检索侧重点的字符串。将规范化问题也作为检索底线，查询数量限制为最多 4 条，过滤空项/重复项/过长项。JSON 无法解析时记录扩写错误并至少检索规范化问题，不能因扩写错误跳过政策检索。
 - 对每条查询调用现有 `EvidenceAdapter`/质量检索服务并强制政策类别。证据以 `chunk_id` 去重，取最高得分的快照并按得分稳定排序；旧 FAQ 仍只按原查询检索，不扩写。状态和日志记录原始问题、解析问题、扩写 query 列表及检索 trace，不保存重复知识。
@@ -62,19 +62,19 @@ flowchart TD
 ### 演示订单与退款申请
 
 - 使用无新增依赖的固定演示订单记录取代本流程的随机订单读取；卡片显示演示标识、订单号、商品摘要、日期、订单状态及金额。已有不受本章影响的物流随机工具继续明确标为模拟数据。
-- 订单选择事件和退款表单事件均绑定会话、当前 assistant message 与服务端生成的一次性 request ID。退款表单只包含订单号、退款/退货方向、固定原因下拉（商品质量问题、错发/漏发、不想要/不合适、其他）和提交按钮；不询问自由文本原因。
-- 新增只用于演示的本地退款申请记录和提交端点，校验 owner、已展示表单的 assistant message、挂起/展示的订单、固定原因枚举及一次性 request ID；重复 request ID 返回原结果，不重复插入。表单成功回执明确显示“演示申请已记录”，不称退款已批准或资金已退回。
+- 订单选择事件和退款表单事件均绑定会话、当前 assistant message 与服务端生成的 offer 唯一 `request_id`。订单选择 POST 使用 `selected_order_id` + `selection_message_id` + `request_id` 并核验持久化的 `order_selection` offer。退款表单只包含订单号、退款/退货方向、固定原因下拉（商品质量问题、错发/漏发、不想要/不合适、其他）和提交按钮；不询问自由文本原因。
+- 新增只用于演示的本地退款申请记录和提交端点，校验 owner、已展示表单的 assistant message、挂起/展示的订单、固定原因枚举及绑定此 offer 的唯一 request ID；同 payload 重试同一 request ID 返回原结果，冲突 payload 拒绝，不重复插入。表单成功回执明确显示“演示申请已记录”，不称退款已批准或资金已退回。
 - 不新增 npm/pip 组件，不连接真实商户 API、支付接口或订单服务。
 
 ## API 与前端事件
 
-保留 `POST /api/v1/chat/stream` 和已有 token/tool_status/citations/actions/done/error 语义。扩展 ChatRequest 可选的 `selected_order_id` 仅用于恢复挂起 thread。新增 `order_choices` 和 `refund_form` 结构化 SSE 事件，带 `conversation_id`、`message_id`、`request_id` 及安全展示字段；前端未知事件继续忽略。新增演示退款申请 POST 接口。不会把 prompt、完整状态或模型推理放入 SSE。
+保留 `POST /api/v1/chat/stream` 和已有 token/tool_status/citations/actions/done/error 语义。扩展 ChatRequest 可选的 `selected_order_id`、`selection_message_id`、`request_id` 仅用于验证并恢复挂起 thread；选择请求不得重复写入对话历史。新增 `order_choices` 和 `refund_form` 结构化 SSE 事件，带 `conversation_id`、`message_id`、`request_id` 及安全展示字段；前端未知事件继续忽略。新增演示退款申请 POST 接口。不会把 prompt、完整状态或模型推理放入 SSE。
 
 原生聊天页在 assistant 流消息下渲染内联订单卡片；点选后禁用该卡片，回发订单 ID 并将回复流接到同一聊天区。退款表单使用原生 `<select>` 固定选项；新对话时清除旧卡片状态，历史卡片不可重复提交。保留已有引用和操作按钮行为。
 
 ## 容错及数据边界
 
-- 指代 prompt、意图 prompt 或结构错误：停止本轮自动业务动作，记录失败阶段并以兜底提示结束；绝不拿原始模糊指代猜订单或业务意图。
+- 指代 prompt 或结构错误：停止本轮自动业务动作，记录失败阶段并以兜底提示结束；绝不拿原始模糊指代猜实体。合法但 unresolved 的指代保留原文并允许独立的意图 prompt 判定可识别动作；意图 JSON 无效或低置信时才进入固定兜底。
 - 意图为其他/置信度低：确定性兜底，不触发检索、工具、订单卡或 Agent。
 - 无订单 ID：只暂停并列可选演示订单；零模型订单参数推测。
 - 检索空证据或检索服务失败：沿用现有证据闸区分拒答与服务错误，不允许资格 Agent 在无政策时作结论。

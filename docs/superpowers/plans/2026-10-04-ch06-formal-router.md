@@ -27,7 +27,7 @@
 
 ## Review Focus
 
-- A complete question with no reference stays unchanged; an ambiguous demonstrative pronoun with multiple prior topics resolves only from the current conversation. Pin in Task 3 evaluation cases.
+- A complete question with no reference stays unchanged; an ambiguous demonstrative pronoun with multiple prior topics resolves only from the current conversation. If a referent cannot be resolved but the user's action is classifiable, preserve the original text and send the known intent to the primary Agent for clarification (refund/after-sale still follows order → policy → Agent); only unclassifiable/invalid/low-confidence intent goes to fixed fallback. Pin both paths in Task 3 evaluation cases.
 - Invalid intent JSON, extra keys, out-of-range confidence and strange questions go to `其他`, without accidentally entering an operational route. Pin in Task 3.
 - A repeated/expired/forged order selection or a selection from another conversation never resumes or leaks another run. Pin in Task 5.
 - Query expansion failure still searches the canonical refund/after-sale question, while empty/failed policy evidence never reaches the judgment Agent. Pin in Task 4 and Task 5.
@@ -43,12 +43,12 @@
 - Modify: `dev-notes/ch06.md`
 
 **Interfaces:**
-- Each case contains `id`, `turns` (ordered user/assistant history), `input`, and expected values for `resolved_query` and `intent`; refund/after-sale cases may include `expansion_focus` tags.
+- Each case contains `id`, `turns` (ordered user/assistant history), `input`, and expected values for `resolved_query`, `reference_resolved`, and `intent`; refund/after-sale cases may include `expansion_focus` tags.
 - The conversation case `CYCLE-01` must model logistics → “这个订单能退吗？” → logistics and label all three turns.
 
 - [ ] **Step 1: Add annotated multi-turn and boundary cases**
 
-Create at least 36 cases, with at least 4 per each of the eight families; include at least 8 three-turn or longer conversations. Add ambiguous pronouns (`它`, `这个`, `那单`), complete no-reference questions, overlapping complaint/after-sale language, and deliberately unclassifiable input. Keep expected resolution explicit. Label the dataset synthetic in README.
+Create at least 36 cases, with at least 4 per each of the eight families; include at least 8 conversations whose evaluated input is the third or later user turn. Add ambiguous pronouns (`它`, `这个`, `那单`), complete no-reference questions, classifiable-but-unresolved referents, overlapping complaint/after-sale language, and deliberately unclassifiable input. Keep expected resolution and whether the reference was actually resolved explicit. Label the dataset synthetic in README.
 
 - [ ] **Step 2: Validate the case data**
 
@@ -117,13 +117,13 @@ Append paths, test output summary and any migration limitation to `dev-notes/ch0
 - Modify: `evaluation/ch06/cases.json`
 
 **Interfaces:**
-- `resolve_question(model, history: list[BaseMessage], question: str) -> str` returns a standalone question; exact complete questions remain unchanged.
+- `resolve_question(model, history: list[BaseMessage], question: str) -> tuple[str, bool]` returns the standalone/original question and whether a context-dependent reference was resolved; exact complete questions remain unchanged with `true`, while unresolved pronouns retain the original text and return `false`.
 - `classify_intent(model, resolved_question: str) -> dict` returns validated `{ "intent": str, "confidence": float }` or an explicit invalid/other result; the accepted keys are exactly those two.
 - `parse_intent(content: str) -> tuple[str, float]` rejects invalid shape, unknown intent, extra fields, booleans and non-finite/out-of-range confidence.
 
 - [ ] **Step 1: Add deterministic parser and mocked model tests**
 
-Test exact valid JSON, `其他`, invalid JSON, markdown fences, extra/missing keys, boolean/string confidence, NaN, confidence below/above 0–1, and exact no-reference pass-through. Assert the prompts include the exact JSON schema and enumerated seven classes plus `其他` few-shots.
+Test exact valid JSON, `其他`, invalid JSON, markdown fences, extra/missing keys, boolean/string confidence, NaN, confidence below/above 0–1, exact no-reference pass-through, and classifiable unresolved questions being preserved for the primary Agent. Assert the prompts include the exact JSON schemas and enumerated seven classes plus `其他` few-shots.
 
 - [ ] **Step 2: Run focused tests to verify red**
 
@@ -201,14 +201,14 @@ Append the expansion shape results, retrieval dedup behavior and relevant test o
 - Test: `tests/test_workflow_api.py`
 
 **Interfaces:**
-- `ChatRequest.selected_order_id: str | None` is present only when resuming a stored order-selection interrupt.
-- `order_choices` SSE event carries `conversation_id`, `request_id`, and display-safe choices only.
-- Resume uses `Command(resume={"order_id": selected_order_id})` only after verifying a pending interrupt and catalog membership for the authenticated demo user.
+- `ChatRequest.selected_order_id`, `selection_message_id`, and `request_id` are present together only when resuming a stored order-selection interrupt.
+- `order_choices` SSE event carries `conversation_id`, persisted assistant `message_id`, `request_id`, and display-safe choices only.
+- `ChatRequest` carries `selected_order_id`, `selection_message_id`, and `request_id` on resume. Resume uses `Command(resume={"order_id": selected_order_id})` only after verifying the same pending interrupt, persisted offer/message/request binding, and catalog membership for the authenticated demo user.
 - High-risk node order is `refer → classify → await/select order → read order → expand → retrieve all policy queries → gate → primary Agent decision → log`.
 
 - [ ] **Step 1: Add graph tests for order pause/resume and strict ordering**
 
-Use a deterministic `ScriptedModel`, fake fixed demo catalog and recording retriever. Verify no guessed order ID, interruption emits cards without `done`, valid selection resumes without duplicate history insertion, same-call repeat/foreign order/foreign conversation cannot resume, missing policy blocks the Agent, and eligible query uses expansion before retrieval. Verify FAQ has one retrieval and zero expansion calls.
+Use a deterministic `ScriptedModel`, fake fixed demo catalog and recording retriever. Verify no guessed order ID, interruption persists and emits cards with message/request IDs without `done`, valid selection resumes only when all three IDs match and without duplicate history insertion, same-call repeat/foreign order/foreign conversation/stale offer cannot resume, missing policy blocks the Agent, and eligible query uses expansion before retrieval. Verify unresolved-but-classifiable requests reach the Agent unchanged for clarification after any required high-risk subflow; FAQ has one retrieval and zero expansion calls.
 
 - [ ] **Step 2: Run tests to verify red**
 
@@ -241,12 +241,12 @@ Append the exact routed-node sequence, authorization edge cases and focused test
 
 **Interfaces:**
 - `readEvents` handles `order_choices` and `refund_form` and safely ignores unknown events.
-- Order choice click posts the exact selected `order_id` with the original conversation and request ID; rendering uses `textContent`/safe DOM APIs for all server-provided strings.
-- Refund form posts the fixed select value and request ID; only the current active card can submit.
+- Order choice click posts `selected_order_id`, `selection_message_id`, and `request_id` with the original conversation ID; rendering uses `textContent`/safe DOM APIs for all server-provided strings.
+- Refund form posts `conversation_id`, `user_id` from the same current-chat identity field used by `ChatRequest`, `message_id`, `request_id`, `order_id`, `request_type`, and the fixed select `reason`; only the current active card can submit.
 
 - [ ] **Step 1: Implement the native-page changes directly (Vibe Coding)**
 
-Add inline choice cards within the existing assistant message; disable the selected card while resuming. Add the inline refund form with a native select, clear “演示” label and confirmation state. Preserve message scroll, composer enablement, citations, actions and stream errors. Do not modify inactive `frontend/src/App.jsx`.
+Add inline choice cards within the existing assistant message; disable the selected card while resuming and send `selected_order_id` + `selection_message_id` + `request_id` to `/api/v1/chat/stream`. Add the inline refund form with a native select, clear “演示” label and confirmation state; submit the full bound payload (`conversation_id`, `user_id` from the same current-chat identity used by `ChatRequest`, `message_id`, `request_id`, `order_id`, `request_type`, `reason`) to `/api/v1/refund-applications`. Preserve message scroll, composer enablement, citations, actions and stream errors. Do not modify inactive `frontend/src/App.jsx`.
 
 - [ ] **Step 2: Build/check page syntax and run browser acceptance**
 
