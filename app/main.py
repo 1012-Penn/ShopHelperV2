@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from collections.abc import Iterator
 from pathlib import Path
+from contextlib import asynccontextmanager
+from threading import Lock
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse, HTMLResponse
@@ -12,16 +14,10 @@ from fastapi.staticfiles import StaticFiles
 from langchain_openai import ChatOpenAI
 
 from app.config import Settings
-from app.db.session import create_tables, make_engine, make_session_factory
-from app.schemas import AfterSaleExtraction, AfterSaleRequest, ChatRequest
+from app.schemas import AfterSaleExtraction, AfterSaleRequest, ChatRequest, TicketRequest
 from app.services.after_sale import AfterSaleService
 from app.services.chat import ChatService
-from app.services.quality.runtime import build_answer_service, config
-from app.services.knowledge.embeddings import EmbeddingClient
-from app.services.knowledge.repository import KnowledgeRepository
-from app.services.knowledge.retriever import DenseSearcher, KnowledgeRetriever
-from app.services.knowledge.vector_store import MilvusKnowledgeStore
-from app.tools.registry import ToolRegistry, ToolRunner
+from app.services.workflow.runtime import build_workflow_service
 
 
 ERROR_EVENT = {"event": "error", "data": {"message": "暂时无法处理，请稍后再试。"}}
@@ -34,51 +30,24 @@ def get_after_sale_service() -> AfterSaleService:
 
 
 def create_app(chat_service: ChatService | None = None) -> FastAPI:
-    application = FastAPI(title="MewHelp")
     service = chat_service
+    service_lock = Lock()
+
+    @asynccontextmanager
+    async def lifespan(application):
+        try:
+            yield
+        finally:
+            if service is not None and hasattr(service,'close'):
+                service.close()
+
+    application = FastAPI(title="MewHelp",lifespan=lifespan)
 
     def get_chat_service() -> ChatService:
         nonlocal service
-        if service is None:
-            settings = Settings.from_env()
-            quality_enabled = config().get("QUALITY_ENABLED", "true").lower() == "true"
-            if not quality_enabled:
-                settings.require_knowledge()
-            engine = make_engine(settings.database_url)
-            create_tables(engine)
-            session_factory = make_session_factory(engine)
-            knowledge_answer_service = None
-            faq_retriever = None
-            if quality_enabled:
-                knowledge_answer_service = build_answer_service(session_factory, settings)
-            else:
-                embedding_client = EmbeddingClient(
-                    api_key=settings.embedding_api_key,
-                    base_url=settings.embedding_api_base,
-                    model=settings.embedding_model,
-                )
-                vector_store = MilvusKnowledgeStore(
-                    uri=settings.milvus_uri,
-                    collection_name=settings.milvus_collection,
-                )
-                vector_store.ensure_collection()
-                faq_retriever = KnowledgeRetriever(
-                    DenseSearcher(embedding_client, vector_store),
-                    KnowledgeRepository(session_factory),
-                    top_k=settings.faq_top_k,
-                    min_similarity=settings.faq_min_similarity,
-                )
-            model_factory = lambda: ChatOpenAI(
-                model=settings.model,
-                api_key=settings.api_key,
-                base_url=settings.base_url,
-            )
-            runner_factory = lambda tools: ToolRunner(
-                ToolRegistry(tools),
-                timeout_seconds=settings.tool_timeout_seconds,
-                max_retries=settings.tool_max_retries,
-            )
-            service = ChatService(session_factory, model_factory, runner_factory, faq_retriever=faq_retriever, knowledge_answer_service=knowledge_answer_service)
+        with service_lock:
+            if service is None:
+                service = build_workflow_service()
         return service
 
     @application.get("/health")
@@ -87,11 +56,21 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
 
     @application.get("/", include_in_schema=False)
     def chat_page() -> FileResponse:
-        frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
-        page = frontend_dist / "index.html"
-        if not page.exists():
-            page = Path(__file__).parent / "static" / "index.html"
-        return FileResponse(page)
+        return FileResponse(Path(__file__).parent / "static" / "index.html")
+
+    @application.post('/api/v1/tickets')
+    def create_ticket_from_button(request: TicketRequest):
+        try:
+            chat = get_chat_service()
+            if not hasattr(chat,'ticket_actions'):
+                raise HTTPException(status_code=503,detail='工单服务暂不可用')
+            return chat.ticket_actions.submit(request.conversation_id,request.user_id,request.message_id)
+        except ValueError as error:
+            raise HTTPException(status_code=403,detail='会话或工单建议无效') from error
+        except HTTPException:
+            raise
+        except Exception as error:
+            raise HTTPException(status_code=503,detail='工单结果暂未确认，请勿重复提交；请联系人工客服核查。') from error
 
     @application.get("/api/v1/knowledge/source", response_class=HTMLResponse)
     def knowledge_source(source: str):

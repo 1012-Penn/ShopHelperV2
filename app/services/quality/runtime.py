@@ -19,7 +19,7 @@ def config():
     return {**dotenv_values('.env'),**os.environ}
 
 
-def build_answer_service(session_factory, settings=None):
+def build_retriever(session_factory, settings=None):
     settings=settings or Settings.from_env()
     values=config()
     embeddings=EmbeddingClient(api_key=settings.embedding_api_key,base_url=settings.embedding_api_base,model=settings.embedding_model)
@@ -29,6 +29,14 @@ def build_answer_service(session_factory, settings=None):
     model=ChatOpenAI(model=settings.model,api_key=settings.api_key,base_url=settings.base_url,temperature=0,timeout=90,max_retries=1)
     normalizer=QueryNormalizer.from_model(model)
     retriever=QualityRetriever(session_factory,embeddings,store,reranker,normalizer)
+    return retriever
+
+
+def build_answer_service(session_factory, settings=None):
+    settings=settings or Settings.from_env()
+    values=config()
+    retriever=build_retriever(session_factory,settings)
+    model=ChatOpenAI(model=settings.model,api_key=settings.api_key,base_url=settings.base_url,temperature=0,timeout=90,max_retries=1)
     project_root=Path(__file__).resolve().parents[3]
     diagnostic_path=Path(values.get('QUALITY_GENERATION_DIAGNOSTICS_PATH') or '.runtime/quality/generation-failures.jsonl')
     if not diagnostic_path.is_absolute():
