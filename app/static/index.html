@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MewHelp 客服</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      color: #202b25;
+      background: #f4f6f2;
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% -15%, #e4eee5, transparent 55%), #f4f6f2; }
+    .app { width: min(100%, 880px); height: 100dvh; margin: auto; display: flex; flex-direction: column; padding: 0 28px; }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; border-bottom: 1px solid #dfe6de; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 13px; background: #244d3a; color: #f6fbf6; font-size: 19px; }
+    h1 { margin: 0; font-size: 16px; letter-spacing: .01em; }
+    .subtitle { margin-top: 3px; color: #748079; font-size: 12px; }
+    .session { color: #758078; font-size: 12px; }
+    main { flex: 1; overflow: auto; padding: 30px 0; }
+    .welcome { max-width: 580px; margin: 12vh auto 0; text-align: center; }
+    .welcome-mark { width: 52px; height: 52px; margin: 0 auto 18px; display: grid; place-items: center; border: 1px solid #dce6dc; border-radius: 18px; background: #fff; color: #37644c; font-size: 24px; }
+    .welcome h2 { margin: 0 0 9px; font-size: clamp(23px, 4vw, 30px); font-weight: 600; letter-spacing: -.035em; }
+    .welcome p { margin: 0; color: #737e76; font-size: 14px; line-height: 1.7; }
+    .suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 25px; }
+    .suggestion { border: 1px solid #dce4db; border-radius: 999px; background: #fbfcfa; padding: 9px 13px; color: #506057; font: inherit; font-size: 12px; cursor: pointer; transition: border-color .15s, background .15s; }
+    .suggestion:hover { border-color: #9ab5a1; background: #f4f8f3; }
+    .messages { display: flex; flex-direction: column; gap: 23px; }
+    .message { display: flex; gap: 11px; align-items: flex-start; max-width: 88%; }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .avatar { width: 31px; height: 31px; flex: 0 0 31px; display: grid; place-items: center; border-radius: 11px; background: #e5eee4; color: #315b43; font-size: 14px; }
+    .user .avatar { background: #e8e9e4; color: #636b64; }
+    .bubble { min-width: 0; padding: 12px 15px; border: 1px solid #e2e8e1; border-radius: 4px 16px 16px 16px; background: #fff; box-shadow: 0 3px 12px #23382a08; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.7; }
+    .user .bubble { border-color: #e4e8e1; border-radius: 16px 4px 16px 16px; background: #edf1eb; }
+    .trace { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid #dce8dc; border-radius: 999px; background: #f5f9f4; color: #42634c; font-size: 11px; line-height: 1.2; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: #6c9a76; }
+    .badge.running .dot { background: #c28a37; animation: pulse 1s ease-in-out infinite; }
+    .badge.failed { border-color: #f0d9cd; background: #fff8f4; color: #965b41; }
+    .badge.failed .dot { background: #bd6b4b; }
+    .typing { color: #89948c; }
+    footer { padding: 16px 0 22px; border-top: 1px solid #dfe6de; }
+    .composer { display: flex; gap: 10px; align-items: flex-end; padding: 9px; border: 1px solid #dce4db; border-radius: 17px; background: #fff; box-shadow: 0 7px 22px #2137280b; }
+    textarea { flex: 1; min-height: 42px; max-height: 130px; resize: none; border: 0; outline: 0; padding: 11px 10px; background: transparent; color: inherit; font: inherit; font-size: 14px; line-height: 1.45; }
+    textarea::placeholder { color: #9aa49d; }
+    .send { width: 40px; height: 40px; flex: 0 0 40px; border: 0; border-radius: 12px; background: #244d3a; color: white; font-size: 18px; cursor: pointer; }
+    .send:disabled { background: #a7b5aa; cursor: wait; }
+    .hint { margin: 9px 0 0; color: #89938c; text-align: center; font-size: 11px; }
+    @keyframes pulse { 50% { opacity: .35; } }
+    @media (max-width: 560px) { .app { padding: 0 16px; } header { padding: 17px 0; } main { padding: 22px 0; } .message { max-width: 96%; } .session { max-width: 115px; overflow: hidden; text-overflow: ellipsis; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">✳</div>
+        <div><h1>MewHelp 客服</h1><div class="subtitle">在线为你解答订单与售后问题</div></div>
+      </div>
+      <div class="session" id="session-label"></div>
+    </header>
+    <main id="transcript" aria-live="polite">
+      <section class="welcome" id="welcome">
+        <div class="welcome-mark" aria-hidden="true">✦</div>
+        <h2>你好，有什么可以帮你？</h2>
+        <p>可以直接问订单、商品、物流或常见问题。</p>
+        <div class="suggestions">
+          <button class="suggestion">订单 1001 的物流到哪了</button>
+          <button class="suggestion">退货政策是什么</button>
+          <button class="suggestion">耳机现在有货吗</button>
+        </div>
+      </section>
+      <div class="messages" id="messages"></div>
+    </main>
+    <footer>
+      <form class="composer" id="chat-form">
+        <textarea id="message-input" rows="1" aria-label="发送消息" placeholder="输入你的问题…"></textarea>
+        <button class="send" id="send-button" type="submit" aria-label="发送">↑</button>
+      </form>
+      <p class="hint">回答由客服助手生成，涉及账户或敏感问题时请联系人工客服。</p>
+    </footer>
+  </div>
+  <script>
+    const labels = {
+      query_order: "查询订单",
+      query_product: "查询商品",
+      query_logistics: "查询物流",
+      query_faq: "查询常见问题",
+      create_ticket: "创建人工工单",
+    };
+    const newId = () => crypto.randomUUID ? crypto.randomUUID() : `chat-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    let conversationId = localStorage.getItem("mewhelp-conversation-id");
+    if (!conversationId) {
+      conversationId = newId();
+      localStorage.setItem("mewhelp-conversation-id", conversationId);
+    }
+    document.getElementById("session-label").textContent = `会话 ${conversationId.slice(0, 8)}`;
+
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("message-input");
+    const sendButton = document.getElementById("send-button");
+    const messages = document.getElementById("messages");
+    const transcript = document.getElementById("transcript");
+
+    function addMessage(role, text = "") {
+      document.getElementById("welcome")?.remove();
+      const row = document.createElement("div");
+      row.className = `message ${role}`;
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = role === "assistant" ? "✳" : "你";
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      if (role === "assistant") {
+        const trace = document.createElement("div");
+        trace.className = "trace";
+        bubble.append(trace);
+        row.trace = trace;
+      }
+      const body = document.createElement("span");
+      body.textContent = text;
+      bubble.append(body);
+      row.body = body;
+      row.append(avatar, bubble);
+      messages.append(row);
+      transcript.scrollTop = transcript.scrollHeight;
+      return row;
+    }
+
+    function showToolStatus(row, name, status) {
+      let badge = row.trace.querySelector(".badge");
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "badge";
+        badge.innerHTML = '<span class="dot"></span><span class="label"></span>';
+        row.trace.append(badge);
+      }
+      badge.dataset.toolName = name;
+      badge.className = `badge ${status === "running" ? "running" : status === "failed" ? "failed" : ""}`;
+      const statusText = status === "running" ? "查询中" : status === "failed" ? "未完成" : "已调用";
+      badge.querySelector(".label").textContent = `${labels[name] || name} · ${statusText}`;
+    }
+
+    async function readEvents(response, assistantRow) {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let completed = false;
+
+      const handleFrame = (frame) => {
+        let eventName = "message";
+        let data = "";
+        for (const line of frame.split(/\r?\n/)) {
+          if (line.startsWith("event: ")) eventName = line.slice(7);
+          if (line.startsWith("data: ")) data += line.slice(6);
+        }
+        if (!data) return;
+        const payload = JSON.parse(data);
+        if (eventName === "tool_status") showToolStatus(assistantRow, payload.tool_name, "running");
+        if (eventName === "token") assistantRow.body.textContent += payload.content || "";
+        if (eventName === "done") {
+          completed = true;
+          const badge = assistantRow.trace.querySelector(".badge.running");
+          if (badge) showToolStatus(assistantRow, badge.dataset.toolName || "", "done");
+        }
+        if (eventName === "error") {
+          completed = true;
+          const running = assistantRow.trace.querySelector(".badge.running");
+          if (running) running.classList.replace("running", "failed");
+          assistantRow.body.textContent += payload.message || "这次没有处理成功，请稍后再试。";
+        }
+        transcript.scrollTop = transcript.scrollHeight;
+      };
+
+      while (true) {
+        const { value, done } = await reader.read();
+        buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+        let boundary;
+        while ((boundary = buffer.indexOf("\n\n")) !== -1) {
+          handleFrame(buffer.slice(0, boundary));
+          buffer = buffer.slice(boundary + 2);
+        }
+        if (done) break;
+      }
+      if (buffer.trim()) handleFrame(buffer);
+      if (!completed && !assistantRow.body.textContent) assistantRow.body.textContent = "连接中断，请稍后重试。";
+      const badge = assistantRow.trace.querySelector(".badge.running");
+      if (badge) {
+        const label = badge.querySelector(".label").textContent.replace("查询中", "已调用");
+        badge.className = "badge";
+        badge.querySelector(".label").textContent = label;
+      }
+    }
+
+    async function sendMessage(text) {
+      const message = text.trim();
+      if (!message || sendButton.disabled) return;
+      addMessage("user", message);
+      const assistantRow = addMessage("assistant");
+      input.value = "";
+      input.style.height = "auto";
+      sendButton.disabled = true;
+      try {
+        const response = await fetch("/api/v1/chat/stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversation_id: conversationId, user_id: "demo-user", message }),
+        });
+        if (!response.ok) throw new Error("chat request failed");
+        await readEvents(response, assistantRow);
+      } catch (_error) {
+        assistantRow.body.textContent = "连接暂时不可用，请稍后重试。";
+        const badge = assistantRow.trace.querySelector(".badge.running");
+        if (badge) badge.classList.replace("running", "failed");
+      } finally {
+        sendButton.disabled = false;
+        input.focus();
+      }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendMessage(input.value);
+    });
+    input.addEventListener("input", () => {
+      input.style.height = "auto";
+      input.style.height = `${Math.min(input.scrollHeight, 130)}px`;
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+    document.querySelectorAll(".suggestion").forEach((button) => {
+      button.addEventListener("click", () => sendMessage(button.textContent));
+    });
+  </script>
+</body>
+</html>

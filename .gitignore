@@ -1,0 +1,36 @@
+# Credentials and local runtime
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.runtime/
+frontend/node_modules/
+frontend/dist/
+# Private development materials
+dev-notes/
+docs/superpowers/
+.superpowers/
+.claude/
+AGENTS.md
+CLAUDE.md
+.worktrees/
+worktrees/
+# Generated evaluation output
+evaluation/**/runs/
+evaluation/**/smoke-runs/
+evaluation/**/rejudge-runs/

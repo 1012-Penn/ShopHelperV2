@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "frozen_at": "2026-10-02",
+  "author": "实施助手",
+  "review": "源文核验；未经业务专家独立复核",
+  "counts": {
+    "total": 300,
+    "buckets": {
+      "A_policy": 60,
+      "B_model": 60,
+      "C_colloquial": 60,
+      "D_unknown": 60,
+      "E_multi": 60
+    },
+    "splits": {
+      "calibration": 60,
+      "test": 240
+    }
+  },
+  "corpus_chunks": 480,
+  "filtered_cases": 140,
+  "families": 20,
+  "dataset_sha256": "6bf2e08bbf06f5a8f775dca841e88660ec93ae21efc9619323b767b46e5403e6",
+  "corpus_sha256": "445a95364a3ff194650c822d9ed6d200505f445ae6be76f57216dc95630c55e7",
+  "split_rule": "全局 F01-F04 calibration；F05-F20 test；同一型号系列及其政策跨桶保持同一 split",
+  "limits": [
+    "题库来自受控虚构场景，不代表生产分布",
+    "场景家族分组可防止具体型号/政策跨split，通用规则模板仍相似",
+    "数据作者与核验者相同，需独立评审与人工业务抽查"
+  ]
+}

@@ -1,0 +1,1 @@
+"""MewHelp customer support application."""

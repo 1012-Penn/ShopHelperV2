@@ -1,0 +1,26 @@
+[
+  {
+    "query": "邮费是多少",
+    "expected": "hit",
+    "answer_contains": "结算页填写收货地址",
+    "source": "knowledge_docs/02-配送与运费.md"
+  },
+  {
+    "query": "运费怎么查",
+    "expected": "hit",
+    "answer_contains": "运费",
+    "source": "knowledge_docs/02-配送与运费.md"
+  },
+  {
+    "query": "退货政策是什么",
+    "expected": "hit",
+    "answer_contains": "购买时适用",
+    "source": "knowledge_docs/03-退换货与退款.md"
+  },
+  {
+    "query": "怎样给家里的猫梳毛",
+    "expected": "miss",
+    "answer_contains": "",
+    "source": null
+  }
+]
