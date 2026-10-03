@@ -9,17 +9,18 @@ from random import choice, randint
 from langchain.tools import tool
 
 from app.db.models import Ticket
+from app.services.workflow.demo_orders import get_demo_order
 
 
 def build_tools(session_factory, conversation_id: str, faq_retriever=None):
     @tool
     def query_order(order_id: str) -> str:
         """查询订单的演示数据。输入订单号。"""
-        result = {
+        result = get_demo_order(order_id, "demo-user") or {
             "source": "模拟数据",
             "order_id": order_id,
-            "status": choice(["待发货", "已发货", "已签收"]),
-            "total": round(randint(1990, 99900) / 100, 2),
+            "found": False,
+            "message": "未找到演示订单",
         }
         return json.dumps(result, ensure_ascii=False)
 

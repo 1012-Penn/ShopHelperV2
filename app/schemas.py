@@ -25,6 +25,16 @@ class TicketRequest(BaseModel):
     message_id: int = Field(gt=0)
 
 
+class RefundApplicationRequest(BaseModel):
+    conversation_id: str = Field(min_length=1, max_length=128)
+    user_id: str = Field(default="demo-user", min_length=1, max_length=128)
+    message_id: int = Field(gt=0)
+    request_id: str = Field(min_length=1, max_length=128)
+    order_id: str = Field(min_length=1, max_length=128)
+    request_type: Literal["退款", "退货"]
+    reason: Literal["商品质量问题", "错发/漏发", "不想要/不合适", "其他"]
+
+
 class AfterSaleRequest(BaseModel):
     text: str = Field(min_length=1)
 
