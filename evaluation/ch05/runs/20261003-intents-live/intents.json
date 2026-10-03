@@ -1,0 +1,521 @@
+{
+  "mode": "live",
+  "synthetic": false,
+  "model": "deepseek-chat",
+  "summary": {
+    "total": 28,
+    "correct": 28,
+    "errors": 0,
+    "accuracy": 1.0
+  },
+  "cases": [
+    {
+      "id": "L1",
+      "query": "订单1001的物流到哪了",
+      "expected": "物流",
+      "actual": "物流",
+      "raw": "{\"intent\":\"物流\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 132,
+        "output_tokens": 6,
+        "total_tokens": 138,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "L2",
+      "query": "快递单号SF1001现在派送了吗",
+      "expected": "物流",
+      "actual": "物流",
+      "raw": "{\"intent\":\"物流\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 134,
+        "output_tokens": 6,
+        "total_tokens": 140,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "L3",
+      "query": "我想查包裹的运输轨迹",
+      "expected": "物流",
+      "actual": "物流",
+      "raw": "{\"intent\":\"物流\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 130,
+        "output_tokens": 6,
+        "total_tokens": 136,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "L4",
+      "query": "订单1002的快递是哪家承运",
+      "expected": "物流",
+      "actual": "物流",
+      "raw": "{\"intent\":\"物流\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 132,
+        "output_tokens": 6,
+        "total_tokens": 138,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "O1",
+      "query": "帮我查订单1001的订单状态",
+      "expected": "订单",
+      "actual": "订单",
+      "raw": "{\"intent\":\"订单\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 132,
+        "output_tokens": 6,
+        "total_tokens": 138,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "O2",
+      "query": "订单1002的支付记录能查吗",
+      "expected": "订单",
+      "actual": "订单",
+      "raw": "{\"intent\":\"订单\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 133,
+        "output_tokens": 6,
+        "total_tokens": 139,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "O3",
+      "query": "订单1003的总价是多少",
+      "expected": "订单",
+      "actual": "订单",
+      "raw": "{\"intent\":\"订单\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 130,
+        "output_tokens": 6,
+        "total_tokens": 136,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "O4",
+      "query": "先查订单1001状态，再查询它的物流轨迹",
+      "expected": "订单",
+      "actual": "订单",
+      "raw": "{\"intent\":\"订单\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 136,
+        "output_tokens": 6,
+        "total_tokens": 142,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "P1",
+      "query": "这款耳机支持蓝牙吗",
+      "expected": "商品咨询",
+      "actual": "商品咨询",
+      "raw": "{\"intent\":\"商品咨询\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 129,
+        "output_tokens": 7,
+        "total_tokens": 136,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "knowledge"
+    },
+    {
+      "id": "P2",
+      "query": "耳机现在有货吗",
+      "expected": "商品咨询",
+      "actual": "商品咨询",
+      "raw": "{\"intent\":\"商品咨询\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 129,
+        "output_tokens": 7,
+        "total_tokens": 136,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "knowledge"
+    },
+    {
+      "id": "P3",
+      "query": "请推荐适合通勤的耳机",
+      "expected": "商品咨询",
+      "actual": "商品咨询",
+      "raw": "{\"intent\":\"商品咨询\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 131,
+        "output_tokens": 7,
+        "total_tokens": 138,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "knowledge"
+    },
+    {
+      "id": "P4",
+      "query": "这件商品的规格和价格是多少",
+      "expected": "商品咨询",
+      "actual": "商品咨询",
+      "raw": "{\"intent\":\"商品咨询\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 130,
+        "output_tokens": 7,
+        "total_tokens": 137,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "knowledge"
+    },
+    {
+      "id": "R1",
+      "query": "退货政策是什么",
+      "expected": "退款退货",
+      "actual": "退款退货",
+      "raw": "{\"intent\":\"退款退货\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 127,
+        "output_tokens": 7,
+        "total_tokens": 134,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "knowledge"
+    },
+    {
+      "id": "R2",
+      "query": "订单1001想申请退款",
+      "expected": "退款退货",
+      "actual": "退款退货",
+      "raw": "{\"intent\":\"退款退货\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 130,
+        "output_tokens": 7,
+        "total_tokens": 137,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "knowledge"
+    },
+    {
+      "id": "R3",
+      "query": "买了七天的商品符合退货资格吗",
+      "expected": "退款退货",
+      "actual": "退款退货",
+      "raw": "{\"intent\":\"退款退货\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 132,
+        "output_tokens": 7,
+        "total_tokens": 139,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "knowledge"
+    },
+    {
+      "id": "R4",
+      "query": "退货的运费由谁承担",
+      "expected": "退款退货",
+      "actual": "退款退货",
+      "raw": "{\"intent\":\"退款退货\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 130,
+        "output_tokens": 7,
+        "total_tokens": 137,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "knowledge"
+    },
+    {
+      "id": "A1",
+      "query": "订单1001申请维修后现在是什么进度",
+      "expected": "售后",
+      "actual": "售后",
+      "raw": "{\"intent\":\"售后\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 133,
+        "output_tokens": 6,
+        "total_tokens": 139,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "A2",
+      "query": "耳机坏了，我想申请换货",
+      "expected": "售后",
+      "actual": "售后",
+      "raw": "{\"intent\":\"售后\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 131,
+        "output_tokens": 6,
+        "total_tokens": 137,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "A3",
+      "query": "我的售后工单处理到哪一步了",
+      "expected": "售后",
+      "actual": "售后",
+      "raw": "{\"intent\":\"售后\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 133,
+        "output_tokens": 6,
+        "total_tokens": 139,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "A4",
+      "query": "设备需要维修，售后流程怎么办",
+      "expected": "售后",
+      "actual": "售后",
+      "raw": "{\"intent\":\"售后\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 131,
+        "output_tokens": 6,
+        "total_tokens": 137,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "business"
+    },
+    {
+      "id": "C1",
+      "query": "我要投诉",
+      "expected": "投诉",
+      "actual": "投诉",
+      "raw": "{\"intent\":\"投诉\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 126,
+        "output_tokens": 6,
+        "total_tokens": 132,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "complaint"
+    },
+    {
+      "id": "C2",
+      "query": "你们服务太差了，我很不满意",
+      "expected": "投诉",
+      "actual": "投诉",
+      "raw": "{\"intent\":\"投诉\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 131,
+        "output_tokens": 6,
+        "total_tokens": 137,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "complaint"
+    },
+    {
+      "id": "C3",
+      "query": "我想投诉这次购物体验",
+      "expected": "投诉",
+      "actual": "投诉",
+      "raw": "{\"intent\":\"投诉\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 129,
+        "output_tokens": 6,
+        "total_tokens": 135,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "complaint"
+    },
+    {
+      "id": "C4",
+      "query": "处理太慢了，我要求向主管投诉",
+      "expected": "投诉",
+      "actual": "投诉",
+      "raw": "{\"intent\":\"投诉\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 133,
+        "output_tokens": 6,
+        "total_tokens": 139,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "complaint"
+    },
+    {
+      "id": "H1",
+      "query": "你好！",
+      "expected": "闲聊",
+      "actual": "闲聊",
+      "raw": "code fast path",
+      "error": null,
+      "model_calls": 0,
+      "usage": null,
+      "route": "chitchat"
+    },
+    {
+      "id": "H2",
+      "query": "谢谢",
+      "expected": "闲聊",
+      "actual": "闲聊",
+      "raw": "code fast path",
+      "error": null,
+      "model_calls": 0,
+      "usage": null,
+      "route": "chitchat"
+    },
+    {
+      "id": "H3",
+      "query": "再见",
+      "expected": "闲聊",
+      "actual": "闲聊",
+      "raw": "code fast path",
+      "error": null,
+      "model_calls": 0,
+      "usage": null,
+      "route": "chitchat"
+    },
+    {
+      "id": "H4",
+      "query": "你平时喜欢听什么音乐",
+      "expected": "闲聊",
+      "actual": "闲聊",
+      "raw": "{\"intent\":\"闲聊\"}",
+      "error": null,
+      "model_calls": 1,
+      "usage": {
+        "input_tokens": 130,
+        "output_tokens": 6,
+        "total_tokens": 136,
+        "input_token_details": {
+          "cache_read": 0
+        },
+        "output_token_details": {}
+      },
+      "route": "chitchat"
+    }
+  ]
+}

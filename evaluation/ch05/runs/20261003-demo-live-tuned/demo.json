@@ -1,0 +1,248 @@
+{
+  "mode": "live",
+  "synthetic": false,
+  "checks": {
+    "all_completed": true,
+    "policy_forced_retrieval": true,
+    "logistics_agent_tool": true,
+    "complaint_two_suggestions": true,
+    "chitchat_zero_model": true,
+    "complex_multiple_tools": true
+  },
+  "accepted": true,
+  "cases": [
+    {
+      "case": "policy",
+      "question": "退货政策是什么",
+      "conversation_id": "ch05-demo-a9a122c5fb99",
+      "answer": "抱歉，现有知识库没有足够证据回答这个问题，我无法确认。建议联系人工客服核实。",
+      "completed": true,
+      "intent": "退款退货",
+      "route": "knowledge",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "retrieve",
+        "gate",
+        "fixed",
+        "log"
+      ],
+      "gate_passed": false,
+      "gate_score": null,
+      "decisions": 0,
+      "tool_calls": 0,
+      "tokens": 134,
+      "usage": [
+        {
+          "stage": "classify",
+          "tokens": 134,
+          "estimated": false
+        }
+      ],
+      "tool_trace": [],
+      "stop_reason": "retrieval_low_conf",
+      "message_id": 20,
+      "actions": [],
+      "errors": []
+    },
+    {
+      "case": "logistics",
+      "question": "订单 1001 的物流到哪了",
+      "conversation_id": "ch05-demo-2e676487cd55",
+      "answer": "订单 1001 的物流信息如下（模拟数据）：\n\n- 承运商：圆通速递\n- 当前状态：已签收\n- 最后更新：刚刚\n\n如需了解签收人、签收时间或具体派送网点等更详细信息，可以告诉我，我再帮你查。",
+      "completed": true,
+      "intent": "物流",
+      "route": "business",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "agent",
+        "tools",
+        "agent",
+        "agent_answer",
+        "log"
+      ],
+      "gate_passed": false,
+      "gate_score": null,
+      "decisions": 2,
+      "tool_calls": 1,
+      "tokens": 1914,
+      "usage": [
+        {
+          "stage": "classify",
+          "tokens": 140,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 676,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 743,
+          "estimated": false
+        },
+        {
+          "stage": "agent_answer",
+          "tokens": 355,
+          "estimated": false
+        }
+      ],
+      "tool_trace": [
+        {
+          "name": "query_logistics",
+          "call_id": "call_00_xi4aKJdzq3JADfpu6Dqz8499",
+          "is_error": false,
+          "seconds": 0.001881476000562543
+        }
+      ],
+      "stop_reason": "answer",
+      "message_id": 24,
+      "actions": [],
+      "errors": []
+    },
+    {
+      "case": "complaint",
+      "question": "我要投诉",
+      "conversation_id": "ch05-demo-08ea1ddb6661",
+      "answer": "很抱歉给您带来不好的体验，我们重视您的反馈。您可以选择转人工客服或创建工单跟进。",
+      "completed": true,
+      "intent": "投诉",
+      "route": "complaint",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "fixed",
+        "log"
+      ],
+      "gate_passed": false,
+      "gate_score": null,
+      "decisions": 0,
+      "tool_calls": 0,
+      "tokens": 132,
+      "usage": [
+        {
+          "stage": "classify",
+          "tokens": 132,
+          "estimated": false
+        }
+      ],
+      "tool_trace": [],
+      "stop_reason": "complaint",
+      "message_id": 26,
+      "actions": [
+        {
+          "message_id": 26,
+          "items": [
+            {
+              "type": "handoff",
+              "label": "转人工"
+            },
+            {
+              "type": "create_ticket",
+              "label": "建工单"
+            }
+          ]
+        }
+      ],
+      "errors": []
+    },
+    {
+      "case": "chitchat",
+      "question": "你好",
+      "conversation_id": "ch05-demo-fd066ad6c786",
+      "answer": "您好，我是客服小猫，可以帮您查询订单、物流、商品信息和售后问题。",
+      "completed": true,
+      "intent": "闲聊",
+      "route": "chitchat",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "fixed",
+        "log"
+      ],
+      "gate_passed": false,
+      "gate_score": null,
+      "decisions": 0,
+      "tool_calls": 0,
+      "tokens": 0,
+      "usage": [],
+      "tool_trace": [],
+      "stop_reason": "chitchat",
+      "message_id": 28,
+      "actions": [],
+      "errors": []
+    },
+    {
+      "case": "complex",
+      "question": "先查订单1001状态，再查询它的物流轨迹",
+      "conversation_id": "ch05-demo-973c5a8432cb",
+      "answer": "本轮查询已达到处理上限，请补充信息或联系人工客服核实。",
+      "completed": true,
+      "intent": "订单",
+      "route": "business",
+      "path": [
+        "refer",
+        "classify",
+        "route",
+        "agent",
+        "tools",
+        "agent",
+        "tools",
+        "agent",
+        "agent_answer",
+        "log"
+      ],
+      "gate_passed": false,
+      "gate_score": null,
+      "decisions": 3,
+      "tool_calls": 2,
+      "tokens": 2517,
+      "usage": [
+        {
+          "stage": "classify",
+          "tokens": 142,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 679,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 763,
+          "estimated": false
+        },
+        {
+          "stage": "agent_decide",
+          "tokens": 933,
+          "estimated": false
+        }
+      ],
+      "tool_trace": [
+        {
+          "name": "query_order",
+          "call_id": "call_00_qBvp4vsyRnFh8q8IFH5Z8236",
+          "is_error": false,
+          "seconds": 0.001662691000092309
+        },
+        {
+          "name": "query_logistics",
+          "call_id": "call_00_XRSgwxc4GdsZm1vg8ECY0392",
+          "is_error": false,
+          "seconds": 0.0017380820027028676
+        }
+      ],
+      "stop_reason": "invalid_agent_signal",
+      "message_id": 34,
+      "actions": [],
+      "errors": []
+    }
+  ]
+}

@@ -11,17 +11,17 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=1)
     user_id: str = Field(default="demo-user", min_length=1, max_length=128)
 
-    @field_validator('message')
+    @field_validator("message")
     @classmethod
-    def nonblank_message(cls,value):
+    def nonblank_message(cls, value):
         if not value.strip():
-            raise ValueError('message must not be blank')
+            raise ValueError("message must not be blank")
         return value
 
 
 class TicketRequest(BaseModel):
-    conversation_id: str = Field(min_length=1,max_length=128)
-    user_id: str = Field(default='demo-user',min_length=1,max_length=128)
+    conversation_id: str = Field(min_length=1, max_length=128)
+    user_id: str = Field(default="demo-user", min_length=1, max_length=128)
     message_id: int = Field(gt=0)
 
 

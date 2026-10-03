@@ -1,5 +1,4 @@
 import json
-import re
 
 from fastapi.testclient import TestClient
 
@@ -81,7 +80,7 @@ def test_root_serves_native_chat_even_when_react_dist_exists():
 
     assert page.status_code == 200
     assert 'id="chat-form"' in page.text
-    assert '/src/main.jsx' not in page.text
+    assert "/src/main.jsx" not in page.text
     assert 'type="module" src="/assets/' not in page.text
 
 

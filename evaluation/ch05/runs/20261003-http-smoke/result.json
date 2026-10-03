@@ -1,0 +1,24 @@
+{
+  "suggestions": {
+    "message_id": 52,
+    "items": [
+      {
+        "type": "handoff",
+        "label": "转人工"
+      },
+      {
+        "type": "create_ticket",
+        "label": "建工单"
+      }
+    ]
+  },
+  "tickets_before": 0,
+  "tickets_after_suggestion": 0,
+  "tickets_after_confirm": 1,
+  "duplicate_same_result": true,
+  "continue_chat_done": true,
+  "ticket_result": {
+    "status": "created",
+    "ticket_no": "TKT-975E1698"
+  }
+}

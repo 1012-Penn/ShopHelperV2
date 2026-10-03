@@ -1,6 +1,6 @@
 # MewHelp 电商客服知识库
 
-客服系统使用 Milvus 原生 BM25（内置 chinese analyzer）与 BGE-M3 dense 双路各召回 Top-50，hybrid_search + RRF 融合后由 `BAAI/bge-reranker-v2-m3` 精排 Top-10。MySQL `knowledge_chunks` 保留权威原文；回答通过证据充分性自评与引用校验，缺证明确拒答并记录低置信度问题。聊天页角标可查看当轮原文与章节路径，满意度反馈只写浏览器本地。随仓库提供受控电商业务基线，正式门店仍需导入已审核政策。
+客服系统使用 Milvus 原生 BM25（内置 chinese analyzer）与 BGE-M3 dense 双路各召回 Top-50，hybrid_search + RRF 融合后由 `BAAI/bge-reranker-v2-m3` 精排 Top-10。MySQL `knowledge_chunks` 保留权威原文；第5章在线路径由固定Workflow强制检索并先过最简证据闸，再交给ReAct Agent流式回复；缺证明确拒答并记录原问题。第4章缓冲生成与引用校验仍供原评估服务使用。聊天页角标可查看当轮原文与章节路径，满意度反馈只写浏览器本地。随仓库提供受控电商业务基线，正式门店仍需导入已审核政策。
 
 ## 配置和启动
 
@@ -65,7 +65,7 @@ docker compose config
 
 ## 客服工作台与售后识别
 
-项目同时提供 React + Vite 客服工作台，FastAPI 会托管 `frontend/dist` 中的构建产物。构建前端：
+项目保留历史 React + Vite 客服工作台源码；第5章 FastAPI 默认首页服务 `app/static/index.html` 原生聊天页，不再优先加载 dist。原 React 工作台可在 Vite 开发环境单独运行，构建命令保留：
 
 ```bash
 cd frontend
@@ -154,3 +154,50 @@ python3 -m pytest -q tests/test_quality_generation_diagnostics.py
 2026-10-02 修复阶段：Query 改写保护型号、带单位/正负号数量、模糊时长与否定子句；无法确认保真则保留原话。同义词仍仅检索时扩展。独立 calibration 成对验证后，混合检索融合输出上限采用100（dense/BM25每路仍Top-50，最终bge-reranker-v2-m3精排Top-10）。该上限增加重排工作量；校准实验见 `evaluation/ch04/v2/retrieval-calibration/20261002/report.md`。新评估报告metadata记录Prompt及实现hash与实际融合上限，旧报告保留原配置。
 
 2026-10-02 修复后v2统一实跑：1200组、调用错误0，hybrid_rerank完整证据@10=0.988、正确率=0.980（test=0.979），已知误拒答6/240；其中3条引用声明不一致、2条精排丢必要证据、1条候选缺证。四策略还有6条安全协议拒答，raw已记录，不能等同于生成无问题。详见 [修复后报告](evaluation/ch04/v2/runs/20261002-171650-a36a7908/report.md) 与 [独立结果解读](evaluation/ch04/v2/runs/20261002-171650-a36a7908/analysis.md)；历史基线保留。代码版本 `f135940`，评估显示3位，rawJSON保留精度。
+
+## ch05：固定 Workflow 与主力 Agent
+
+默认服务采用 LangGraph StateGraph：指代透传→七类意图→四路固定分流。商品咨询/退款退货强制先检索，再用检索得分过闸；物流/订单/售后直接进入 ReAct Agent。投诉固定安抚并给两个独立操作建议；常见问候零模型，其他闲聊最多分类一次。决策、工具执行、最终答复分别是图节点，最终答复真实流式输出。
+
+先演示不依赖编排框架的普通循环，再运行图与页面：
+
+```bash
+python3 -m pip install -e '.[dev]'
+python3 -m scripts.demo_bare_agent --fixture
+python3 -m scripts.demo_bare_agent --live
+python3 -m scripts.migrate_ch05
+python3 -m scripts.demo_ch05 --fixture --output-dir .runtime/ch05/demo-fixture
+python3 -m scripts.build_knowledge
+python3 -m scripts.demo_ch05 --live
+python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+```
+
+打开 http://127.0.0.1:8000/，依次输入“退货政策是什么”“订单1001的物流到哪了”“我要投诉”“你好”“先查订单1001状态，再查询它的物流轨迹”。图演示将五项路径、工具调用、预算用量与答案写入 `evaluation/ch05/runs`；运行日志默认 `.runtime/ch05/workflow.jsonl`，官方 SqliteSaver 状态默认 `.runtime/ch05/checkpoints.sqlite`。知识初始化延迟到知识分支，问候/投诉不连接 Milvus。
+
+投诉后点“转人工”并确认，仅页面显示“已转接人工客服”和“您好，我是客服小猫，请问有什么可以帮您的”，不接真人系统、不写 tickets。点“建工单”并确认，独立 POST `/api/v1/tickets` 才调用原工单工具。可以只点一个、两个都点或都不点继续聊天。创建成功重复请求返回同一单号；处理中或结果未知不能自动重试，页面提示核查。
+
+默认限制：4次工具决策、6次只读工具执行、每模型调用最多512输出 tokens、当轮模型累计12000预算（检索器内部归一化调用由原服务执行，账单用量不包含在此数字内）。`.env.example` 提供 checkpoint、日志路径与预算参数。日志区分实际usage与保守估算，不显示内部推理。
+
+此部署演示为单进程SQLite checkpoint；真实多副本部署需要另行确定后端与并发方案。订单/商品/物流工具沿用第2章的模拟数据；人工转接也仅模拟。本章没有实现正式指代/意图模型、上下文升级、MCP业务接入或飞轮入库。知识闸是检索分数的最简保护，不等于正式证据覆盖度/生成正确性保证。
+
+验证与真实prompt评估：
+
+```bash
+python3 -m pytest -q
+python3 -m scripts.evaluate_ch05 --fixture
+python3 -m scripts.evaluate_ch05 --live
+# 独立浏览器测试依赖，不影响产品使用原生JS
+npm install --prefix .runtime/browser playwright
+.runtime/browser/node_modules/.bin/playwright install chromium
+node --test tests/browser/ch05.spec.mjs
+```
+
+28条标注样例是本章基线，fixture只能证明评估接线，不能代表真实prompt效果。开发过程按阶段记录于 `dev-notes/ch05.md`，设计与计划位于 `docs/superpowers/specs`、`docs/superpowers/plans`。
+
+本次真实验收使用独立 Milvus collection，避免覆盖已有第4章索引：
+
+```bash
+MILVUS_COLLECTION=knowledge_ch05_demo HYBRID_COLLECTION=knowledge_ch05_demo_hybrid python3 -m scripts.build_knowledge
+MILVUS_COLLECTION=knowledge_ch05_demo HYBRID_COLLECTION=knowledge_ch05_demo_hybrid python3 -m scripts.demo_ch05 --live
+MILVUS_COLLECTION=knowledge_ch05_demo HYBRID_COLLECTION=knowledge_ch05_demo_hybrid python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+```

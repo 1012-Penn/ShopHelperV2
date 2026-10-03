@@ -1,4 +1,5 @@
 """One persistent State spanning the fixed workflow and agent loop."""
+
 from typing import Annotated, TypedDict
 
 from langchain_core.messages import BaseMessage

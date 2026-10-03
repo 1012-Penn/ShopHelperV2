@@ -1,4 +1,5 @@
 """Business message persistence and per-conversation request serialization."""
+
 from contextlib import contextmanager
 from threading import Lock
 
@@ -37,44 +38,81 @@ class ConversationStore:
         with self.session_factory() as s:
             row = s.get(Conversation, conversation_id)
             if row is not None and row.user_id != user_id:
-                raise ValueError('conversation does not belong to user')
+                raise ValueError("conversation does not belong to user")
 
     def prepare(self, request):
         with self.session_factory.begin() as s:
             conv = s.get(Conversation, request.conversation_id)
             if conv is not None and conv.user_id != request.user_id:
-                raise ValueError('conversation does not belong to user')
+                raise ValueError("conversation does not belong to user")
             if conv is None:
-                s.add(Conversation(conversation_id=request.conversation_id, user_id=request.user_id, status='open'))
+                s.add(
+                    Conversation(
+                        conversation_id=request.conversation_id,
+                        user_id=request.user_id,
+                        status="open",
+                    )
+                )
                 s.flush()
-            rows = list(s.scalars(select(Message).where(
-                Message.conversation_id == request.conversation_id).order_by(Message.id)))
-            s.add(Message(conversation_id=request.conversation_id, role='user', content=request.message))
+            rows = list(
+                s.scalars(
+                    select(Message)
+                    .where(Message.conversation_id == request.conversation_id)
+                    .order_by(Message.id)
+                )
+            )
+            s.add(
+                Message(
+                    conversation_id=request.conversation_id,
+                    role="user",
+                    content=request.message,
+                )
+            )
         return [self.to_message(row) for row in rows]
 
     @staticmethod
     def to_message(row):
-        values = {'content': row.content, 'id': f'sql-{row.id}'}
-        if row.role == 'user':
+        values = {"content": row.content, "id": f"sql-{row.id}"}
+        if row.role == "user":
             return HumanMessage(**values)
-        if row.role == 'tool':
-            return ToolMessage(**values, tool_call_id=row.tool_call_id or 'missing-id')
+        if row.role == "tool":
+            return ToolMessage(**values, tool_call_id=row.tool_call_id or "missing-id")
         return AIMessage(**values, tool_calls=row.tool_calls or [])
 
     def save_answer(self, conversation_id, answer, citations, actions, question):
-        metadata = {'items': actions, 'question': question,
-                    'ticket': {'status': 'offered'}} if actions else None
+        metadata = (
+            {"items": actions, "question": question, "ticket": {"status": "offered"}}
+            if actions
+            else None
+        )
         with self.session_factory.begin() as s:
-            row = Message(conversation_id=conversation_id, role='assistant', content=answer,
-                          citations=citations or None, actions=metadata)
+            row = Message(
+                conversation_id=conversation_id,
+                role="assistant",
+                content=answer,
+                citations=citations or None,
+                actions=metadata,
+            )
             s.add(row)
             s.flush()
             return row.id
 
     def save_tool_pair(self, conversation_id, message, observations):
         with self.session_factory.begin() as s:
-            s.add(Message(conversation_id=conversation_id, role='assistant', content='',
-                          tool_calls=message.tool_calls))
+            s.add(
+                Message(
+                    conversation_id=conversation_id,
+                    role="assistant",
+                    content="",
+                    tool_calls=message.tool_calls,
+                )
+            )
             for observation in observations:
-                s.add(Message(conversation_id=conversation_id, role='tool', content=observation.content,
-                              tool_call_id=observation.tool_call_id))
+                s.add(
+                    Message(
+                        conversation_id=conversation_id,
+                        role="tool",
+                        content=observation.content,
+                        tool_call_id=observation.tool_call_id,
+                    )
+                )
