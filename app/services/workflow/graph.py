@@ -14,7 +14,8 @@ from .actions import TicketActions
 from .intents import (CHATTER_TEXT, COMPLAINT_TEXT, INTENT_PROMPT, INVALID_INTENT_TEXT,
                       ROUTES, is_greeting, parse_intent)
 from .logging import WorkflowLog
-from .policy import BudgetExceeded, Limits, STOP_TEXT, estimate_tokens, measured_usage, output_allowance
+from .policy import BudgetExceeded, Limits, estimate_tokens, measured_usage, output_allowance
+from .agent import AgentNodes
 from .state import WorkflowState
 from .storage import ConversationLocks, ConversationStore
 
@@ -45,9 +46,11 @@ class WorkflowService:
 
     def _build_graph(self):
         builder = StateGraph(WorkflowState)
+        agent = AgentNodes(self)
         nodes = {'refer': lambda s: {'resolved_question': s['question']},
                  'classify': self._classify, 'route': self._route, 'retrieve': self._retrieve,
-                 'gate': self._gate, 'fixed': self._fixed, 'agent': self._agent_placeholder,
+                 'gate': self._gate, 'fixed': self._fixed, 'agent': agent.decide,
+                 'tools':agent.execute,'agent_answer':agent.answer,
                  'log': self._log}
         for name, node in nodes.items():
             builder.add_node(name, self._tracked(name, node))
@@ -59,7 +62,10 @@ class WorkflowService:
                                       'complaint':'fixed','chitchat':'fixed','error':'fixed'})
         builder.add_edge('retrieve','gate')
         builder.add_conditional_edges('gate', lambda s: s['gate_passed'], {True:'agent',False:'fixed'})
-        builder.add_edge('agent','log')
+        builder.add_conditional_edges('agent',lambda s:s['agent_next'],
+                                     {'tools':'tools','answer':'agent_answer','clarify':'agent_answer','stop':'agent_answer'})
+        builder.add_conditional_edges('tools',lambda s:s['agent_next'],{'decide':'agent','stop':'agent_answer'})
+        builder.add_edge('agent_answer','log')
         builder.add_edge('fixed','log')
         builder.add_edge('log',END)
         return builder.compile(checkpointer=self.checkpointer)
@@ -113,10 +119,6 @@ class WorkflowService:
         get_stream_writer()({'event':'token','data':{'content':answer}})
         return {'answer':answer,'actions':actions,'stop_reason':reason}
 
-    def _agent_placeholder(self, state):
-        get_stream_writer()({'event':'token','data':{'content':STOP_TEXT}})
-        return {'answer':STOP_TEXT,'stop_reason':'agent_pending_implementation'}
-
     def _log(self, state):
         mid = self.store.save_answer(state['conversation_id'], state['answer'], state['evidence'],
                                      state['actions'], state['question'])
@@ -133,6 +135,7 @@ class WorkflowService:
     def stream_events(self, request):
         config = {'configurable':{'thread_id':request.conversation_id}, 'recursion_limit':40}
         observed_path = []
+        owner_checked = False
         initial = {'run_id':str(uuid4()), 'conversation_id':request.conversation_id, 'user_id':request.user_id,
                    'question':request.message, 'resolved_question':request.message,'category':request.category,
                    'intent':None,'route':None,'path':[], 'evidence':[],'retrieval_trace':{},
@@ -142,6 +145,7 @@ class WorkflowService:
         with self.locks.hold(request.conversation_id):
             try:
                 self.store.check_owner(request.conversation_id, request.user_id)
+                owner_checked = True
                 previous = self.graph.get_state(config).values
                 history = self.store.prepare(request)
                 initial['messages'] = [*([] if previous else history), HumanMessage(content=request.message)]
@@ -155,7 +159,10 @@ class WorkflowService:
                        'stop_reason':final['stop_reason']}}
             except Exception as error:
                 try:
-                    self.logger.write({**initial,'path':observed_path,'stop_reason':'service_error'},
+                    latest = self.graph.get_state(config).values if owner_checked else {}
+                    if latest.get('run_id') != initial['run_id']:
+                        latest = {}
+                    self.logger.write({**initial,**latest,'path':observed_path,'stop_reason':'service_error'},
                                       status='error',error_type=type(error).__name__)
                 except Exception:
                     pass
