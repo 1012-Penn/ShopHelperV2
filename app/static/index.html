@@ -14,14 +14,23 @@
     }
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% -15%, #e4eee5, transparent 55%), #f4f6f2; }
-    .app { width: min(100%, 880px); height: 100dvh; margin: auto; display: flex; flex-direction: column; padding: 0 28px; }
-    header { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; border-bottom: 1px solid #dfe6de; }
+    .app { width: min(100%, 1180px); height: 100dvh; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; padding: 0 28px; }
+    .app > header { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; padding: 22px 0; border-bottom: 1px solid #dfe6de; }
     .brand { display: flex; align-items: center; gap: 12px; }
     .mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 13px; background: #244d3a; color: #f6fbf6; font-size: 19px; }
     h1 { margin: 0; font-size: 16px; letter-spacing: .01em; }
     .subtitle { margin-top: 3px; color: #748079; font-size: 12px; }
     .session { color: #758078; font-size: 12px; }
-    main { flex: 1; overflow: auto; padding: 30px 0; }
+    main { grid-column: 2; grid-row: 2; min-height: 0; overflow: auto; padding: 30px 0; }
+    .sidebar { grid-column: 1; grid-row: 2 / 4; min-height: 0; overflow: auto; padding: 22px 16px 22px 0; border-right: 1px solid #dfe6de; }
+    .sidebar-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; color: #536158; font-size: 12px; font-weight: 600; }
+    .new-conversation { padding: 8px 10px; border: 1px solid #cbd9cd; border-radius: 9px; color: #315b43; background: #fff; font: inherit; font-size: 12px; cursor: pointer; }
+    .new-conversation:disabled, .conversation-item:disabled { cursor: wait; opacity: .55; }
+    .conversation-list { display: flex; flex-direction: column; gap: 5px; }
+    .conversation-item { width: 100%; padding: 10px; border: 1px solid transparent; border-radius: 9px; color: #4d5951; background: transparent; text-align: left; font: inherit; cursor: pointer; }
+    .conversation-item:hover, .conversation-item[aria-current="true"] { border-color: #dce7dc; background: #fff; }
+    .conversation-preview { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+    .summary-tag { display: inline-block; margin-top: 5px; color: #829087; font-size: 10px; }
     .welcome { max-width: 580px; margin: 12vh auto 0; text-align: center; }
     .welcome-mark { width: 52px; height: 52px; margin: 0 auto 18px; display: grid; place-items: center; border: 1px solid #dce6dc; border-radius: 18px; background: #fff; color: #37644c; font-size: 24px; }
     .welcome h2 { margin: 0 0 9px; font-size: clamp(23px, 4vw, 30px); font-weight: 600; letter-spacing: -.035em; }
@@ -43,7 +52,7 @@
     .badge.failed { border-color: #f0d9cd; background: #fff8f4; color: #965b41; }
     .badge.failed .dot { background: #bd6b4b; }
     .typing { color: #89948c; }
-    footer { padding: 16px 0 22px; border-top: 1px solid #dfe6de; }
+    .app > footer { grid-column: 2; grid-row: 3; padding: 16px 0 22px; border-top: 1px solid #dfe6de; }
     .composer { display: flex; gap: 10px; align-items: flex-end; padding: 9px; border: 1px solid #dce4db; border-radius: 17px; background: #fff; box-shadow: 0 7px 22px #2137280b; }
     textarea { flex: 1; min-height: 42px; max-height: 130px; resize: none; border: 0; outline: 0; padding: 11px 10px; background: transparent; color: inherit; font: inherit; font-size: 14px; line-height: 1.45; }
     textarea::placeholder { color: #9aa49d; }
@@ -81,7 +90,7 @@
     .citation-panel footer { margin-top: 20px; padding-top: 14px; border-top: 1px solid #e5e8df; color: #818b80; font-size: 12px; }
     .citation-panel footer a { color: #a65d1c; }
     @keyframes pulse { 50% { opacity: .35; } }
-    @media (max-width: 560px) { .app { padding: 0 16px; } header { padding: 17px 0; } main { padding: 22px 0; } .message { max-width: 96%; } .session { max-width: 115px; overflow: hidden; text-overflow: ellipsis; } }
+    @media (max-width: 700px) { .app { grid-template-columns: 1fr; grid-template-rows: auto auto minmax(0, 1fr) auto; padding: 0 16px; } .app > header { grid-column: 1; grid-row: 1; padding: 17px 0; } .sidebar { grid-column: 1; grid-row: 2; max-height: 180px; padding: 12px 0; border-right: 0; border-bottom: 1px solid #dfe6de; } .sidebar-heading { margin-bottom: 8px; } .conversation-list { flex-direction: row; overflow-x: auto; } .conversation-item { width: 190px; flex: 0 0 190px; } main { grid-column: 1; grid-row: 3; padding: 22px 0; } .app > footer { grid-column: 1; grid-row: 4; } .message { max-width: 96%; } .session { max-width: 115px; overflow: hidden; text-overflow: ellipsis; } }
   </style>
 </head>
 <body>
@@ -93,6 +102,10 @@
       </div>
       <div class="session" id="session-label"></div>
     </header>
+    <aside class="sidebar" id="conversation-sidebar" aria-label="会话列表">
+      <div class="sidebar-heading"><span>最近会话</span><button class="new-conversation" id="new-conversation" type="button">新对话</button></div>
+      <nav class="conversation-list" id="conversation-list" aria-label="最近会话"></nav>
+    </aside>
     <main id="transcript" aria-live="polite">
       <section class="welcome" id="welcome">
         <div class="welcome-mark" aria-hidden="true">✦</div>
@@ -123,7 +136,7 @@
     </section>
   </div>
   <script>
-    const labels = { query_order: "查询订单", query_product: "查询商品", query_logistics: "查询物流", query_faq: "查询常见问题", create_ticket: "创建人工工单" };
+    const labels = { query_order: "查询订单", query_product: "查询商品", query_logistics: "查询物流", query_faq: "查询常见问题", create_ticket: "创建人工工单", handoff: "转人工" };
     const newId = () => crypto.randomUUID ? crypto.randomUUID() : `chat-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     let conversationId = localStorage.getItem("mewhelp-conversation-id");
     if (!conversationId) { conversationId = newId(); localStorage.setItem("mewhelp-conversation-id", conversationId); }
@@ -134,17 +147,122 @@
     const sendButton = document.getElementById("send-button");
     const messages = document.getElementById("messages");
     const transcript = document.getElementById("transcript");
+    const welcome = document.getElementById("welcome");
+    const conversationList = document.getElementById("conversation-list");
+    const newConversationButton = document.getElementById("new-conversation");
     const assistantRowsById = new Map();
     const pendingActions = new Map();
+    let conversationItems = [];
+    let selectionVersion = 0;
+
+    function updateSessionLabel() {
+      document.getElementById("session-label").textContent = `会话 ${conversationId.slice(0, 8)}`;
+    }
+    updateSessionLabel();
+
+    function renderConversationList() {
+      conversationList.replaceChildren();
+      const items = [...conversationItems];
+      if (!items.some((item) => item.conversation_id === conversationId)) {
+        items.unshift({ conversation_id: conversationId, preview: "新对话", has_summary: false, local: true });
+      }
+      for (const item of items) {
+        const button = document.createElement("button"); button.type = "button"; button.className = "conversation-item";
+        button.dataset.conversationId = item.conversation_id;
+        button.setAttribute("aria-current", String(item.conversation_id === conversationId));
+        button.disabled = sendButton.disabled;
+        const preview = document.createElement("span"); preview.className = "conversation-preview";
+        preview.textContent = item.preview || "新对话";
+        button.append(preview);
+        if (item.has_summary) {
+          const summary = document.createElement("span"); summary.className = "summary-tag"; summary.textContent = "已摘要"; button.append(summary);
+        }
+        button.addEventListener("click", () => switchConversation(item.conversation_id));
+        conversationList.append(button);
+      }
+    }
+
+    async function loadConversations() {
+      try {
+        const response = await fetch("/api/conversations?user_id=demo-user");
+        if (!response.ok) return;
+        const result = await response.json();
+        if (!Array.isArray(result.items)) return;
+        conversationItems = result.items.filter((item) => item && typeof item.conversation_id === "string");
+        renderConversationList();
+      } catch { /* History is optional; keep chat usable when it is unavailable. */ }
+    }
+
+    function clearConversation() {
+      messages.replaceChildren();
+      assistantRowsById.clear(); pendingActions.clear();
+      welcome.hidden = false;
+      transcript.scrollTop = 0;
+    }
+
+    async function loadConversation(id, version) {
+      try {
+        const response = await fetch(`/api/conversations/${encodeURIComponent(id)}/messages?user_id=demo-user`);
+        if (!response.ok) return;
+        const result = await response.json();
+        if (version !== selectionVersion || id !== conversationId || !Array.isArray(result.items)) return;
+        messages.replaceChildren(); welcome.hidden = result.items.length > 0;
+        assistantRowsById.clear(); pendingActions.clear();
+        for (let index = 0; index < result.items.length; index += 1) {
+          const item = result.items[index];
+          if (!item || !["user", "assistant"].includes(item.role)) continue;
+          const row = addMessage(item.role, typeof item.content === "string" ? item.content : "");
+          if (item.role !== "assistant") continue;
+          row.citations = Array.isArray(item.citations) ? item.citations : [];
+          renderAssistantBody(row);
+          bindMessageId(row, item.id);
+          if (item.actions && Array.isArray(item.actions.items)) {
+            showActions(row, { ...item.actions, message_id: item.id });
+            const orderOffer = item.actions.order_choice;
+            if (item.actions.items.includes("order_choices") &&
+                typeof orderOffer?.request_id === "string" && Array.isArray(orderOffer.order_ids)) {
+              const selectionWasMade = result.items.slice(index + 1).some((later) =>
+                later?.role === "assistant" ||
+                (later?.role === "user" && orderOffer.order_ids.some((orderId) => later.content === `已选择订单 ${orderId}`))
+              );
+              if (!selectionWasMade) {
+                renderOrderChoices(row, {
+                  message_id: item.id,
+                  request_id: orderOffer.request_id,
+                  content: item.content,
+                  choices: orderOffer.order_ids
+                    .filter((orderId) => typeof orderId === "string")
+                    .map((order_id) => ({ order_id, source: "演示数据" })),
+                });
+              }
+            }
+            if (item.actions.items.includes("refund_form") && item.actions.refund_form) {
+              renderRefundForm(row, { message_id: item.id, ...item.actions.refund_form });
+            }
+          }
+          enableFeedback(row);
+        }
+        transcript.scrollTop = transcript.scrollHeight;
+      } catch { /* A history read failure must not interrupt the active conversation. */ }
+    }
+
+    async function switchConversation(id) {
+      if (sendButton.disabled || id === conversationId) return;
+      conversationId = id;
+      localStorage.setItem("mewhelp-conversation-id", id);
+      selectionVersion += 1;
+      updateSessionLabel(); renderConversationList(); clearConversation();
+      await loadConversation(id, selectionVersion);
+    }
 
     function addMessage(role, text = "") {
-      document.getElementById("welcome")?.remove();
+      welcome.hidden = true;
       const row = document.createElement("div"); row.className = `message ${role}`;
       const avatar = document.createElement("div"); avatar.className = "avatar"; avatar.textContent = role === "assistant" ? "✳" : "你";
       const bubble = document.createElement("div"); bubble.className = "bubble";
       if (role === "assistant") { const trace = document.createElement("div"); trace.className = "trace"; bubble.append(trace); row.trace = trace; }
       const body = document.createElement("span"); body.textContent = text; bubble.append(body);
-      row.body = body; row.content = text; row.localId = newId(); row.citations = [];
+      row.body = body; row.content = text; row.localId = newId(); row.citations = []; row.conversationId = conversationId;
       row.append(avatar, bubble); messages.append(row); transcript.scrollTop = transcript.scrollHeight;
       return row;
     }
@@ -208,7 +326,8 @@
       row.messageId = payload.message_id; assistantRowsById.set(String(payload.message_id), row);
       row.actionsEl?.remove();
       const actions = document.createElement("div"); actions.className = "actions"; row.actionsEl = actions;
-      for (const action of payload.items) {
+      for (const value of payload.items) {
+        const action = typeof value === "string" ? { type: value, label: value === "create_ticket" ? "建工单" : labels[value] } : value;
         if (!action || !["handoff", "create_ticket"].includes(action.type)) continue;
         const button = document.createElement("button"); button.type = "button";
         button.className = `action-button ${action.type === "create_ticket" ? "ticket" : "handoff"}`;
@@ -218,13 +337,18 @@
           if (action.type === "handoff") { button.disabled = true; addLocalHandoffMessages(); return; }
           button.disabled = true; setActionResult(row, "工单提交中…");
           try {
-            const response = await fetch("/api/v1/tickets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conversation_id: conversationId, user_id: "demo-user", message_id: payload.message_id }) });
+            const response = await fetch("/api/v1/tickets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conversation_id: row.conversationId, user_id: "demo-user", message_id: payload.message_id }) });
             const result = await response.json();
             if (response.ok && result.status === "created" && result.ticket_no) setActionResult(row, `工单已创建：${result.ticket_no}`);
             else setActionResult(row, result.message || (result.status === "submitting" ? "工单仍在处理中，请勿重复提交。" : "工单结果待核查，请勿重复提交。"));
           } catch { setActionResult(row, "工单结果待核查，请勿重复提交。"); }
         });
         actions.append(button);
+        if (action.type === "create_ticket" && payload.ticket?.status && payload.ticket.status !== "offered") {
+          button.disabled = true;
+          const outcome = payload.ticket;
+          setActionResult(row, outcome.status === "created" && outcome.ticket_no ? `工单已创建：${outcome.ticket_no}` : outcome.message || "工单已提交，请勿重复提交。");
+        }
       }
       if (actions.childElementCount) row.append(actions);
     }
@@ -238,12 +362,26 @@
         if (row.feedback) return; row.feedback = choice;
         let records = [];
         try { const stored = JSON.parse(localStorage.getItem("mewhelp.feedback.v1") || "[]"); if (Array.isArray(stored)) records = stored; } catch { /* Storage may be unavailable. */ }
-        records.push({ conversation_id: conversationId, message_id: row.messageId || row.localId, choice, time: new Date().toISOString() });
+        records.push({ conversation_id: row.conversationId, message_id: row.messageId || row.localId, choice, time: new Date().toISOString() });
         try { localStorage.setItem("mewhelp.feedback.v1", JSON.stringify(records)); } catch { /* Keep the selection in this page. */ }
         feedback.querySelectorAll("button").forEach((item) => { item.disabled = true; }); selected.setAttribute("aria-pressed", "true");
         const status = document.createElement("span"); status.textContent = "已反馈"; feedback.append(status);
       };
       up.addEventListener("click", () => select("up", up)); down.addEventListener("click", () => select("down", down));
+      try {
+        const stored = JSON.parse(localStorage.getItem("mewhelp.feedback.v1") || "[]");
+        const existing = Array.isArray(stored) && stored.find((item) =>
+          item?.conversation_id === row.conversationId && String(item.message_id) === String(row.messageId || row.localId)
+        );
+        if (existing && ["up", "down"].includes(existing.choice)) {
+          row.feedback = existing.choice;
+          for (const button of [up, down]) {
+            button.disabled = true;
+            button.setAttribute("aria-pressed", String(button === (existing.choice === "up" ? up : down)));
+          }
+          const status = document.createElement("span"); status.textContent = "已反馈"; feedback.append(status);
+        }
+      } catch { /* Ignore unavailable or malformed feedback storage. */ }
       feedback.append(up, down); row.feedbackEl = feedback; row.append(feedback);
     }
 
@@ -281,7 +419,7 @@
       try {
         const response = await fetch("/api/v1/chat/stream", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ conversation_id: conversationId, user_id: "demo-user", selected_order_id: order.order_id, selection_message_id: offer.message_id, request_id: offer.request_id }),
+          body: JSON.stringify({ conversation_id: cardRow.conversationId, user_id: "demo-user", selected_order_id: order.order_id, selection_message_id: offer.message_id, request_id: offer.request_id }),
         });
         if (!response.ok || !response.body) throw new Error("order selection resume failed");
         await readEvents(response, assistantRow);
@@ -305,13 +443,18 @@
       const submit = document.createElement("button"); submit.type = "submit"; submit.textContent = "提交演示申请";
       const status = document.createElement("div"); status.className = "action-result"; status.setAttribute("role", "status");
       form.append(label, demo, reasonLabel, submit, status);
+      if (payload.status === "recorded") {
+        if (Array.from(select.options).some((option) => option.value === payload.reason)) select.value = payload.reason;
+        select.disabled = true; submit.disabled = true;
+        status.textContent = `演示申请已记录：${payload.reason || "原因未提供"}${payload.application_id ? `（申请编号：${payload.application_id}）` : ""}。`;
+      }
       form.addEventListener("submit", async (event) => {
         event.preventDefault(); if (submit.disabled) return;
         submit.disabled = true; status.textContent = "正在记录演示申请…";
         try {
           const response = await fetch("/api/v1/refund-applications", {
             method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ conversation_id: conversationId, user_id: "demo-user", message_id: payload.message_id, request_id: payload.request_id, order_id: payload.order_id, request_type: payload.request_type, reason: select.value }),
+            body: JSON.stringify({ conversation_id: row.conversationId, user_id: "demo-user", message_id: payload.message_id, request_id: payload.request_id, order_id: payload.order_id, request_type: payload.request_type, reason: select.value }),
           });
           const result = await response.json();
           status.textContent = response.ok ? (result.message || "演示申请已记录；未执行真实退款。") : (result.detail || result.message || "申请未能提交，请联系人工核查。");
@@ -364,16 +507,28 @@
 
     async function sendMessage(text) {
       const message = text.trim(); if (!message || sendButton.disabled) return;
+      const activeConversationId = conversationId;
+      selectionVersion += 1;
       addMessage("user", message); const assistantRow = addMessage("assistant"); input.value = ""; input.style.height = "auto"; sendButton.disabled = true;
+      newConversationButton.disabled = true; renderConversationList();
       try {
-        const response = await fetch("/api/v1/chat/stream", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conversation_id: conversationId, user_id: "demo-user", message }) });
+        const response = await fetch("/api/v1/chat/stream", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conversation_id: activeConversationId, user_id: "demo-user", message }) });
         if (!response.ok || !response.body) throw new Error("chat request failed");
         await readEvents(response, assistantRow);
       } catch {
         assistantRow.content = "连接暂时不可用，请稍后重试。"; renderAssistantBody(assistantRow);
         for (const running of assistantRow.trace.querySelectorAll(".badge.running")) showToolStatus(assistantRow, running.dataset.toolName, "failed");
-      } finally { sendButton.disabled = false; input.focus(); }
+      } finally {
+        sendButton.disabled = false; newConversationButton.disabled = false; renderConversationList();
+        loadConversations(); input.focus();
+      }
     }
+
+    newConversationButton.addEventListener("click", () => {
+      if (sendButton.disabled) return;
+      conversationId = newId(); localStorage.setItem("mewhelp-conversation-id", conversationId);
+      selectionVersion += 1; updateSessionLabel(); clearConversation(); renderConversationList(); input.focus();
+    });
 
     form.addEventListener("submit", (event) => { event.preventDefault(); sendMessage(input.value); });
     input.addEventListener("input", () => { input.style.height = "auto"; input.style.height = `${Math.min(input.scrollHeight, 130)}px`; });
@@ -383,6 +538,16 @@
     document.getElementById("citation-close").addEventListener("click", () => { citationOverlay.hidden = true; });
     citationOverlay.addEventListener("click", (event) => { if (event.target === citationOverlay) citationOverlay.hidden = true; });
     document.addEventListener("keydown", (event) => { if (event.key === "Escape") citationOverlay.hidden = true; });
+    const startupConversationId = conversationId;
+    const startupSelectionVersion = selectionVersion;
+    loadConversations().then(() => {
+      if (conversationId === startupConversationId &&
+          selectionVersion === startupSelectionVersion &&
+          !sendButton.disabled &&
+          conversationItems.some((item) => item.conversation_id === startupConversationId)) {
+        selectionVersion += 1; loadConversation(startupConversationId, selectionVersion);
+      }
+    });
   </script>
 </body>
 </html>

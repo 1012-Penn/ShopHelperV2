@@ -5,7 +5,8 @@ import logging
 import time
 from uuid import uuid4
 
-from langchain_core.messages import AIMessage, SystemMessage, ToolMessage
+from langchain_core.messages import AIMessage, ToolMessage
+from langchain_core.utils.function_calling import convert_to_openai_tool
 from langgraph.config import get_stream_writer
 
 from app.tools.business import build_tools
@@ -14,14 +15,13 @@ from app.tools.registry import ToolInputError, UnknownToolError
 from .policy import (
     STOP_TEXT,
     BudgetExceeded,
-    estimate_tokens,
     measured_usage,
     output_allowance,
 )
 from .prompts import ANSWER_PROMPT, DECISION_PROMPT
 
 READ_ONLY = frozenset({"query_order", "query_product", "query_logistics"})
-HIGH_RISK_PROMPT = """本次是高风险退款/售后判断：订单已校验且已有强制政策证据。不得查询其他订单、商品或物流，只判断本轮诉求与这笔订单是否符合所给政策；不确定时澄清。
+HIGH_RISK_PROMPT = """仅当背景数据中的 route 为 high_risk 时遵循本规则：这是高风险退款/售后判断，订单已校验且已有强制政策证据。不得查询其他订单、商品或物流，只判断本轮诉求与这笔订单是否符合所给政策；不确定时澄清。
 仅当 intent 为退款退货、你判断该订单符合申请条件且用户需要继续办理时，在最终 JSON actions 中加入 refund_form；系统会显示固定原因的演示表单。证据不足、不符合或需要澄清时不加；售后意图不提供 refund_form。"""
 
 
@@ -39,47 +39,46 @@ class AgentNodes:
         ]
 
     def messages(self, state, prompt):
-        context = {
-            "original_question": state["question"],
-            "resolved_question": state.get("resolved_question", state["question"]),
-            "intent": state.get("intent"),
-            "route": state.get("route"),
-            "validated_order": state.get("order"),
-            "evidence": state["evidence"],
-            "mode": state.get("agent_next"),
-            "missing": state.get("missing", ""),
-        }
-        if state.get("route") == "high_risk":
-            prompt += "\n" + HIGH_RISK_PROMPT
-        return [
-            SystemMessage(
-                content=prompt
-                + "\n本轮数据："
-                + json.dumps(context, ensure_ascii=False)
-            ),
-            *state.get("agent_messages", state["messages"]),
-        ]
+        prompt += "\n" + HIGH_RISK_PROMPT
+        return self.service.context.model_messages(state, prompt)
 
     def decide(self, state):
         if state["decisions"] >= self.service.limits.max_decisions:
             return {"agent_next": "stop", "stop_reason": "decision_limit"}
         messages = self.messages(state, DECISION_PROMPT)
         tools = self.tools(state)
-        schemas = [tool.get_input_schema().model_json_schema() for tool in tools]
+        schemas = [convert_to_openai_tool(tool) for tool in tools]
         try:
+            self.service.context.check(messages, schemas)
             allowance, input_estimate = output_allowance(
-                messages, state["tokens"], self.service.limits, schemas
+                messages,
+                state["tokens"],
+                self.service.limits,
+                schemas,
+                token_counter=self.service.context.budget.count,
             )
-        except BudgetExceeded:
+        except (BudgetExceeded, ValueError):
             return {"agent_next": "stop", "stop_reason": "token_budget"}
+        self.service.context.log.context(
+            "model_ctx",
+            messages,
+            self.service.context.budget,
+            conversation_id=state["conversation_id"],
+            summary=state.get("context_summary", ""),
+            omitted_summaries=state.get("context_omitted_summaries", 0),
+            stage="agent_decide",
+            tools=schemas,
+        )
         model = self.service.model_factory()
         if tools:
-            model = model.bind_tools(tools)
+            model = model.bind_tools(tools, parallel_tool_calls=False)
         response = model.bind(max_tokens=allowance).invoke(messages)
         count, approximate = measured_usage(
             response,
             input_estimate,
-            estimate_tokens(str(response.content) + str(response.tool_calls)),
+            self.service.context.budget.count(
+                str(response.content) + str(response.tool_calls)
+            ),
         )
         update = {
             "decisions": state["decisions"] + 1,
@@ -115,7 +114,9 @@ class AgentNodes:
                 and state.get("gate_passed")
             ):
                 allowed_actions.add("refund_form")
-            if not isinstance(actions, list) or any(a not in allowed_actions for a in actions):
+            if not isinstance(actions, list) or any(
+                a not in allowed_actions for a in actions
+            ):
                 raise ValueError("invalid actions")
             if "refund_form" in actions and signal["next"] != "answer":
                 raise ValueError("refund form requires a final answer")
@@ -212,12 +213,6 @@ class AgentNodes:
                 )
         finally:
             runner.close()
-        # Commit the assistant request and every observation together, never an orphan.
-        self.service.store.save_tool_pair(
-            state["conversation_id"],
-            AIMessage(content="", tool_calls=pending),
-            observations,
-        )
         turn_messages = [AIMessage(content="", tool_calls=pending), *observations]
         return {
             "messages": turn_messages,
@@ -237,12 +232,25 @@ class AgentNodes:
             return {"answer": STOP_TEXT}
         messages = self.messages(state, ANSWER_PROMPT)
         try:
+            self.service.context.check(messages)
             allowance, input_estimate = output_allowance(
-                messages, state["tokens"], self.service.limits
+                messages,
+                state["tokens"],
+                self.service.limits,
+                token_counter=self.service.context.budget.count,
             )
-        except BudgetExceeded:
+        except (BudgetExceeded, ValueError):
             get_stream_writer()({"event": "token", "data": {"content": STOP_TEXT}})
             return {"answer": STOP_TEXT, "stop_reason": "token_budget"}
+        self.service.context.log.context(
+            "model_ctx",
+            messages,
+            self.service.context.budget,
+            conversation_id=state["conversation_id"],
+            summary=state.get("context_summary", ""),
+            omitted_summaries=state.get("context_omitted_summaries", 0),
+            stage="agent_answer",
+        )
         parts, full = [], None
         for chunk in (
             self.service.model_factory().bind(max_tokens=allowance).stream(messages)
@@ -260,7 +268,7 @@ class AgentNodes:
         if not answer.strip():
             raise ValueError("empty model answer")
         count, approximate = measured_usage(
-            full, input_estimate, estimate_tokens(answer)
+            full, input_estimate, self.service.context.budget.count(answer)
         )
         usage = [
             *state["usage"],

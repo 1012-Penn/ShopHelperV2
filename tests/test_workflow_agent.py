@@ -202,7 +202,7 @@ def test_decision_limit_stops_with_tool_calls_paired(tmp_path):
 
 def test_token_budget_prevents_agent_model_call(tmp_path):
     model = ScriptedModel("物流")
-    service = make_workflow(tmp_path, model, limits=Limits(max_tokens=1400))
+    service = make_workflow(tmp_path, model, limits=Limits(max_tokens=300))
     list(
         service.stream_events(ChatRequest(conversation_id="c", message="订单1001物流"))
     )
@@ -314,7 +314,7 @@ def test_error_log_preserves_completed_decision_and_tool_usage(tmp_path):
     service.close()
 
 
-@pytest.mark.parametrize("boundary", ["persist", "runner_factory", "runner_close"])
+@pytest.mark.parametrize("boundary", ["runner_factory", "runner_close"])
 def test_failed_tool_node_does_not_poison_followup_protocol(tmp_path, boundary):
     model = ScriptedModel("订单", [call("query_order", "orphan", order_id="1001")])
     service = make_workflow(tmp_path, model)
@@ -392,7 +392,7 @@ def test_final_stream_over_budget_is_error_without_success_save(tmp_path, actual
                     },
                 )
             else:
-                yield AIMessageChunk(content="查询结果" * 1000)
+                yield AIMessageChunk(content="查询结果" * 2000)
 
     service = make_workflow(
         tmp_path, OverBudget("订单"), limits=Limits(max_tokens=5000)

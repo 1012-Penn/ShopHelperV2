@@ -9,6 +9,10 @@ from langgraph.graph.message import add_messages
 class WorkflowState(TypedDict, total=False):
     messages: Annotated[list[BaseMessage], add_messages]
     agent_messages: list[BaseMessage]
+    context_history: list[BaseMessage]
+    context_summary: str
+    context_omitted_summaries: int
+    current_message_id: int
     conversation_id: str
     user_id: str
     run_id: str

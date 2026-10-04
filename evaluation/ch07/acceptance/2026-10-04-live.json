@@ -1,0 +1,43 @@
+{
+  "mode": "live_model",
+  "model": "deepseek-chat",
+  "configuration": "25 rounds each; real classifier/refer/agent/stream/summarizer; project mock business tools",
+  "reports": {
+    "live-default-verified": {
+      "mode": "live-default",
+      "rounds": 25,
+      "history_budget": 80000,
+      "layer1_budget": 55999,
+      "layer2_budget": 24000,
+      "downgrades": 0,
+      "summaries": 0,
+      "original_messages": 50,
+      "checkpoint_messages": 50,
+      "max_input_tokens": 16676,
+      "reply_finished_while_summary_blocked": false,
+      "last_answer": "您最开始提到的订单是**778899**，您当时的诉求是：一直未收到货，要求核实处理进展。这些是您此前的陈述。\n\n关于“后来怎么说”，目前没有可用的查询结果或处理进展证据，我无法确认该订单后续的物流状态、处理节点或处理结果，也不能凭之前的对话推断最新情况。建议您通过原下单渠道的订单详情页查看最新状态，或联系对应平台客服进一步核实。",
+      "log": ".runtime/ch07/live-default-verified/app.log",
+      "answer_rounds": 25,
+      "other_stop_reasons": [],
+      "app_log_absolute": "/root/.codex/worktrees/ch07-context/ShopHelperV2/.runtime/ch07/live-default-verified/app.log"
+    },
+    "live-demo-verified": {
+      "mode": "live-demo",
+      "rounds": 25,
+      "history_budget": 5650,
+      "layer1_budget": 3954,
+      "layer2_budget": 1695,
+      "downgrades": 18,
+      "summaries": 4,
+      "original_messages": 50,
+      "checkpoint_messages": 50,
+      "max_input_tokens": 8475,
+      "reply_finished_while_summary_blocked": true,
+      "last_answer": "您最开始提到的订单是778899，您此前陈述一直未收到货，并要求核实处理进展。\n\n不过本轮检索证据为空，没有可用的查询结果，因此我无法确认该订单后来是否有处理结果，也不能凭历史信息推断。请提供下单手机号或物流单号，以便进一步核实。",
+      "log": ".runtime/ch07/live-demo-verified/app.log",
+      "answer_rounds": 25,
+      "other_stop_reasons": [],
+      "app_log_absolute": "/root/.codex/worktrees/ch07-context/ShopHelperV2/.runtime/ch07/live-demo-verified/app.log"
+    }
+  }
+}

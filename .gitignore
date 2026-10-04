@@ -34,3 +34,20 @@ worktrees/
 evaluation/**/runs/
 evaluation/**/smoke-runs/
 evaluation/**/rejudge-runs/
+evaluation/ch04/*.db
+evaluation/ch04/*.db-*
+evaluation/ch04/v2/*.db
+evaluation/ch04/v2/*.db-*
+
+# ch05 local fixture/checkpointer binaries
+evaluation/ch05/**/*.db
+evaluation/ch05/**/*.db-*
+evaluation/ch05/**/*.sqlite
+evaluation/ch05/**/*.sqlite-*
+
+# ch07 complete context logs contain raw conversation data
+log/*.log
+evaluation/ch07/**/*.db
+evaluation/ch07/**/*.db-*
+evaluation/ch07/**/*.sqlite
+evaluation/ch07/**/*.sqlite-*

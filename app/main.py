@@ -24,13 +24,13 @@ from app.schemas import (
 )
 from app.services.after_sale import AfterSaleService
 from app.services.chat import ChatService
-from app.services.workflow.runtime import build_workflow_service
 from app.services.workflow.refunds import (
     DemoOrderError,
     DemoRefundApplications,
     RefundConflict,
     RefundOfferError,
 )
+from app.services.workflow.runtime import build_workflow_service
 
 ERROR_EVENT = {"event": "error", "data": {"message": "暂时无法处理，请稍后再试。"}}
 
@@ -49,6 +49,11 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(application):
+        # Validate window arithmetic at startup without loading network dependencies.
+        from app.services.context.budget import ContextBudget
+        from app.services.quality.runtime import config
+
+        ContextBudget.from_env(config())
         try:
             yield
         finally:
@@ -63,6 +68,116 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
             if service is None:
                 service = build_workflow_service()
         return service
+
+    @application.get("/api/conversations")
+    def conversations(user_id: str):
+        from sqlalchemy import select
+
+        from app.db.models import Conversation, Message
+
+        chat = get_chat_service()
+        with chat.session_factory() as session:
+            rows = list(
+                session.scalars(
+                    select(Conversation)
+                    .where(Conversation.user_id == user_id)
+                    .order_by(
+                        Conversation.created_at.desc(),
+                        Conversation.id.desc(),
+                        Conversation.conversation_id.desc(),
+                    )
+                )
+            )
+            result = []
+            for row in rows:
+                first = session.scalar(
+                    select(Message.content)
+                    .where(
+                        Message.conversation_id == row.conversation_id,
+                        Message.role == "user",
+                    )
+                    .order_by(Message.id)
+                    .limit(1)
+                )
+                first_id = session.scalar(
+                    select(Message.id)
+                    .where(
+                        Message.conversation_id == row.conversation_id,
+                        Message.role == "user",
+                    )
+                    .order_by(Message.id)
+                    .limit(1)
+                )
+                result.append(
+                    {
+                        "conversation_id": row.conversation_id,
+                        "created_at": row.created_at,
+                        "preview": (first or "")[:80],
+                        "has_summary": row.summary_upto_msg_id is not None,
+                        "first_message_id": first_id or 0,
+                    }
+                )
+            result.sort(
+                key=lambda item: (str(item["created_at"]), item["first_message_id"]),
+                reverse=True,
+            )
+            return {"items": result}
+
+    @application.get("/api/conversations/{conversation_id}/messages")
+    def conversation_messages(conversation_id: str, user_id: str):
+        from sqlalchemy import select
+
+        from app.db.models import Conversation, Message, RefundApplication
+
+        chat = get_chat_service()
+        with chat.session_factory() as session:
+            conversation = session.get(Conversation, conversation_id)
+            if conversation is None:
+                raise HTTPException(status_code=404, detail="会话不存在")
+            if conversation.user_id != user_id:
+                raise HTTPException(status_code=403, detail="无权访问该会话")
+            rows = session.scalars(
+                select(Message)
+                .where(
+                    Message.conversation_id == conversation_id,
+                    Message.role.in_(["user", "assistant"]),
+                    Message.tool_calls.is_(None),
+                )
+                .order_by(Message.id)
+            )
+            refunds = {
+                row.request_id: row
+                for row in session.scalars(
+                    select(RefundApplication).where(
+                        RefundApplication.conversation_id == conversation_id,
+                        RefundApplication.user_id == user_id,
+                    )
+                )
+            }
+            items = []
+            for row in rows:
+                actions = dict(row.actions) if row.actions else None
+                if actions and actions.get("refund_form"):
+                    form = dict(actions["refund_form"])
+                    saved = refunds.get(form.get("request_id"))
+                    if saved is not None and saved.message_id == row.id:
+                        form.update(
+                            status=saved.status,
+                            reason=saved.reason,
+                            application_id=saved.request_id,
+                        )
+                    actions["refund_form"] = form
+                items.append(
+                    {
+                        "id": row.id,
+                        "role": row.role,
+                        "content": row.content,
+                        "citations": row.citations,
+                        "actions": actions,
+                        "created_at": row.created_at,
+                    }
+                )
+            return {"items": items}
 
     @application.get("/health")
     def health() -> dict[str, str]:
@@ -99,7 +214,9 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
                 raise HTTPException(status_code=503, detail="演示退款服务暂不可用")
             return DemoRefundApplications(chat.session_factory).submit(request)
         except RefundConflict as error:
-            raise HTTPException(status_code=409, detail="请求标识已用于其他申请内容") from error
+            raise HTTPException(
+                status_code=409, detail="请求标识已用于其他申请内容"
+            ) from error
         except RefundOfferError as error:
             raise HTTPException(status_code=403, detail="会话或退款表单无效") from error
         except DemoOrderError as error:
@@ -110,7 +227,9 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
             logging.getLogger(__name__).error(
                 "Demo refund submission failed (%s)", type(error).__name__
             )
-            raise HTTPException(status_code=503, detail="演示申请暂未确认，请勿重复提交") from error
+            raise HTTPException(
+                status_code=503, detail="演示申请暂未确认，请勿重复提交"
+            ) from error
 
     @application.get("/api/v1/knowledge/source", response_class=HTMLResponse)
     def knowledge_source(source: str):

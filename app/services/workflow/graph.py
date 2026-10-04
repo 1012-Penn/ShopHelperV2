@@ -6,40 +6,42 @@ import re
 from pathlib import Path
 from uuid import uuid4
 
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.config import get_stream_writer
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command, interrupt
-from app.db.models import Conversation, Message
+from sqlalchemy import select
 
+from app.db.models import Conversation, Message
+from app.services.context.manager import ContextManager
 from app.services.quality.generation import REFUSAL
 from app.services.quality.ledger import QualityLedger
 
 from .actions import TicketActions
 from .agent import AgentNodes
+from .demo_orders import get_demo_order, list_demo_orders
 from .intents import (
     CHATTER_TEXT,
     COMPLAINT_TEXT,
     INTENT_CONFIDENCE_THRESHOLD,
     INTENT_PROMPT,
     INVALID_INTENT_TEXT,
+    REFER_PROMPT,
     ROUTES,
     parse_intent,
-    resolve_question,
+    parse_reference_resolution,
 )
 from .logging import WorkflowLog
 from .policy import (
     DEFAULT_LIMITS,
     BudgetExceeded,
-    estimate_tokens,
     measured_usage,
     output_allowance,
 )
-from .state import WorkflowState
-from .storage import ConversationLocks, ConversationStore
-from .demo_orders import get_demo_order, list_demo_orders
 from .query_expansion import expand_policy_queries
 from .retrieval import EvidenceAdapter, retrieve_policy_queries
+from .state import WorkflowState
+from .storage import ConversationLocks, ConversationStore
 
 
 class WorkflowService:
@@ -54,6 +56,9 @@ class WorkflowService:
         limits=DEFAULT_LIMITS,
         min_score=0.05,
         strategy="hybrid_rerank",
+        context_budget=None,
+        context_log_path=None,
+        summarizer=None,
     ):
         if not math.isfinite(min_score) or not 0 <= min_score <= 1:
             raise ValueError("knowledge threshold must be finite in [0,1]")
@@ -69,6 +74,13 @@ class WorkflowService:
         self.ledger = QualityLedger(session_factory)
         self.log_path = Path(log_path)
         self.logger = WorkflowLog(log_path)
+        self.context = ContextManager(
+            session_factory,
+            model_factory,
+            context_budget,
+            context_log_path or self.log_path.parent / "app.log",
+            summarize=summarizer,
+        )
         self._closers = []
         self.graph = self._build_graph()
 
@@ -161,19 +173,32 @@ class WorkflowService:
         return builder.compile(checkpointer=self.checkpointer)
 
     def _classify(self, state):
-        messages = [
-            SystemMessage(content=INTENT_PROMPT),
-            HumanMessage(content=state["resolved_question"]),
-        ]
+        messages = self.context.history_messages(
+            {**state, "question": state["resolved_question"]}, INTENT_PROMPT
+        )
+        self.context.check(messages)
+        self.context.log.context(
+            "classify_ctx",
+            messages,
+            self.context.budget,
+            conversation_id=state["conversation_id"],
+        )
         try:
             allowance, estimated_input = output_allowance(
-                messages, state["tokens"], self.limits
+                messages,
+                state["tokens"],
+                self.limits,
+                token_counter=self.context.budget.count,
             )
         except BudgetExceeded:
             return {"intent": None, "stop_reason": "token_budget"}
-        response = self.model_factory().bind(max_tokens=allowance).invoke(messages)
+        response = (
+            self.model_factory()
+            .bind(max_tokens=allowance, response_format={"type": "json_object"})
+            .invoke(messages)
+        )
         count, estimated = measured_usage(
-            response, estimated_input, estimate_tokens(response.content)
+            response, estimated_input, self.context.budget.count(response.content)
         )
         update = {
             "tokens": state["tokens"] + count,
@@ -196,8 +221,8 @@ class WorkflowService:
         return update
 
     def _refer(self, state):
-        messages = list(state.get("messages", []))
-        history = messages[:-1] if messages and isinstance(messages[-1], HumanMessage) else messages
+        question = state["question"]
+        history = list(state.get("context_history", []))
         if state.get("previous_order"):
             selected = state["previous_order"]
             history.append(
@@ -208,16 +233,46 @@ class WorkflowService:
                     )
                 )
             )
-        try:
-            resolved, reference_resolved = resolve_question(
-                self.model_factory(), history, state["question"]
+        messages = self.context.history_messages(
+            {**state, "context_history": history}, REFER_PROMPT
+        )
+        # Preserve the formal resolver's current-question delimiter without
+        # passing complete checkpoint history to the model.
+        if state.get("context_summary"):
+            messages[-1] = HumanMessage(
+                content=messages[-1].content + "\n本轮原问题：\n" + question
             )
-        except ValueError:
-            # A malformed resolver result must never invent a reference.
-            resolved, reference_resolved = state["question"], False
+        else:
+            messages[-1] = HumanMessage(content="本轮原问题：\n" + question)
+        estimate = self.context.check(messages)
+        self.context.log.context(
+            "refer_ctx",
+            messages,
+            self.context.budget,
+            conversation_id=state["conversation_id"],
+        )
+        response = (
+            self.model_factory()
+            .bind(max_tokens=min(400, self.context.budget.output))
+            .invoke(messages)
+        )
+        count, approximate = measured_usage(
+            response, estimate, self.context.budget.count(response.content)
+        )
+        try:
+            resolved, reference_resolved = parse_reference_resolution(
+                response.content, question
+            )
+        except (ValueError, TypeError):
+            resolved, reference_resolved = question, False
         return {
             "resolved_question": resolved,
             "reference_resolved": reference_resolved,
+            "tokens": state["tokens"] + count,
+            "usage": [
+                *state["usage"],
+                {"stage": "refer", "tokens": count, "estimated": approximate},
+            ],
         }
 
     def _route(self, state):
@@ -226,7 +281,9 @@ class WorkflowService:
     def _order_check(self, state):
         current_ids = {
             match.upper()
-            for match in re.findall(r"DEMO-\d{4}", state["question"], flags=re.IGNORECASE)
+            for match in re.findall(
+                r"DEMO-\d{4}", state["question"], flags=re.IGNORECASE
+            )
         }
         historical_ids = {
             match.upper()
@@ -261,9 +318,7 @@ class WorkflowService:
                 if not resolved_ids or resolved_ids == {candidate}:
                     order_id = candidate
         order = (
-            get_demo_order(order_id, state["user_id"])
-            if order_id is not None
-            else None
+            get_demo_order(order_id, state["user_id"]) if order_id is not None else None
         )
         result = {"order": order}
         if resolver_conflict:
@@ -325,7 +380,47 @@ class WorkflowService:
             item["order_id"] for item in state["order_choices"]
         }:
             raise ValueError("invalid demo order selection")
-        return {"order": order}
+        update = {"order": order}
+        if not state.get("current_message_id"):
+            # Upgrade an existing chapter-six paused checkpoint in place. Do
+            # not create a new user row when its order selector is resumed.
+            with self.session_factory() as session:
+                current = session.scalar(
+                    select(Message)
+                    .where(
+                        Message.conversation_id == state["conversation_id"],
+                        Message.role == "user",
+                        Message.id < state["selection_message_id"],
+                    )
+                    .order_by(Message.id.desc())
+                    .limit(1)
+                )
+                if current is None:
+                    raise ValueError("pending workflow has no original user message")
+                current_id = current.id
+            complete = list(state.get("messages", []))
+            current_index = next(
+                (
+                    i
+                    for i in range(len(complete) - 1, -1, -1)
+                    if isinstance(complete[i], HumanMessage)
+                ),
+                len(complete),
+            )
+            update.update(
+                self.context.prepare(
+                    state["conversation_id"], complete[:current_index], current_id
+                )
+            )
+            self.context.log.context(
+                "history_ctx",
+                self.context.history_messages({**state, **update}, INTENT_PROMPT),
+                self.context.budget,
+                conversation_id=state["conversation_id"],
+                summary=update["context_summary"],
+                omitted_summaries=update["context_omitted_summaries"],
+            )
+        return update
 
     def _expand_policy(self, state):
         try:
@@ -359,7 +454,20 @@ class WorkflowService:
         evidence, trace = self.retriever.retrieve(
             state["resolved_question"], state.get("category")
         )
-        return {"evidence": evidence, "retrieval_trace": trace}
+        selected = []
+        evidence_budget = (
+            self.context.budget.top_k * self.context.budget.evidence_per_item
+        )
+        for item in evidence[: self.context.budget.top_k]:
+            if self.context.budget.count([*selected, item]) <= evidence_budget:
+                selected.append(item)
+        return {
+            "evidence": selected,
+            "retrieval_trace": {
+                **trace,
+                "context_evidence_tokens": self.context.budget.count(selected),
+            },
+        }
 
     def _gate(self, state):
         evidence = [
@@ -411,7 +519,11 @@ class WorkflowService:
             and state.get("order")
         ):
             request_id = str(uuid4())
-            request_type = "退货" if re.search(r"退货|退回", state["resolved_question"]) else "退款"
+            request_type = (
+                "退货"
+                if re.search(r"退货|退回", state["resolved_question"])
+                else "退款"
+            )
             offer = {
                 "refund_form": {
                     "request_id": request_id,
@@ -437,7 +549,11 @@ class WorkflowService:
                 }
             )
         if state["actions"]:
-            labels = {"handoff": "转人工", "create_ticket": "建工单", "refund_form": "提交演示申请"}
+            labels = {
+                "handoff": "转人工",
+                "create_ticket": "建工单",
+                "refund_form": "提交演示申请",
+            }
             get_stream_writer()(
                 {
                     "event": "actions",
@@ -511,7 +627,8 @@ class WorkflowService:
                     values = snapshot.values
                     if (
                         "await_order" not in snapshot.next
-                        or values.get("selection_message_id") != request.selection_message_id
+                        or values.get("selection_message_id")
+                        != request.selection_message_id
                         or values.get("selection_request_id") != request.request_id
                     ):
                         raise ValueError("order selection is stale or already used")
@@ -519,7 +636,9 @@ class WorkflowService:
                         offered = session.get(Message, request.selection_message_id)
                         metadata = offered.actions or {} if offered else {}
                         order_offer = metadata.get("order_choice") or {}
-                        conversation = session.get(Conversation, request.conversation_id)
+                        conversation = session.get(
+                            Conversation, request.conversation_id
+                        )
                         if (
                             conversation is None
                             or conversation.user_id != request.user_id
@@ -528,22 +647,57 @@ class WorkflowService:
                             or offered.conversation_id != request.conversation_id
                             or "order_choices" not in (metadata.get("items") or [])
                             or order_offer.get("request_id") != request.request_id
-                            or request.selected_order_id not in order_offer.get("order_ids", [])
+                            or request.selected_order_id
+                            not in order_offer.get("order_ids", [])
                         ):
                             raise ValueError("invalid or foreign order selection")
-                    if get_demo_order(request.selected_order_id, request.user_id) is None:
+                    if (
+                        get_demo_order(request.selected_order_id, request.user_id)
+                        is None
+                    ):
                         raise ValueError("unknown demo order selection")
                     graph_input = Command(
                         resume={"order_id": request.selected_order_id}
                     )
                 else:
                     if "await_order" in snapshot.next:
-                        raise ValueError("conversation has a pending workflow selection")
+                        raise ValueError(
+                            "conversation has a pending workflow selection"
+                        )
                     initial["previous_order"] = snapshot.values.get("order")
-                    history = self.store.prepare(request)
+                    if (
+                        self.context.budget.count(request.message)
+                        > self.context.budget.user_input
+                    ):
+                        yield {
+                            "event": "error",
+                            "data": {
+                                "message": "当前输入超过配置的上下文预算，请缩短后重试。"
+                            },
+                        }
+                        return
+                    history, current_id = self.store.prepare(request)
+                    initial.update(
+                        self.context.prepare(
+                            request.conversation_id,
+                            snapshot.values.get("messages", history),
+                            current_id,
+                        )
+                    )
+                    history_messages = self.context.history_messages(
+                        initial, INTENT_PROMPT
+                    )
+                    self.context.log.context(
+                        "history_ctx",
+                        history_messages,
+                        self.context.budget,
+                        conversation_id=request.conversation_id,
+                        summary=initial["context_summary"],
+                        omitted_summaries=initial["context_omitted_summaries"],
+                    )
                     initial["messages"] = [
                         *([] if snapshot.values else history),
-                        HumanMessage(content=request.message),
+                        HumanMessage(content=request.message, id=f"sql-{current_id}"),
                     ]
                     initial["agent_messages"] = [HumanMessage(content=request.message)]
                     graph_input = initial
@@ -593,6 +747,7 @@ class WorkflowService:
                 }
 
     def close(self):
+        self.context.close()
         conn = getattr(self.checkpointer, "conn", None)
         if conn:
             conn.close()

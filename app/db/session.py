@@ -28,6 +28,10 @@ def create_tables(engine: Engine) -> None:
     from scripts.migrate_ch05 import migrate_ch05
     migrate_ch04(engine)
     migrate_ch05(engine)
+    from scripts.migrate_ch07 import migrate_ch07
+    migrate_ch07(engine)
     Base.metadata.create_all(engine)
     migrate_ch04(engine)
     migrate_ch05(engine)
+    from scripts.migrate_ch07 import migrate_ch07
+    migrate_ch07(engine)
