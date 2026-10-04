@@ -47,6 +47,8 @@ class Conversation(Base):
     user_id: Mapped[str] = mapped_column(String(128), nullable=False)
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="open")
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+    summary_upto_msg_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    layer1_from_msg_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     messages: Mapped[list["Message"]] = relationship(back_populates="conversation", cascade="all, delete-orphan")
     tickets: Mapped[list["Ticket"]] = relationship(back_populates="conversation")
 
@@ -183,3 +185,18 @@ class HybridSync(Base):
     collection: Mapped[str] = mapped_column(String(128), primary_key=True)
     chunk_id: Mapped[int] = mapped_column(ForeignKey("knowledge_chunks.id"), primary_key=True)
     content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
+class ConversationSummary(Base):
+    __tablename__ = "conversation_summaries"
+    __table_args__ = (
+        UniqueConstraint("conversation_id", "segment", name="uq_summary_segment"),
+        UniqueConstraint("conversation_id", "from_msg_id", "upto_msg_id", name="uq_summary_range"),
+    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    conversation_id: Mapped[str] = mapped_column(ForeignKey("conversations.conversation_id"), nullable=False, index=True)
+    segment: Mapped[int] = mapped_column(Integer, nullable=False)
+    from_msg_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    upto_msg_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())

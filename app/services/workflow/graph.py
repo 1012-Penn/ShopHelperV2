@@ -1,14 +1,17 @@
 """Fixed routing and evidence gate around a checkpointed agent subflow."""
 
+import json
 import logging
 import math
+import re
 from pathlib import Path
 from uuid import uuid4
 
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.config import get_stream_writer
 from langgraph.graph import END, START, StateGraph
 
+from app.services.context.manager import ContextManager
 from app.services.quality.generation import REFUSAL
 from app.services.quality.ledger import QualityLedger
 
@@ -19,6 +22,7 @@ from .intents import (
     COMPLAINT_TEXT,
     INTENT_PROMPT,
     INVALID_INTENT_TEXT,
+    REFER_PROMPT,
     ROUTES,
     is_greeting,
     parse_intent,
@@ -27,7 +31,6 @@ from .logging import WorkflowLog
 from .policy import (
     DEFAULT_LIMITS,
     BudgetExceeded,
-    estimate_tokens,
     measured_usage,
     output_allowance,
 )
@@ -47,6 +50,9 @@ class WorkflowService:
         limits=DEFAULT_LIMITS,
         min_score=0.05,
         strategy="hybrid_rerank",
+        context_budget=None,
+        context_log_path=None,
+        summarizer=None,
     ):
         if not math.isfinite(min_score) or not 0 <= min_score <= 1:
             raise ValueError("knowledge threshold must be finite in [0,1]")
@@ -62,6 +68,13 @@ class WorkflowService:
         self.ledger = QualityLedger(session_factory)
         self.log_path = Path(log_path)
         self.logger = WorkflowLog(log_path)
+        self.context = ContextManager(
+            session_factory,
+            model_factory,
+            context_budget,
+            context_log_path or self.log_path.parent / "app.log",
+            summarize=summarizer,
+        )
         self._closers = []
         self.graph = self._build_graph()
 
@@ -82,7 +95,7 @@ class WorkflowService:
         builder = StateGraph(WorkflowState)
         agent = AgentNodes(self)
         nodes = {
-            "refer": lambda s: {"resolved_question": s["question"]},
+            "refer": self._refer,
             "classify": self._classify,
             "route": self._route,
             "retrieve": self._retrieve,
@@ -133,22 +146,73 @@ class WorkflowService:
         builder.add_edge("log", END)
         return builder.compile(checkpointer=self.checkpointer)
 
+    def _refer(self, state):
+        question = state["question"]
+        if not (
+            state.get("context_history") or state.get("context_summary")
+        ) or not re.search(r"那个|这个|它|最开始|之前|刚才|前面|后来", question):
+            return {"resolved_question": question}
+        prompt = REFER_PROMPT
+        messages = self.context.history_messages(state, prompt)
+        estimate = self.context.check(messages)
+        self.context.log.context(
+            "refer_ctx",
+            messages,
+            self.context.budget,
+            conversation_id=state["conversation_id"],
+        )
+        response = (
+            self.model_factory()
+            .bind(max_tokens=min(400, self.context.budget.output))
+            .invoke(messages)
+        )
+        count, approximate = measured_usage(
+            response, estimate, self.context.budget.count(response.content)
+        )
+        try:
+            resolved = json.loads(response.content).get("question", question)
+            if not isinstance(resolved, str) or not resolved.strip():
+                resolved = question
+        except (ValueError, TypeError, AttributeError):
+            resolved = question
+        return {
+            "resolved_question": resolved,
+            "tokens": state["tokens"] + count,
+            "usage": [
+                *state["usage"],
+                {"stage": "refer", "tokens": count, "estimated": approximate},
+            ],
+        }
+
     def _classify(self, state):
         if is_greeting(state["question"]):
             return {"intent": "闲聊"}
-        messages = [
-            SystemMessage(content=INTENT_PROMPT),
-            HumanMessage(content=state["resolved_question"]),
-        ]
+        messages = self.context.history_messages(
+            {**state, "question": state["resolved_question"]}, INTENT_PROMPT
+        )
+        self.context.check(messages)
+        self.context.log.context(
+            "classify_ctx",
+            messages,
+            self.context.budget,
+            conversation_id=state["conversation_id"],
+        )
         try:
             allowance, estimated_input = output_allowance(
-                messages, state["tokens"], self.limits
+                messages,
+                state["tokens"],
+                self.limits,
+                token_counter=self.context.budget.count,
             )
         except BudgetExceeded:
             return {"intent": None, "stop_reason": "token_budget"}
-        response = self.model_factory().bind(max_tokens=allowance).invoke(messages)
+        response = (
+            self.model_factory()
+            .bind(max_tokens=allowance, response_format={"type": "json_object"})
+            .invoke(messages)
+        )
         count, estimated = measured_usage(
-            response, estimated_input, estimate_tokens(response.content)
+            response, estimated_input, self.context.budget.count(response.content)
         )
         update = {
             "tokens": state["tokens"] + count,
@@ -170,7 +234,20 @@ class WorkflowService:
         evidence, trace = self.retriever.retrieve(
             state["resolved_question"], state.get("category")
         )
-        return {"evidence": evidence, "retrieval_trace": trace}
+        selected = []
+        evidence_budget = (
+            self.context.budget.top_k * self.context.budget.evidence_per_item
+        )
+        for item in evidence[: self.context.budget.top_k]:
+            if self.context.budget.count([*selected, item]) <= evidence_budget:
+                selected.append(item)
+        return {
+            "evidence": selected,
+            "retrieval_trace": {
+                **trace,
+                "context_evidence_tokens": self.context.budget.count(selected),
+            },
+        }
 
     def _gate(self, state):
         evidence = [
@@ -288,10 +365,36 @@ class WorkflowService:
                 self.store.check_owner(request.conversation_id, request.user_id)
                 owner_checked = True
                 previous = self.graph.get_state(config).values
-                history = self.store.prepare(request)
+                if (
+                    self.context.budget.count(request.message)
+                    > self.context.budget.user_input
+                ):
+                    yield {
+                        "event": "error",
+                        "data": {
+                            "message": "当前输入超过配置的上下文预算，请缩短后重试。"
+                        },
+                    }
+                    return
+                history, current_id = self.store.prepare(request)
+                complete_history = previous.get("messages", history)
+                initial.update(
+                    self.context.prepare(
+                        request.conversation_id, complete_history, current_id
+                    )
+                )
+                history_messages = self.context.history_messages(initial, INTENT_PROMPT)
+                self.context.log.context(
+                    "history_ctx",
+                    history_messages,
+                    self.context.budget,
+                    conversation_id=request.conversation_id,
+                    summary=initial["context_summary"],
+                    omitted_summaries=initial["context_omitted_summaries"],
+                )
                 initial["messages"] = [
                     *([] if previous else history),
-                    HumanMessage(content=request.message),
+                    HumanMessage(content=request.message, id=f"sql-{current_id}"),
                 ]
                 for event in self.graph.stream(
                     initial, config=config, stream_mode="custom"
@@ -337,6 +440,7 @@ class WorkflowService:
                 }
 
     def close(self):
+        self.context.close()
         conn = getattr(self.checkpointer, "conn", None)
         if conn:
             conn.close()

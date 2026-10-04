@@ -9,6 +9,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 
 from app.config import Settings
 from app.db.session import create_tables, make_engine, make_session_factory
+from app.services.context.budget import ContextBudget
 from app.services.quality.runtime import build_retriever, config
 from app.tools.registry import ToolRegistry, ToolRunner
 
@@ -43,14 +44,15 @@ class LazyRetriever:
 def build_workflow_service(settings=None, values=None):
     settings = settings or Settings.from_env()
     values = config() if values is None else values
+    budget = ContextBudget.from_env(values)
     limits = Limits(
         **{
             key: int(values.get(env, default))
             for key, env, default in (
-                ("max_decisions", "AGENT_MAX_DECISIONS", 4),
+                ("max_decisions", "MAX_AGENT_STEPS", budget.steps),
                 ("max_tool_calls", "AGENT_MAX_TOOL_CALLS", 6),
-                ("max_output_tokens", "AGENT_MAX_OUTPUT_TOKENS", 512),
-                ("max_tokens", "AGENT_MAX_TOKENS", 12000),
+                ("max_output_tokens", "MAX_OUTPUT_TOKENS", budget.output),
+                ("max_tokens", "AGENT_MAX_TOKENS", 1000000),
             )
         }
     )
@@ -131,6 +133,8 @@ def build_workflow_service(settings=None, values=None):
             limits=limits,
             min_score=threshold,
             strategy="hybrid_rerank" if quality_enabled else "dense",
+            context_budget=budget,
+            context_log_path=path_for("CONTEXT_LOG_PATH", "log/app.log"),
         )
         service._closers.extend([retriever.close, engine.dispose])
         return service

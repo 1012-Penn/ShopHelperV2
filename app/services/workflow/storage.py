@@ -61,14 +61,15 @@ class ConversationStore:
                     .order_by(Message.id)
                 )
             )
-            s.add(
-                Message(
-                    conversation_id=request.conversation_id,
-                    role="user",
-                    content=request.message,
-                )
+            current = Message(
+                conversation_id=request.conversation_id,
+                role="user",
+                content=request.message,
             )
-        return [self.to_message(row) for row in rows]
+            s.add(current)
+            s.flush()
+            current_id = current.id
+        return [self.to_message(row) for row in rows], current_id
 
     @staticmethod
     def to_message(row):

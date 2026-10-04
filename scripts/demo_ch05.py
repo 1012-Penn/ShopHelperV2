@@ -25,7 +25,7 @@ class FixtureModel:
     def bind(self, **kwargs):
         return self
 
-    def bind_tools(self, tools):
+    def bind_tools(self, tools, **kwargs):
         return self
 
     def invoke(self, messages):

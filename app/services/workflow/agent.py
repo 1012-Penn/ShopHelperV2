@@ -5,7 +5,8 @@ import logging
 import time
 from uuid import uuid4
 
-from langchain_core.messages import AIMessage, SystemMessage, ToolMessage
+from langchain_core.messages import AIMessage, ToolMessage
+from langchain_core.utils.function_calling import convert_to_openai_tool
 from langgraph.config import get_stream_writer
 
 from app.tools.business import build_tools
@@ -14,7 +15,6 @@ from app.tools.registry import ToolInputError, UnknownToolError
 from .policy import (
     STOP_TEXT,
     BudgetExceeded,
-    estimate_tokens,
     measured_usage,
     output_allowance,
 )
@@ -35,43 +35,48 @@ class AgentNodes:
         ]
 
     def messages(self, state, prompt):
-        context = {
-            "original_question": state["question"],
-            "evidence": state["evidence"],
-            "mode": state.get("agent_next"),
-            "missing": state.get("missing", ""),
-        }
-        return [
-            SystemMessage(
-                content=prompt
-                + "\n本轮数据："
-                + json.dumps(context, ensure_ascii=False)
-            ),
-            *state["messages"],
-        ]
+        messages = self.service.context.model_messages(state, prompt)
+        return messages
 
     def decide(self, state):
         if state["decisions"] >= self.service.limits.max_decisions:
             return {"agent_next": "stop", "stop_reason": "decision_limit"}
         messages = self.messages(state, DECISION_PROMPT)
         tools = self.tools(state)
-        schemas = [tool.get_input_schema().model_json_schema() for tool in tools]
+        schemas = [convert_to_openai_tool(tool) for tool in tools]
         try:
+            self.service.context.check(messages, schemas)
             allowance, input_estimate = output_allowance(
-                messages, state["tokens"], self.service.limits, schemas
+                messages,
+                state["tokens"],
+                self.service.limits,
+                schemas,
+                token_counter=self.service.context.budget.count,
             )
-        except BudgetExceeded:
+        except (BudgetExceeded, ValueError):
             return {"agent_next": "stop", "stop_reason": "token_budget"}
+        self.service.context.log.context(
+            "model_ctx",
+            messages,
+            self.service.context.budget,
+            conversation_id=state["conversation_id"],
+            summary=state.get("context_summary", ""),
+            omitted_summaries=state.get("context_omitted_summaries", 0),
+            stage="agent_decide",
+            tools=schemas,
+        )
         response = (
             self.service.model_factory()
-            .bind_tools(tools)
+            .bind_tools(tools, parallel_tool_calls=False)
             .bind(max_tokens=allowance)
             .invoke(messages)
         )
         count, approximate = measured_usage(
             response,
             input_estimate,
-            estimate_tokens(str(response.content) + str(response.tool_calls)),
+            self.service.context.budget.count(
+                str(response.content) + str(response.tool_calls)
+            ),
         )
         update = {
             "decisions": state["decisions"] + 1,
@@ -196,12 +201,7 @@ class AgentNodes:
                 )
         finally:
             runner.close()
-        # Commit the assistant request and every observation together, never an orphan.
-        self.service.store.save_tool_pair(
-            state["conversation_id"],
-            AIMessage(content="", tool_calls=pending),
-            observations,
-        )
+        # Full observations live in the checkpoint; SQL stores business dialog only.
         return {
             "messages": [AIMessage(content="", tool_calls=pending), *observations],
             "tool_calls": count,
@@ -219,12 +219,25 @@ class AgentNodes:
             return {"answer": STOP_TEXT}
         messages = self.messages(state, ANSWER_PROMPT)
         try:
+            self.service.context.check(messages)
             allowance, input_estimate = output_allowance(
-                messages, state["tokens"], self.service.limits
+                messages,
+                state["tokens"],
+                self.service.limits,
+                token_counter=self.service.context.budget.count,
             )
-        except BudgetExceeded:
+        except (BudgetExceeded, ValueError):
             get_stream_writer()({"event": "token", "data": {"content": STOP_TEXT}})
             return {"answer": STOP_TEXT, "stop_reason": "token_budget"}
+        self.service.context.log.context(
+            "model_ctx",
+            messages,
+            self.service.context.budget,
+            conversation_id=state["conversation_id"],
+            summary=state.get("context_summary", ""),
+            omitted_summaries=state.get("context_omitted_summaries", 0),
+            stage="agent_answer",
+        )
         parts, full = [], None
         for chunk in (
             self.service.model_factory().bind(max_tokens=allowance).stream(messages)
@@ -242,7 +255,7 @@ class AgentNodes:
         if not answer.strip():
             raise ValueError("empty model answer")
         count, approximate = measured_usage(
-            full, input_estimate, estimate_tokens(answer)
+            full, input_estimate, self.service.context.budget.count(answer)
         )
         usage = [
             *state["usage"],

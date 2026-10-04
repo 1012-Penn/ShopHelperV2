@@ -201,3 +201,51 @@ MILVUS_COLLECTION=knowledge_ch05_demo HYBRID_COLLECTION=knowledge_ch05_demo_hybr
 MILVUS_COLLECTION=knowledge_ch05_demo HYBRID_COLLECTION=knowledge_ch05_demo_hybrid python3 -m scripts.demo_ch05 --live
 MILVUS_COLLECTION=knowledge_ch05_demo HYBRID_COLLECTION=knowledge_ch05_demo_hybrid python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 ```
+
+## 第 7 章：当前会话上下文
+
+当前会话采用三层历史：L1按完整轮保留原文，L2保留用户原话、客服前60字及工具标记，最早部分由后台任务追加到 `conversation_summaries`。SQL原文和LangGraph checkpoint不裁剪；新工具观察只留checkpoint。历史与精简模型输入分别保存，不建立用户画像或跨会话记忆。
+
+首次启动会校验预算；已有MySQL表通过幂等增量迁移补两个锚点，新摘要表单独创建：
+
+```bash
+python3 -m scripts.migrate_ch07
+uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+打开聊天首页，侧栏可新建或切换旧会话，回载原文继续聊。只读接口为 `GET /api/conversations?user_id=demo-user` 和 `GET /api/conversations/{id}/messages?user_id=demo-user`；沿用本项目既有user_id归属约定。侧栏加载失败不会阻断发送。
+
+预算默认 `MODEL_CONTEXT_WINDOW=128000`；窗口余量扣除系统/工具2200、检索 `RERANK_TOP_K×150`、摘要1000、输出2000、安全500，以及 `MAX_USER_INPUT_TOKENS + MAX_AGENT_STEPS×(TOOL_RESULT_MAX_TOKENS+100)` 的瞬时峰值。历史取目标40轮×稳态2000与窗口余量的较小值。L1/L2按70/30分配，L1另留1token边界余量。中文估算与所有预算共用 `CHINESE_TOKEN_RATIO`，默认1.0保守估计；真实usage的校准报告可用下面评估命令生成，调整时应同时评审稳态/峰值和预留参数。旧 `AGENT_MAX_DECISIONS`/`AGENT_MAX_OUTPUT_TOKENS` 仍作为新变量未设置时的兼容别名；`AGENT_MAX_TOKENS` 单独控制累计调用费用，默认1000000。
+
+演示配置和可复现命令：
+
+```bash
+# 不调用外部API的25轮机制演示，输出目录必须是新目录
+python3 -m scripts.demo_ch07
+python3 -m scripts.demo_ch07 --demo
+# 真实配置模型跑25轮完整图（订单/物流工具仍是项目的模拟数据）
+python3 -m scripts.demo_ch07 --live
+python3 -m scripts.demo_ch07 --live --demo
+# 真实模型标注评估：摘要、指代、长历史分类、重复信息保真
+python3 scripts/evaluate_ch07.py --env-file .env
+pytest -q
+CH07_LIVE_MYSQL=1 pytest tests/test_ch07_mysql.py -q
+```
+
+`--demo` 使用以下预算配置，算得历史5650、L1=3954、L2=1695；实际聊天页面可按同组环境变量启动：
+
+```bash
+MODEL_CONTEXT_WINDOW=18000 MAX_OUTPUT_TOKENS=2000 MAX_USER_INPUT_TOKENS=2000 \
+MAX_AGENT_STEPS=3 TOOL_RESULT_MAX_TOKENS=1200 RERANK_TOP_K=5 \
+uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+每轮完整上下文记录在 `log/app.log`；演示独立记录在输出目录的app.log，运行结果json包含路径。可直接检查：
+
+```bash
+rg 'model_ctx|history_ctx|层1 降级|summary trigger|summary start|summary done|summary skip|summary fail' log/app.log
+```
+
+后台摘要只追加段，不重写旧段；长积压按完整轮分批，失败不推进边界、下一轮可重试。所有摘要段永久保留在数据库，模型只注入摘要预算内的最新完整段；极长会话的最早摘要可能不再注入，日志注明省略段数。真实原文仍能完整回载。输出和工具输入上限与窗口实际校验共同保护预算，原始超大工具结果仍留checkpoint。
+
+本章开发过程、失败实测与独立评审记录见 `dev-notes/ch07.md`；标注结果保存在 `evaluation/ch07/runs/`，fixture机制演示不代表真实模型质量。

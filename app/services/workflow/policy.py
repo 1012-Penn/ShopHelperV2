@@ -29,8 +29,8 @@ def estimate_tokens(value):
     return len(value.encode("utf-8")) + 16
 
 
-def output_allowance(messages, used, limits, tools=None):
-    needed = estimate_tokens(messages) + (estimate_tokens(tools) if tools else 0)
+def output_allowance(messages, used, limits, tools=None, token_counter=estimate_tokens):
+    needed = token_counter(messages) + (token_counter(tools) if tools else 0)
     available = limits.max_tokens - used - needed
     if available < 1:
         raise BudgetExceeded("token_budget")
