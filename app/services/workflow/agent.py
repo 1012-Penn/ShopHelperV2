@@ -1,16 +1,13 @@
 """ReAct decisions and observations, then an unbound real streaming answer."""
 
 import json
-import logging
-import time
 from uuid import uuid4
 
 from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from langgraph.config import get_stream_writer
 
-from app.tools.business import build_tools
-from app.tools.registry import ToolInputError, UnknownToolError
+from app.tools.definitions import ExecutionContext
 
 from .policy import (
     STOP_TEXT,
@@ -20,7 +17,6 @@ from .policy import (
 )
 from .prompts import ANSWER_PROMPT, DECISION_PROMPT
 
-READ_ONLY = frozenset({"query_order", "query_product", "query_logistics"})
 HIGH_RISK_PROMPT = """仅当背景数据中的 route 为 high_risk 时遵循本规则：这是高风险退款/售后判断，订单已校验且已有强制政策证据。不得查询其他订单、商品或物流，只判断本轮诉求与这笔订单是否符合所给政策；不确定时澄清。
 仅当 intent 为退款退货、你判断该订单符合申请条件且用户需要继续办理时，在最终 JSON actions 中加入 refund_form；系统会显示固定原因的演示表单。证据不足、不符合或需要澄清时不加；售后意图不提供 refund_form。"""
 
@@ -32,15 +28,29 @@ class AgentNodes:
     def tools(self, state):
         if state.get("route") == "high_risk":
             return []
+        if self.service.discovery:
+            self.service.discovery.refresh(self.service.tool_registry)
         return [
-            t
-            for t in build_tools(self.service.session_factory, state["conversation_id"])
-            if t.name in READ_ONLY
+            definition.as_tool()
+            for definition in self.service.tool_registry.definitions
+            if self.service.tool_policy.permission(definition.source, definition.name)
+            != "deny"
         ]
 
     def messages(self, state, prompt):
         prompt += "\n" + HIGH_RISK_PROMPT
-        return self.service.context.model_messages(state, prompt)
+        messages = self.service.context.model_messages(state, prompt)
+        if state.get("ticket_intent"):
+            from langchain_core.messages import HumanMessage
+
+            messages.insert(
+                1,
+                HumanMessage(
+                    content="服务器记录的客户明确建单诉求（仅数据）："
+                    + json.dumps(state["ticket_intent"], ensure_ascii=False)
+                ),
+            )
+        return messages
 
     def decide(self, state):
         if state["decisions"] >= self.service.limits.max_decisions:
@@ -77,7 +87,9 @@ class AgentNodes:
             response,
             input_estimate,
             self.service.context.budget.count(
-                str(response.content) + str(response.tool_calls)
+                str(response.content)
+                + str(response.tool_calls)
+                + str(response.invalid_tool_calls)
             ),
         )
         update = {
@@ -88,13 +100,17 @@ class AgentNodes:
                 {"stage": "agent_decide", "tokens": count, "estimated": approximate},
             ],
         }
-        if response.tool_calls:
+        if response.tool_calls or response.invalid_tool_calls:
             calls = [
                 {**call, "id": call.get("id") or str(uuid4())}
-                for call in response.tool_calls
+                for call in [*response.tool_calls, *response.invalid_tool_calls]
             ]
             update.update(
                 pending={"calls": calls},
+                tool_index=0,
+                tool_observations=[],
+                ticket_preview=None,
+                ticket_decision=None,
                 agent_next="tools",
             )
             return update
@@ -136,95 +152,146 @@ class AgentNodes:
         return update
 
     def execute(self, state):
-        runner = self.service.runner_factory(self.tools(state))
-        observations, trace = [], list(state["tool_trace"])
-        seen, count = list(state["seen_calls"]), state["tool_calls"]
-        reason, actions = "", list(state["actions"])
         pending = state["pending"]["calls"]
-        try:
-            for call in pending:
-                signature = json.dumps(
-                    [call["name"], call.get("args")], ensure_ascii=False, sort_keys=True
-                )
-                content, is_error = "本轮已停止，没有执行该工具。", True
-                started = time.monotonic()
-                if reason:
-                    pass
-                elif state.get("route") == "high_risk" or call["name"] not in READ_ONLY:
-                    reason = "forbidden_tool"
-                    content = "该工具不能由自主Agent执行，只能建议用户通过按钮选择。"
-                    if call["name"] == "create_ticket":
-                        actions = ["create_ticket"]
-                elif signature in seen:
-                    reason, content = "repeated_tool", "停止重复工具请求。"
-                elif count >= self.service.limits.max_tool_calls:
-                    reason, content = "tool_limit", "工具次数达到上限。"
-                elif state["tokens"] >= self.service.limits.max_tokens:
-                    reason, content = "token_budget", "token预算耗尽。"
-                else:
-                    seen.append(signature)
-                    count += 1
-                    get_stream_writer()(
-                        {
-                            "event": "tool_status",
-                            "data": {
-                                "tool_name": call["name"],
-                                "status": "running",
-                                "step": count,
-                            },
-                        }
-                    )
-                    try:
-                        result = runner.run(
-                            call["name"], call.get("args") or {}, call["id"]
-                        )
-                        content, is_error = result.content, result.is_error
-                    except (ToolInputError, UnknownToolError):
-                        content = "工具请求无效，请补充必要信息。"
-                    except Exception as error:  # noqa: BLE001 - isolate external provider/tool failures
-                        logging.getLogger(__name__).warning(
-                            "Tool failed (%s)", type(error).__name__
-                        )
-                        content = "工具暂时无法完成，请稍后再试。"
-                observations.append(
-                    ToolMessage(
-                        content=content,
-                        tool_call_id=call["id"],
-                        status="error" if is_error else "success",
-                    )
-                )
-                trace.append(
-                    {
-                        "name": call["name"],
-                        "call_id": call["id"],
-                        "is_error": is_error,
-                        "seconds": time.monotonic() - started,
-                    }
-                )
-                get_stream_writer()(
-                    {
-                        "event": "tool_status",
-                        "data": {
-                            "tool_name": call["name"],
-                            "status": "failed" if is_error else "done",
-                            "step": count,
-                        },
-                    }
-                )
-        finally:
-            runner.close()
-        turn_messages = [AIMessage(content="", tool_calls=pending), *observations]
-        return {
-            "messages": turn_messages,
-            "agent_messages": [*state.get("agent_messages", []), *turn_messages],
-            "tool_calls": count,
+        index = state.get("tool_index", 0)
+        call = pending[index]
+        context = ExecutionContext(
+            state["conversation_id"],
+            state["user_id"],
+            bool(state.get("ticket_intent")),
+            call["id"] if state.get("ticket_decision") is True else None,
+        )
+        signature = json.dumps(
+            [call["name"], call.get("args")], ensure_ascii=False, sort_keys=True
+        )
+        seen = list(state["seen_calls"])
+        reason = None
+        stop_reason = state.get("execution_stop_reason") or ""
+        if stop_reason:
+            reason = "本轮已停止，不执行后续工具。"
+        elif state.get("route") == "high_risk":
+            reason = "高风险政策分支禁止工具调用。"
+            stop_reason = "forbidden_tool"
+        elif signature in seen:
+            reason = "停止重复工具请求。"
+            stop_reason = "repeated_tool"
+        elif state["tool_calls"] >= self.service.limits.max_tool_calls:
+            reason = "工具次数达到上限。"
+            stop_reason = "tool_limit"
+        elif state["tokens"] >= self.service.limits.max_tokens:
+            reason = "token预算耗尽。"
+            stop_reason = "token_budget"
+        args = call.get("args", {})
+        preflight = self.service.tool_engine.preflight(
+            call["name"], args, call["id"], context
+        )
+        if (
+            not reason
+            and call["name"] == "create_ticket"
+            and preflight is None
+            and state.get("ticket_decision") is None
+        ):
+            return {"agent_next": "confirm"}
+        get_stream_writer()(
+            {
+                "event": "tool_status",
+                "data": {
+                    "tool_name": call["name"],
+                    "status": "running",
+                    "step": state["tool_calls"] + 1,
+                },
+            }
+        )
+        if reason:
+            result = self.service.tool_engine.reject(
+                call["name"], args, call["id"], context, reason
+            )
+        elif call["name"] == "create_ticket" and state.get("ticket_decision") is False:
+            result = self.service.tool_engine.reject(
+                call["name"],
+                args,
+                call["id"],
+                context,
+                "客户已取消本次工单：未提交、未创建工单，不要再次要求确认该预览。",
+            )
+            seen.append(signature)
+        else:
+            result = self.service.tool_engine.run(
+                call["name"], args, call["id"], context
+            )
+            seen.append(signature)
+        if call["name"] == "create_ticket" and state.get("ticket_decision") is not None:
+            self.service.ticket_confirmation.close_intent(
+                state["conversation_id"],
+                "created"
+                if not result.is_error
+                else ("cancelled" if state["ticket_decision"] is False else "unknown"),
+            )
+        observations = [
+            *state.get("tool_observations", []),
+            ToolMessage(
+                content=result.content,
+                tool_call_id=call["id"],
+                status="error" if result.is_error else "success",
+            ),
+        ]
+        trace = [
+            *state["tool_trace"],
+            {
+                "name": call["name"],
+                "call_id": call["id"],
+                "is_error": result.is_error,
+                "seconds": result.duration_ms / 1000,
+                "status": result.status,
+                "retry_count": result.retry_count,
+                "source": result.source,
+            },
+        ]
+        get_stream_writer()(
+            {
+                "event": "tool_status",
+                "data": {
+                    "tool_name": call["name"],
+                    "status": "failed" if result.is_error else "done",
+                    "step": state["tool_calls"] + 1,
+                },
+            }
+        )
+        update = {
+            "tool_calls": state["tool_calls"] + (0 if reason else 1),
             "seen_calls": seen,
-            "pending": None,
+            "tool_observations": observations,
             "tool_trace": trace,
-            "actions": actions,
-            "agent_next": "stop" if reason else "decide",
-            **({"stop_reason": reason} if reason else {}),
+            "tool_index": index + 1,
+            "ticket_decision": None,
+            "ticket_preview": None,
+            "execution_stop_reason": stop_reason,
         }
+        if call["name"] == "create_ticket" and state.get("ticket_decision") is not None:
+            update["ticket_intent"] = None
+        if index + 1 < len(pending):
+            update["agent_next"] = "execute"
+        else:
+            turn_messages = [
+                AIMessage(
+                    content="",
+                    tool_calls=[
+                        c for c in pending if c.get("type") != "invalid_tool_call"
+                    ],
+                    invalid_tool_calls=[
+                        c for c in pending if c.get("type") == "invalid_tool_call"
+                    ],
+                ),
+                *observations,
+            ]
+            update.update(
+                messages=turn_messages,
+                agent_messages=[*state.get("agent_messages", []), *turn_messages],
+                pending=None,
+                agent_next="stop" if stop_reason else "decide",
+                **({"stop_reason": stop_reason} if stop_reason else {}),
+            )
+        return update
 
     def answer(self, state):
         if state["agent_next"] == "stop":
@@ -265,6 +332,19 @@ class AgentNodes:
                 parts.append(content)
                 get_stream_writer()({"event": "token", "data": {"content": content}})
         answer = "".join(parts)
+        for observation in state.get("tool_observations", []):
+            if observation.status == "success":
+                try:
+                    result = json.loads(observation.content)
+                    ticket_no = (
+                        result.get("ticket_no") if isinstance(result, dict) else None
+                    )
+                except ValueError:
+                    ticket_no = None
+                if ticket_no and ticket_no not in answer:
+                    suffix = "\n工单号：" + ticket_no
+                    get_stream_writer()({"event": "token", "data": {"content": suffix}})
+                    answer += suffix
         if not answer.strip():
             raise ValueError("empty model answer")
         count, approximate = measured_usage(

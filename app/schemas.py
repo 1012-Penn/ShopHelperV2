@@ -62,3 +62,13 @@ class AfterSaleExtraction(BaseModel):
     order_id: str | None = None
     request_type: Literal["退款", "退货", "换货", "维修", "物流", "其他"] | None = None
     expected_solution: str | None = None
+
+
+class TicketConfirmationRequest(BaseModel):
+    conversation_id: str = Field(min_length=1, max_length=128)
+    user_id: str = Field(default='demo-user', min_length=1, max_length=128)
+    request_id: str = Field(min_length=1, max_length=128)
+    tool_call_id: str = Field(min_length=1, max_length=128)
+    approve: bool = Field(strict=True)
+
+    model_config = {'extra':'forbid'}

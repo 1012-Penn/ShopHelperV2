@@ -11,6 +11,8 @@ from app.config import Settings
 from app.db.session import create_tables, make_engine, make_session_factory
 from app.services.context.budget import ContextBudget
 from app.services.quality.runtime import build_retriever, config
+from app.tools.mcp import MCPDiscovery
+from app.tools.policy import ToolPolicy
 from app.tools.registry import ToolRegistry, ToolRunner
 
 from .graph import WorkflowService
@@ -22,11 +24,11 @@ class LazyRetriever:
     def __init__(self, factory):
         self.factory, self.value, self.lock = factory, None, Lock()
 
-    def retrieve(self, question, category=None):
+    def retrieve(self, question, category=None, **filters):
         with self.lock:
             if self.value is None:
                 self.value = self.factory()
-        return self.value.retrieve(question, category)
+        return self.value.retrieve(question, category, **filters)
 
     def close(self):
         if self.value is not None:
@@ -133,6 +135,30 @@ def build_workflow_service(settings=None, values=None):
             limits=limits,
             min_score=threshold,
             strategy="hybrid_rerank" if quality_enabled else "dense",
+            discovery=MCPDiscovery(
+                {
+                    "logistics": {
+                        "transport": "http",
+                        "url": values.get(
+                            "MCP_LOGISTICS_URL", "http://127.0.0.1:8765/mcp"
+                        ),
+                    },
+                    "after_sale": {
+                        "transport": "http",
+                        "url": values.get(
+                            "MCP_AFTER_SALE_URL", "http://127.0.0.1:8766/mcp"
+                        ),
+                    },
+                },
+                float(values.get("MCP_DISCOVERY_TIMEOUT_SECONDS", "5")),
+            )
+            if str(values.get("MCP_ENABLED", "true")).lower() == "true"
+            else None,
+            tool_policy=ToolPolicy(
+                path_for("TOOL_PERMISSIONS_PATH", "config/tool_permissions.json")
+            ),
+            tool_timeout_seconds=settings.tool_timeout_seconds,
+            tool_max_retries=settings.tool_max_retries,
             context_budget=budget,
             context_log_path=path_for("CONTEXT_LOG_PATH", "log/app.log"),
         )

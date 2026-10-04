@@ -1,102 +1,120 @@
-"""Tool registration, input validation, and bounded execution."""
+"""Atomic tool catalog; compatibility runner delegates to the same engine."""
 
-from __future__ import annotations
+from threading import RLock
 
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
-from dataclasses import dataclass
-
+from jsonschema import validators
 from langchain_core.tools import BaseTool
-from pydantic import ValidationError
+
+from .definitions import ToolDefinition, ToolResult
+
+__all__ = ["ToolRegistry", "ToolResult", "ToolRunner", "UnknownToolError"]
 
 
 class UnknownToolError(ValueError):
-    """Raised when the model requests a tool not registered by the app."""
+    pass
 
 
 class ToolInputError(ValueError):
-    """Raised when tool arguments do not match that tool's schema."""
-
-
-@dataclass(frozen=True)
-class ToolResult:
-    tool_name: str
-    tool_call_id: str
-    content: str
-    is_error: bool
+    pass
 
 
 class ToolRegistry:
-    def __init__(self, tools: list[BaseTool]) -> None:
-        self._tools = {tool.name: tool for tool in tools}
-        if len(self._tools) != len(tools):
-            raise ValueError("Tool names must be unique")
+    def __init__(self, tools=()):
+        self._lock = RLock()
+        self._tools = {}
+        for tool in tools:
+            self.register(tool)
 
-    def get(self, name: str) -> BaseTool:
+    def register(self, definition):
+        if isinstance(definition, BaseTool):
+            tool = definition
+            schema = (
+                tool.args_schema
+                if isinstance(tool.args_schema, dict)
+                else tool.get_input_schema().model_json_schema()
+            )
+            definition = ToolDefinition(
+                tool.name,
+                tool.description,
+                schema,
+                "builtin",
+                lambda args, context, t=tool: t.invoke(args),
+            )
+        self._validate(definition)
+        with self._lock:
+            if definition.name in self._tools:
+                raise ValueError("Tool names must be unique: " + definition.name)
+            self._tools[definition.name] = definition
+
+    @staticmethod
+    def _validate(definition):
+        if (
+            not isinstance(definition, ToolDefinition)
+            or not definition.name
+            or not definition.description.strip()
+            or not callable(definition.handler)
+        ):
+            raise ValueError("Tool name, description, schema and handler are required")
+        if (
+            not isinstance(definition.input_schema, dict)
+            or definition.input_schema.get("type") != "object"
+        ):
+            raise ValueError("Tool schema must define an object")
         try:
-            return self._tools[name]
-        except KeyError as error:
-            raise UnknownToolError(f"Unknown tool: {name}") from error
+            validators.validator_for(definition.input_schema).check_schema(
+                definition.input_schema
+            )
+        except Exception as error:
+            raise ValueError("Invalid tool JSON schema") from error
+        if definition.source != "builtin" and not definition.source.startswith("mcp:"):
+            raise ValueError("Invalid tool source")
+
+    def replace_source(self, source, definitions):
+        if source == "builtin":
+            raise ValueError("Cannot replace built-in tools from discovery")
+        fresh = {}
+        for definition in definitions:
+            self._validate(definition)
+            if definition.source != source or definition.name in fresh:
+                raise ValueError("Source mismatch or duplicate tool")
+            fresh[definition.name] = definition
+        with self._lock:
+            rest = {n: t for n, t in self._tools.items() if t.source != source}
+            if rest.keys() & fresh.keys():
+                raise ValueError("Tool name conflict across sources")
+            self._tools = {**rest, **fresh}
+
+    def get(self, name):
+        with self._lock:
+            try:
+                return self._tools[name]
+            except KeyError as error:
+                raise UnknownToolError("Unknown tool: " + str(name)) from error
 
     @property
-    def tools(self) -> list[BaseTool]:
-        return list(self._tools.values())
+    def definitions(self):
+        with self._lock:
+            return list(self._tools.values())
 
     @property
-    def names(self) -> frozenset[str]:
-        return frozenset(self._tools)
+    def tools(self):
+        return [t.as_tool() for t in self.definitions]
+
+    @property
+    def names(self):
+        with self._lock:
+            return frozenset(self._tools)
 
 
 class ToolRunner:
-    def __init__(self, registry: ToolRegistry, timeout_seconds: float, max_retries: int) -> None:
+    def __init__(self, registry, timeout_seconds, max_retries, **kwargs):
+        from .engine import ToolEngine
+
         self.registry = registry
-        self.timeout_seconds = timeout_seconds
-        self.max_retries = max_retries
-        self._executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="mewhelp-tool")
+        self.engine = ToolEngine(registry, timeout_seconds, max_retries, **kwargs)
 
-    def run(self, name: str, args: dict, tool_call_id: str) -> ToolResult:
-        tool = self.registry.get(name)
-        try:
-            validated = tool.get_input_schema().model_validate(args)
-        except ValidationError as error:
-            raise ToolInputError(f"Invalid arguments for {name}") from error
+    def run(self, name, args, tool_call_id, context=None):
+        return self.engine.run(name, args, tool_call_id, context)
 
-        safe_error = "工具暂时无法完成，请稍后再试。"
-        for attempt in range(self.max_retries + 1):
-            future = self._executor.submit(tool.invoke, validated.model_dump())
-            try:
-                content = future.result(timeout=self.timeout_seconds)
-                return ToolResult(name, tool_call_id, str(content), False)
-            except TimeoutError:
-                cancelled = future.cancel()
-                if name == "create_ticket" and not cancelled:
-                    # A running thread cannot be stopped safely. Reconcile its
-                    # database result briefly before reporting an unknown outcome.
-                    try:
-                        content = future.result(timeout=self.timeout_seconds)
-                        return ToolResult(name, tool_call_id, str(content), False)
-                    except TimeoutError:
-                        return ToolResult(
-                            name,
-                            tool_call_id,
-                            "工单提交结果暂未确认，请勿重复提交；请稍候查询或联系人工客服。",
-                            True,
-                        )
-                    except Exception:
-                        return ToolResult(
-                            name,
-                            tool_call_id,
-                            "工单提交结果暂未确认，请勿重复提交；请稍候查询或联系人工客服。",
-                            True,
-                        )
-                safe_error = "工具执行超时，请稍后再试。"
-                break
-            except Exception:
-                if name == "create_ticket":
-                    return ToolResult(name, tool_call_id, "工单提交结果暂未确认，请勿重复提交；请联系人工客服核查。", True)
-                if attempt == self.max_retries:
-                    break
-
-        return ToolResult(name, tool_call_id, safe_error, True)
-
-    def close(self) -> None:
-        self._executor.shutdown(wait=False, cancel_futures=True)
+    def close(self):
+        self.engine.close()

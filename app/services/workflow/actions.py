@@ -7,10 +7,12 @@ from sqlalchemy import select
 
 from app.db.models import Conversation, Message
 from app.tools.business import build_tools
+from app.tools.definitions import ExecutionContext
 
 
 class TicketActions:
-    def __init__(self, session_factory, runner_factory, locks):
+    def __init__(self, session_factory, runner_factory, locks, engine=None):
+        self.engine=engine
         self.session_factory, self.runner_factory, self.locks = (
             session_factory,
             runner_factory,
@@ -42,7 +44,7 @@ class TicketActions:
                 description = metadata["question"]
                 row.actions = {**metadata, "ticket": {"status": "submitting"}}
             # The reservation above commits before invoking any write tool.
-            runner = self.runner_factory(
+            runner = self.engine or self.runner_factory(
                 [
                     t
                     for t in build_tools(self.session_factory, conversation_id)
@@ -58,6 +60,8 @@ class TicketActions:
                     "create_ticket",
                     {"description": description, "ticket_type": "客服跟进"},
                     f"ticket-{message_id}",
+                    ExecutionContext(
+                        conversation_id,user_id,True,f'ticket-{message_id}'),
                 )
                 if not result.is_error:
                     parsed = json.loads(result.content)
@@ -71,7 +75,8 @@ class TicketActions:
                     "Ticket outcome unknown (%s)", type(error).__name__
                 )
             finally:
-                runner.close()
+                if not self.engine:
+                    runner.close()
             with self.session_factory.begin() as s:
                 row = s.get(Message, message_id)
                 row.actions = {**row.actions, "ticket": outcome}

@@ -209,3 +209,45 @@ rg 'model_ctx|history_ctx|层1 降级|summary trigger|summary start|summary done
 后台摘要只追加段，不重写旧段；长积压按完整轮分批，失败不推进边界、下一轮可重试。所有摘要段永久保留在数据库，模型只注入摘要预算内的最新完整段；极长会话的最早摘要可能不再注入，日志注明省略段数。真实原文仍能完整回载。输出和工具输入上限与窗口实际校验共同保护预算，原始超大工具结果仍留checkpoint。
 
 本章开发过程、失败实测与独立评审记录见 `dev-notes/ch07.md`；标注结果保存在 `evaluation/ch07/runs/`，fixture机制演示不代表真实模型质量。
+
+## 第 8 章：动态工具与建单确认
+
+安装本章依赖和增量表（审计、意愿、单次写请求记录均无外键）：
+
+```bash
+python3 -m pip install -e '.[dev]'
+python3 -m scripts.migrate_ch08
+```
+
+在三个终端分别启动两个独立业务 MCP Server 和客服服务，MCP 使用官方 Python SDK 的 Streamable HTTP：
+
+```bash
+python3 -m mcp_servers.logistics
+python3 -m mcp_servers.after_sale
+python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+```
+
+打开 `http://127.0.0.1:8000`。问“查订单 DEMO-1001 的物流轨迹”或“查询订单 DEMO-1001 是否在保”；两类返回都是随机模拟数据。聊天输入“帮我建个工单”会追问问题，补充“耳机无法充电”后出现预览；确认才落 `tickets` 并回复工单号，取消产生 `permission_denied` 审计。第 5 章投诉按钮路径保留。
+
+本地工具只需 `service.tool_registry.register(ToolDefinition(name, description, input_schema, 'builtin', handler))`，下一轮 Agent 取得新清单。内置物流已移除。MCP 工具每轮重新发现，各 Server 独立替换自身来源；远端用途/annotations 不提供权限。`config/tool_permissions.json` 的 `mcp` 对象按 Server 名/工具名精确配置 `read`，文件逐次热读取，未知与外部写默认拒绝。
+
+演示动态新增 MCP 工具：停止物流进程，在本地权限文件 `mcp.logistics` 节点添加 `"query_eta": "read"`，然后运行 `LOGISTICS_EXTRA_TOOL=query_eta python3 -m mcp_servers.logistics`。客服进程保持运行，下一轮可查询预计送达时间。新的业务工具也可按同一方式在 MCP Server 添加，重启该 Server 并授权。
+
+无需模型密钥的完整机制演示（隔离 SQLite、实际独立 MCP HTTP 进程、脚本模型边界；不代表真实模型质量）：
+
+```bash
+python3 scripts/demo_ch08.py --fixture --output .runtime/ch08/demo
+python3 scripts/evaluate_ch08.py --fixture --output-dir .runtime/ch08/eval-fixture
+```
+
+第一条验证热注册、仅重启 MCP 后发现、工单确认/取消实际 SQL 落库、读超时重试 2 次及写超时零重试，输出审计和检查结果。真实模型标注评估使用 `.env`，运行前先启动上述两个 MCP Server；评估隔离业务数据与 checkpoint，不写生产工单：
+
+```bash
+python3 scripts/evaluate_ch08.py --live --output-dir .runtime/ch08/eval-live
+python3 -m pytest -q
+npm install --prefix .runtime/browser playwright --no-audit --no-fund
+.runtime/browser/node_modules/.bin/playwright install chromium
+node --test tests/browser/ch08.spec.mjs tests/browser/ch08-live.spec.mjs
+```
+
+`--output-dir` 需为新目录；真实报告保留报错与未覆盖案例，并以全部 19 条为分母。审计状态使用 `success/failed/timeout/validation_blocked/permission_denied`，写超时表示结果未知，需要核查而不能自动重试。后台线程中的同步工具无法强制撤销，超时后的写请求仍保留一次性收据。当前 checkpoint/互斥按单服务进程部署；更多副本需共享持久 checkpoint 与跨进程协调。

@@ -70,6 +70,12 @@
     .refund-form select { width: 100%; padding: 9px; border: 1px solid #d6dfd4; border-radius: 8px; color: inherit; background: white; font: inherit; }
     .refund-form button { justify-self: start; padding: 8px 12px; border: 0; border-radius: 8px; color: white; background: #315d43; font: inherit; cursor: pointer; }
     .refund-form button:disabled { opacity: .55; cursor: default; }
+    .ticket-preview { display: grid; gap: 9px; max-width: 410px; margin-top: 12px; padding: 13px; border: 1px solid #d7e2d4; border-radius: 11px; background: #fbfdf9; }
+    .ticket-preview p { margin: 0; white-space: pre-wrap; color: #59665d; }
+    .ticket-preview .ticket-preview-actions { display: flex; gap: 8px; }
+    .ticket-preview button { padding: 8px 12px; border: 0; border-radius: 8px; color: white; background: #315d43; font: inherit; cursor: pointer; }
+    .ticket-preview button.cancel { color: #39463d; background: #e8eee8; }
+    .ticket-preview button:disabled { opacity: .55; cursor: default; }
     .action-button { padding: 8px 12px; border: 1px solid #bfd2c2; border-radius: 9px; color: #315b43; background: #f7fbf6; font: inherit; font-size: 12px; cursor: pointer; }
     .action-button.ticket { border-color: #d9c9ae; color: #765b30; background: #fffbf3; }
     .action-button:disabled { cursor: default; opacity: .55; }
@@ -240,8 +246,12 @@
               renderRefundForm(row, { message_id: item.id, ...item.actions.refund_form });
             }
           }
+          if (item.actions?.ticket_preview && typeof item.actions.ticket_preview === "object") {
+            row.ticketPreviewHistory = { ...item.actions.ticket_preview, message_id: item.id };
+          }
           enableFeedback(row);
         }
+        await restorePendingTicket(id, version);
         transcript.scrollTop = transcript.scrollHeight;
       } catch { /* A history read failure must not interrupt the active conversation. */ }
     }
@@ -463,6 +473,68 @@
       row.append(form); transcript.scrollTop = transcript.scrollHeight;
     }
 
+    function renderTicketPreview(row, payload) {
+      if (!payload || typeof payload.request_id !== "string" || !payload.request_id ||
+          typeof payload.tool_call_id !== "string" || !payload.tool_call_id ||
+          typeof payload.ticket_type !== "string" || typeof payload.description !== "string") return;
+      const preview = document.createElement("section"); preview.className = "ticket-preview";
+      const title = document.createElement("strong"); title.textContent = `人工工单预览 · ${payload.ticket_type}`;
+      const description = document.createElement("p"); description.textContent = payload.description;
+      const actions = document.createElement("div"); actions.className = "ticket-preview-actions";
+      const approve = document.createElement("button"); approve.type = "button"; approve.textContent = "确认提交";
+      const cancel = document.createElement("button"); cancel.type = "button"; cancel.className = "cancel"; cancel.textContent = "取消";
+      const status = document.createElement("div"); status.className = "action-result"; status.setAttribute("role", "status");
+      const lock = (message) => {
+        approve.disabled = true; cancel.disabled = true;
+        status.textContent = message;
+        sendButton.disabled = true; newConversationButton.disabled = true; renderConversationList();
+      };
+      const confirm = async (approved) => {
+        if (approve.disabled || cancel.disabled) return;
+        lock(approved ? "正在处理工单确认…" : "正在发送取消请求…");
+        const requestConversationId = row.conversationId;
+        try {
+          const response = await fetch("/api/v1/chat/ticket-confirmation", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ conversation_id: requestConversationId, user_id: "demo-user", request_id: payload.request_id, tool_call_id: payload.tool_call_id, approve: approved }),
+          });
+          if (!response.ok || !response.body) throw new Error("ticket confirmation response unavailable");
+          const succeeded = await readEvents(response, row);
+          status.textContent = succeeded ? "确认请求已处理。" : "确认请求未完成，请查看对话中的错误说明。";
+        } catch {
+          status.textContent = "请求结果暂时无法确认，请查看对话回复或联系人工核查；请勿重复提交。";
+        } finally {
+          if (conversationId === requestConversationId) {
+            sendButton.disabled = false; newConversationButton.disabled = false; renderConversationList(); input.focus();
+          }
+        }
+      };
+      approve.addEventListener("click", () => confirm(true)); cancel.addEventListener("click", () => confirm(false));
+      actions.append(approve, cancel); preview.append(title, description, actions, status);
+      row.ticketPreviewEl?.remove(); row.ticketPreviewEl = preview; row.append(preview); transcript.scrollTop = transcript.scrollHeight;
+    }
+
+    async function restorePendingTicket(id, version) {
+      try {
+        const response = await fetch(`/api/v1/chat/pending-ticket?conversation_id=${encodeURIComponent(id)}&user_id=${encodeURIComponent("demo-user")}`);
+        if (!response.ok || version !== selectionVersion || id !== conversationId) return;
+        const payload = await response.json();
+        if (!payload || typeof payload !== "object") return;
+        const messageId = payload.message_id ?? payload.ticket_preview?.message_id;
+        let row = messageId == null ? null : assistantRowsById.get(String(messageId));
+        if (!row) {
+          row = Array.from(messages.querySelectorAll(".message.assistant")).find((candidate) =>
+            candidate.ticketPreviewHistory && candidate.ticketPreviewHistory.request_id === payload.request_id &&
+            candidate.ticketPreviewHistory.tool_call_id === payload.tool_call_id
+          ) || null;
+        }
+        if (!row) {
+          for (const candidate of messages.querySelectorAll(".message.assistant")) row = candidate;
+        }
+        if (row) renderTicketPreview(row, { ...payload, message_id: messageId });
+      } catch { /* Pending ticket recovery is optional; history remains readable. */ }
+    }
+
     async function readEvents(response, assistantRow) {
       const reader = response.body.getReader(); const decoder = new TextDecoder(); let buffer = ""; let completed = false; let hadError = false;
       const handleFrame = (frame) => {
@@ -478,6 +550,7 @@
           const target = assistantRowsById.get(id) || (assistantRow.messageId == null || String(assistantRow.messageId) === id ? assistantRow : null);
           if (target) showActions(target, payload); else pendingActions.set(id, payload);
         }
+        if (eventName === "ticket_preview") { completed = true; renderTicketPreview(assistantRow, payload); }
         if (eventName === "order_choices") { completed = true; renderOrderChoices(assistantRow, payload); }
         if (eventName === "refund_form") renderRefundForm(assistantRow, payload);
         if (eventName === "done") { completed = true; bindMessageId(assistantRow, payload.message_id); enableFeedback(assistantRow); }
@@ -503,6 +576,7 @@
           badge.className = "badge"; badge.querySelector(".label").textContent = badge.querySelector(".label").textContent.replace("查询中", "已调用");
         }
       }
+      return !hadError;
     }
 
     async function sendMessage(text) {

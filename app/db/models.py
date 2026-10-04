@@ -5,15 +5,16 @@ from __future__ import annotations
 from datetime import datetime
 
 from sqlalchemy import (
+    JSON,
     BigInteger,
     Boolean,
     CheckConstraint,
     DateTime,
-    ForeignKey,
-    FetchedValue,
     Enum,
+    FetchedValue,
+    Float,
+    ForeignKey,
     Integer,
-    JSON,
     String,
     Text,
     UniqueConstraint,
@@ -34,7 +35,8 @@ class FAQ(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
 
 
-from sqlalchemy.dialects.mysql import BIGINT as MYSQL_BIGINT, INTEGER as MYSQL_INTEGER
+from sqlalchemy.dialects.mysql import BIGINT as MYSQL_BIGINT
+from sqlalchemy.dialects.mysql import INTEGER as MYSQL_INTEGER
 
 UnsignedID = BigInteger().with_variant(MYSQL_BIGINT(unsigned=True), "mysql").with_variant(Integer(), "sqlite")
 
@@ -49,8 +51,8 @@ class Conversation(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
     summary_upto_msg_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     layer1_from_msg_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    messages: Mapped[list["Message"]] = relationship(back_populates="conversation", cascade="all, delete-orphan")
-    tickets: Mapped[list["Ticket"]] = relationship(back_populates="conversation")
+    messages: Mapped[list[Message]] = relationship(back_populates="conversation", cascade="all, delete-orphan")
+    tickets: Mapped[list[Ticket]] = relationship(back_populates="conversation")
 
 
 class Message(Base):
@@ -222,3 +224,40 @@ class ConversationSummary(Base):
     upto_msg_id: Mapped[int] = mapped_column(Integer, nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
+
+
+class ToolAuditLog(Base):
+    """Best-effort tool evidence, intentionally without foreign keys."""
+    __tablename__ = 'tool_audit_logs'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    conversation_id: Mapped[str] = mapped_column(String(128), index=True)
+    tool_call_id: Mapped[str] = mapped_column(String(128), index=True)
+    tool_name: Mapped[str] = mapped_column(String(128))
+    source: Mapped[str] = mapped_column(String(128))
+    arguments: Mapped[dict] = mapped_column(JSON)
+    result_summary: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(32))
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    retry_count: Mapped[int] = mapped_column(Integer, default=0)
+    duration_ms: Mapped[float] = mapped_column(Float)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
+class ToolWriteReceipt(Base):
+    """Durable execution reservation, independent of best-effort audit."""
+    __tablename__ = 'tool_write_receipts'
+    conversation_id: Mapped[str] = mapped_column(String(128), primary_key=True)
+    tool_call_id: Mapped[str] = mapped_column(String(128), primary_key=True)
+    status: Mapped[str] = mapped_column(String(32), default='running')
+    result: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
+class TicketIntent(Base):
+    __tablename__ = 'ticket_intents'
+    conversation_id: Mapped[str] = mapped_column(String(128), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(128))
+    operation_id: Mapped[str] = mapped_column(String(128))
+    status: Mapped[str] = mapped_column(String(32), default='requested')
+    original_request: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

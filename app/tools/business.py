@@ -37,18 +37,6 @@ def build_tools(session_factory, conversation_id: str, faq_retriever=None):
         return json.dumps(result, ensure_ascii=False)
 
     @tool
-    def query_logistics(order_id: str) -> str:
-        """查询订单物流的演示数据。输入订单号。"""
-        result = {
-            "source": "模拟数据",
-            "order_id": order_id,
-            "carrier": choice(["顺丰速运", "中通快递", "圆通速递"]),
-            "status": choice(["运输中", "派送中", "已签收"]),
-            "last_update": "刚刚",
-        }
-        return json.dumps(result, ensure_ascii=False)
-
-    @tool
     def query_faq(query: str) -> str:
         """查询电商商品、配送、退换货、支付或售后知识。输入用户问题。"""
         matches = faq_retriever.search(query)[:5] if faq_retriever is not None else []
@@ -81,4 +69,21 @@ def build_tools(session_factory, conversation_id: str, faq_retriever=None):
             )
         return json.dumps({"ticket_no": ticket_no, "status": "open"}, ensure_ascii=False)
 
-    return [query_order, query_product, query_logistics, query_faq, create_ticket]
+    return [query_order, query_product, query_faq, create_ticket]
+
+
+def build_definitions(session_factory, faq_retriever=None):
+    """Register metadata once; bind the current conversation at execution time."""
+    from app.tools.definitions import ToolDefinition
+    definitions=[]
+    for builtin in build_tools(session_factory, '', faq_retriever):
+        schema=builtin.get_input_schema().model_json_schema()
+        schema['additionalProperties']=False
+        for prop in schema.get('properties',{}).values():
+            if prop.get('type')=='string':
+                prop.update(minLength=1, pattern=r'\S')
+        def handler(args, context, name=builtin.name):
+            current={t.name:t for t in build_tools(session_factory, context.conversation_id,faq_retriever)}
+            return current[name].invoke(args)
+        definitions.append(ToolDefinition(builtin.name,builtin.description,schema,'builtin',handler))
+    return definitions

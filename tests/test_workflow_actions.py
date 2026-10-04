@@ -7,7 +7,8 @@ from sqlalchemy import func, inspect, select, text
 from app.db.models import Message, Ticket
 from app.db.session import create_tables, make_engine, make_session_factory
 from app.schemas import ChatRequest
-from app.tools.registry import ToolRegistry, ToolResult, ToolRunner
+from app.tools.definitions import ExecutionContext, ToolResult
+from app.tools.registry import ToolRegistry, ToolRunner
 
 
 @pytest.fixture
@@ -139,9 +140,14 @@ def test_ticket_runner_does_not_retry_unknown_write_failure():
 
     runner = ToolRunner(ToolRegistry([bad_write]), 1, 2)
     result = runner.run(
-        "create_ticket", {"description": "投诉", "ticket_type": "投诉"}, "id"
+        "create_ticket",
+        {"description": "投诉", "ticket_type": "投诉"},
+        "id",
+        ExecutionContext("conv-write", "demo-user", True, "id"),
     )
     assert result.is_error
+    assert result.status == "failed"
+    assert result.retry_count == 0
     assert executions == ["投诉"]
 
 

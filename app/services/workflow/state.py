@@ -47,3 +47,9 @@ class WorkflowState(TypedDict, total=False):
     selection_request_id: str | None
     selection_message_id: int | None
     policy_queries: list[str]
+    tool_index: int
+    tool_observations: list[BaseMessage]
+    ticket_preview: dict | None
+    ticket_decision: bool | None
+    ticket_intent: dict | None
+    execution_stop_reason: str

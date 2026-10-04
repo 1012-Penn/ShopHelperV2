@@ -33,7 +33,7 @@ def test_simple_logistics_converges_with_one_real_existing_tool(tmp_path):
     assert state(service)["tool_calls"] == 1
     assert [t["name"] for t in state(service)["tool_trace"]] == ["query_logistics"]
     assert "retrieve" not in state(service)["path"]
-    assert set(model.bound_tools) == {"query_order", "query_product", "query_logistics"}
+    assert set(model.bound_tools) == service.tool_registry.names
     service.close()
 
 
@@ -265,10 +265,10 @@ def test_invalid_completion_json_stops_before_streaming_model_answer(tmp_path):
 
 def test_tool_status_includes_running_and_completed(tmp_path):
     service = make_workflow(
-        tmp_path, ScriptedModel("订单", [call("query_order", order_id="1001")])
+        tmp_path, ScriptedModel("订单", [call("query_order", order_id="DEMO-1001")])
     )
     events = list(
-        service.stream_events(ChatRequest(conversation_id="c", message="查订单1001"))
+        service.stream_events(ChatRequest(conversation_id="c", message="查订单DEMO-1001"))
     )
     statuses = [e["data"]["status"] for e in events if e["event"] == "tool_status"]
     assert statuses == ["running", "done"]
@@ -287,7 +287,10 @@ def test_unexpected_executor_failure_is_observation_not_orphaned_call(tmp_path):
         def close(self):
             pass
 
-    service.runner_factory = lambda tools: BrokenRunner()
+    from app.tools.definitions import ToolDefinition
+    service.tool_registry.register(ToolDefinition('broken_lookup','故障查询',{'type':'object','properties':{}},'builtin',lambda args,context: BrokenRunner().run()))
+    service.model_factory().decisions=[call('broken_lookup')]
+
     events = list(
         service.stream_events(ChatRequest(conversation_id="c", message="查订单1001"))
     )
@@ -314,30 +317,16 @@ def test_error_log_preserves_completed_decision_and_tool_usage(tmp_path):
     service.close()
 
 
-@pytest.mark.parametrize("boundary", ["runner_factory", "runner_close"])
+@pytest.mark.parametrize("boundary", ["preflight", "run"])
 def test_failed_tool_node_does_not_poison_followup_protocol(tmp_path, boundary):
     model = ScriptedModel("订单", [call("query_order", "orphan", order_id="1001")])
     service = make_workflow(tmp_path, model)
-    original_save, original_factory = (
-        service.store.save_tool_pair,
-        service.runner_factory,
-    )
+    original = getattr(service.tool_engine,boundary)
 
     def fail(*args):
         raise RuntimeError("transient failure")
 
-    if boundary == "persist":
-        service.store.save_tool_pair = fail
-    elif boundary == "runner_factory":
-        service.runner_factory = fail
-    else:
-
-        def factory(tools):
-            runner = original_factory(tools)
-            runner.close = fail
-            return runner
-
-        service.runner_factory = factory
+    setattr(service.tool_engine,boundary,fail)
     try:
         events = list(
             service.stream_events(
@@ -345,10 +334,7 @@ def test_failed_tool_node_does_not_poison_followup_protocol(tmp_path, boundary):
             )
         )
         assert events[-1]["event"] == "error"
-        service.store.save_tool_pair, service.runner_factory = (
-            original_save,
-            original_factory,
-        )
+        setattr(service.tool_engine,boundary,original)
         events = list(
             service.stream_events(
                 ChatRequest(conversation_id="c", message="再查询订单1001")

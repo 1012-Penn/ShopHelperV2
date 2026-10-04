@@ -20,6 +20,7 @@ from app.schemas import (
     AfterSaleRequest,
     ChatRequest,
     RefundApplicationRequest,
+    TicketConfirmationRequest,
     TicketRequest,
 )
 from app.services.after_sale import AfterSaleService
@@ -230,6 +231,22 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
             raise HTTPException(
                 status_code=503, detail="演示申请暂未确认，请勿重复提交"
             ) from error
+
+    @application.get('/api/v1/chat/pending-ticket')
+    def pending_ticket(conversation_id: str,user_id: str='demo-user'):
+        chat=get_chat_service()
+        try:
+            return chat.pending_ticket(conversation_id,user_id)
+        except ValueError as error:
+            raise HTTPException(status_code=403,detail='会话无效') from error
+
+    @application.post('/api/v1/chat/ticket-confirmation')
+    def confirm_ticket(request: TicketConfirmationRequest):
+        chat=get_chat_service()
+        def stream():
+            for event in chat.resume_ticket_events(request):
+                yield _encode_sse(event)
+        return StreamingResponse(stream(),media_type='text/event-stream',headers={'Cache-Control':'no-cache','X-Accel-Buffering':'no'})
 
     @application.get("/api/v1/knowledge/source", response_class=HTMLResponse)
     def knowledge_source(source: str):

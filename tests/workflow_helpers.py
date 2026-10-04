@@ -87,4 +87,16 @@ def make_workflow(tmp_path, model=None, retriever=None, limits=None):
         tmp_path / "workflow.jsonl",
         **({"limits": limits} if limits else {}),
     )
+    # Offline workflow tests replace only the MCP transport boundary; production
+    # never restores query_logistics to its built-in catalog.
+    from app.tools.definitions import ToolDefinition
+    from app.tools.policy import ToolPolicy
+    policy_path=tmp_path/'tool-permissions.json'
+    policy_path.write_text('{"mcp":{"logistics":{"query_logistics":"read"}}}')
+    service.tool_policy=ToolPolicy(policy_path)
+    service.tool_engine.policy=service.tool_policy
+    service.tool_registry.register(ToolDefinition(
+        'query_logistics','查询模拟物流轨迹',
+        {'type':'object','properties':{'order_id':{'type':'string'}},'required':['order_id']},
+        'mcp:logistics',lambda args,context:{'source':'模拟数据','order_id':args['order_id'],'status':'in_transit'}))
     return service
