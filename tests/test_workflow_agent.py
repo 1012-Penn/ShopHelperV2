@@ -69,19 +69,23 @@ def test_knowledge_gate_passes_evidence_to_agent_then_resets_on_business(tmp_pat
             "chunk_id": 7,
             "source_key": "doc:policy:1",
             "section_path": ["退货"],
+            "category": "退换货与退款 / 退货条件",
+            "content_type": "policy",
         }
     ]
     model = ScriptedModel("退款退货", chunks=["可申请退货[1]"])
     service = make_workflow(tmp_path, model, EvidenceRetriever(evidence))
     events = list(
-        service.stream_events(ChatRequest(conversation_id="c", message="退货政策"))
+        service.stream_events(ChatRequest(conversation_id="c", message="订单 DEMO-1001 退货政策"))
     )
-    assert state(service)["path"][:5] == [
+    assert state(service)["path"][:7] == [
         "refer",
         "classify",
         "route",
-        "retrieve",
-        "gate",
+        "order_check",
+        "expand_policy",
+        "retrieve_policy",
+        "policy_gate",
     ]
     assert "七天内可申请退货" in str(model.calls[-1])
     assert (
@@ -122,15 +126,46 @@ def test_forged_write_tool_never_creates_ticket_and_pairs_error_observation(tmp_
     model = ScriptedModel(
         "售后", [call("create_ticket", description="帮我建单", ticket_type="售后")]
     )
-    service = make_workflow(tmp_path, model)
+    service = make_workflow(
+        tmp_path,
+        model,
+        EvidenceRetriever([{
+            "chunk_id": 1, "source_key": "policy:after-sale", "score": 0.9,
+            "answer": "演示售后条款。", "category": "退换货与退款 / 售后",
+            "content_type": "policy",
+        }]),
+    )
     events = list(
-        service.stream_events(ChatRequest(conversation_id="c", message="售后问题"))
+        service.stream_events(ChatRequest(conversation_id="c", message="订单 DEMO-1001 售后问题"))
     )
     assert events[-1]["event"] == "done"
     assert state(service)["stop_reason"] == "forbidden_tool"
     assert len([m for m in state(service)["messages"] if m.type == "tool"]) == 1
     with service.session_factory() as s:
         assert s.scalar(select(func.count()).select_from(Ticket)) == 0
+    service.close()
+
+
+def test_high_risk_agent_cannot_query_another_order_after_policy_gate(tmp_path):
+    model = ScriptedModel(
+        "退款退货",
+        [call("query_order", "other-order", order_id="DEMO-1002")],
+    )
+    policy = EvidenceRetriever([{
+        "chunk_id": 1, "source_key": "policy:return", "score": 0.9,
+        "answer": "演示退货条款。", "category": "退换货与退款 / 退货条件",
+        "content_type": "policy",
+    }])
+    service = make_workflow(tmp_path, model, policy)
+    events = list(service.stream_events(ChatRequest(
+        conversation_id="c", message="订单 DEMO-1001 能退吗？"
+    )))
+    assert events[-1]["event"] == "done"
+    state = service.graph.get_state({"configurable": {"thread_id": "c"}}).values
+    assert state["route"] == "high_risk"
+    assert state["stop_reason"] == "forbidden_tool"
+    assert state["tool_trace"][0]["name"] == "query_order"
+    assert model.bound_tools == []
     service.close()
 
 

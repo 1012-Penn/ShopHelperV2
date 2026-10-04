@@ -56,7 +56,7 @@ flowchart TD
 - 高风险意图统一进入退款/售后子图。输入显式提到的订单 ID 可直接用；否则生成 `request_id`，先将订单选项作为 assistant `Message.actions` 持久化以取得 `message_id`，再通过 LangGraph `interrupt()` 暂停并发出包含 `conversation_id`、`message_id`、`request_id` 和展示选项的 `order_choices` 事件。浏览器点击后以现有聊天 POST 带回 `selected_order_id`、`selection_message_id` 和 `request_id`；服务端必须核验相同会话里仍待恢复的 interrupt 与已持久化 offer/message/request 绑定，并验证订单属于固定清单，再用 `Command(resume=...)` 恢复原 thread。重复、过期、伪造或跨会话选择一律拒绝，不能把选择内容当成新自然语言对话写入历史。
 - 订单校验后使用订单详情构造意图相关的决策问题。退款退货使用“这一单能不能退”；售后问题仅要求判断该订单按已述售后诉求是否适用。原因字段不进对话澄清步骤。
 - 专用扩写调用必须返回 JSON 对象且字段只有 `queries` 数组；数组项为不同检索侧重点的字符串。将规范化问题也作为检索底线，查询数量限制为最多 4 条，过滤空项/重复项/过长项。JSON 无法解析时记录扩写错误并至少检索规范化问题，不能因扩写错误跳过政策检索。
-- 对每条查询调用现有 `EvidenceAdapter`/质量检索服务并强制政策类别。证据以 `chunk_id` 去重，取最高得分的快照并按得分稳定排序；旧 FAQ 仍只按原查询检索，不扩写。状态和日志记录原始问题、解析问题、扩写 query 列表及检索 trace，不保存重复知识。
+- 对每条查询调用现有 `EvidenceAdapter`/质量检索服务并强制政策类别前缀及权威库 `content_type`（仅 policy/after_sales）。当前 Milvus category 保存 Markdown heading path，因此用官方支持的 VARCHAR `LIKE "prefix%"` 预过滤，再按 SQLAlchemy 中权威 `content_type` 去掉 FAQ/会话问答 chunk。退款/退货限定“退换货与退款”章节；售后查询“退换货与退款”及“支付与售后”章节。证据以 `chunk_id` 去重，取最高得分的快照并按得分稳定排序；普通 FAQ 仍只按原查询检索，不扩写。状态和日志记录原始问题、解析问题、扩写 query 列表及检索 trace，不保存重复知识。
 - 仅在订单数据、政策证据和一个资格判定问题可用后调用主力 Agent。不得让 Agent 自选路由、跳过政策检索、追问原因或执行退款写操作。回答强调仅为模拟数据下的政策资格判断，不承诺退款成功或到账。
 
 ### 演示订单与退款申请
@@ -99,6 +99,7 @@ flowchart TD
 - 已用 Context7 查阅 LangChain Python structured output 文档：`json_schema` / `json_mode` 与 provider 支持有关；具体调用形式必须按当前 `langchain` 1.4、`langchain-openai` 1.6 和现有 DeepSeek-compatible `ChatOpenAI` 配置核实，不臆造 provider schema 能力。
 - 已用 Context7 查阅 SQLAlchemy 2.0 官方 Declarative、`create_all` 和 dialect-specific upsert 文档：`create_all` 只建缺失表，不做现有表迁移；SQLite/MySQL upsert 都是 dialect-specific API，所以此处使用主键与事务，不依赖方言特有 upsert。
 - 已用 Context7 查阅 FastAPI 官方 Pydantic 请求体及同步 `StreamingResponse`/SSE 文档；保留仓库现有 `StreamingResponse` 与同步迭代器写法，不切换较新版本专属事件流 API。
+- 已用 Context7 查阅 Milvus 官方 VARCHAR filter expression：向量 search filter 可用 `category like "prefix%"` 做前缀匹配；项目 PyMilvus 范围为 `>=3.0.2,<4`。实现用静态文档根路径作为 prefix，并将同一过滤条件施加在 hybrid search 两条检索腿；检索结果再用 MySQL `content_type` 权威过滤。
 - 项目锁定范围见 `pyproject.toml`：LangChain `>=1.4,<1.5`、LangGraph `>=1.2,<1.3`、SQLAlchemy `>=2.0`、FastAPI `>=0.115`。正式实现前继续对涉及的确切 API 查询 Context7。
 
 ## 决策记录

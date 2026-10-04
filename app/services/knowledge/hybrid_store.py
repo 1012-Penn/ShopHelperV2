@@ -69,7 +69,8 @@ class HybridStore:
             raise RuntimeError('hybrid upsert ids mismatch')
         return ids
 
-    def search(self, query_vector, lexical_query, strategy, category=None, limit=50):
+    def search(self, query_vector, lexical_query, strategy, category=None, limit=50,
+               category_prefixes=None, chunk_ids=None):
         if strategy not in {'dense','bm25','hybrid','hybrid_rerank'}:
             raise ValueError('unknown strategy')
         expr='is_active == true'
@@ -77,6 +78,21 @@ class HybridStore:
             if not category.strip() or len(category.encode())>512:
                 raise ValueError('invalid category filter')
             expr+=' and category == '+json.dumps(category,ensure_ascii=False)
+        if category_prefixes:
+            if any(not p.strip() or len(p.encode()) > 512 for p in category_prefixes):
+                raise ValueError('invalid category prefix filter')
+            clauses = [
+                'category like ' + json.dumps(prefix + '%', ensure_ascii=False)
+                for prefix in category_prefixes
+            ]
+            expr += ' and (' + ' or '.join(clauses) + ')'
+        if chunk_ids is not None:
+            ids = tuple(dict.fromkeys(chunk_ids))
+            if any(type(chunk_id) is not int or chunk_id < 1 for chunk_id in ids):
+                raise ValueError('invalid chunk id filter')
+            if not ids:
+                return []
+            expr += ' and chunk_id in [' + ', '.join(str(chunk_id) for chunk_id in ids) + ']'
         if strategy!='bm25' and (query_vector is None or len(query_vector)!=1024):
             raise ValueError('dense query dimension must be 1024')
         if strategy in {'hybrid','hybrid_rerank'}:

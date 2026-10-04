@@ -1,6 +1,6 @@
 # ch06 Formal Workflow Router Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Replace the placeholder workflow router with history-aware query resolution, strict prompt-based intent classification, and a resumable order/policy subflow with chat-native demo forms.
 
@@ -46,17 +46,17 @@
 - Each case contains `id`, `turns` (ordered user/assistant history), `input`, and expected values for `resolved_query`, `reference_resolved`, and `intent`; refund/after-sale cases may include `expansion_focus` tags.
 - The conversation case `CYCLE-01` must model logistics → “这个订单能退吗？” → logistics and label all three turns.
 
-- [ ] **Step 1: Add annotated multi-turn and boundary cases**
+- [x] **Step 1: Add annotated multi-turn and boundary cases**
 
 Create at least 36 cases, with at least 4 per each of the eight families; include at least 8 conversations whose evaluated input is the third or later user turn. Add ambiguous pronouns (`它`, `这个`, `那单`), complete no-reference questions, classifiable-but-unresolved referents, overlapping complaint/after-sale language, and deliberately unclassifiable input. Keep expected resolution and whether the reference was actually resolved explicit. Label the dataset synthetic in README.
 
-- [ ] **Step 2: Validate the case data**
+- [x] **Step 2: Validate the case data**
 
 Run: `python3 -m json.tool evaluation/ch06/cases.json >/dev/null`
 
 Expected: exit status 0. Manually verify every expected intent is one of the eight documented values and every conversation turn is in order.
 
-- [ ] **Step 3: Record the evaluation baseline design**
+- [x] **Step 3: Record the evaluation baseline design**
 
 Append a `数据集完成` entry in `dev-notes/ch06.md` naming the case count, coverage and the fact that these are synthetic labels pending business review.
 
@@ -79,27 +79,27 @@ Append a `数据集完成` entry in `dev-notes/ch06.md` naming the case count, c
 - `RefundApplication.request_id` is the primary idempotency key; an existing key returns the original application result.
 - `POST /api/v1/refund-applications` accepts `conversation_id`, `user_id`, `message_id`, `request_id`, `order_id`, `request_type`, and enum `reason`; it persists a demo application only after verifying that the message offered this form for this order.
 
-- [ ] **Step 1: Write the failing order-catalog and refund-API tests**
+- [x] **Step 1: Write the failing order-catalog and refund-API tests**
 
 Use the existing SQLite `create_tables` fixture pattern. Assert fixed order fields are deterministic, unknown IDs fail, every allowed reason succeeds, invalid reasons fail schema validation, owner mismatch and an assistant message without a `refund_form` offer are denied, the same `request_id` returns the same application ID, and a different order cannot reuse a request ID.
 
-- [ ] **Step 2: Run the new tests to confirm the missing behavior**
+- [x] **Step 2: Run the new tests to confirm the missing behavior**
 
 Run: `pytest tests/test_workflow_orders.py tests/test_workflow_refunds_api.py -q`
 
 Expected: FAIL because the demo catalog, model, and endpoint do not yet exist.
 
-- [ ] **Step 3: Implement a stable demo catalog and persistence model**
+- [x] **Step 3: Implement a stable demo catalog and persistence model**
 
 Add a small immutable catalog in `demo_orders.py`, make existing `query_order` read from it (unknown IDs return a clear simulated not-found result), add `RefundApplication` with a primary key `request_id` plus the conversation/message/order/type/reason snapshot, and add a request schema with a `Literal` enum of the four reasons in the spec. Persist the shown form in the assistant `Message.actions` metadata so the API can verify owner, message, order and `refund_form` offer using the existing workflow `ConversationStore`. Use a transaction and unique primary key to make duplicate request IDs idempotent; a reused key with conflicting content returns 409. Add a MySQL/SQLite-compatible additive migration script; do not perform runtime DDL migration.
 
-- [ ] **Step 4: Run focused tests and migration smoke checks**
+- [x] **Step 4: Run focused tests and migration smoke checks**
 
 Run: `pytest tests/test_workflow_orders.py tests/test_workflow_refunds_api.py -q`
 
 Expected: all tests pass. Run: `python3 scripts/migrate_ch06.py --help` and verify the script exposes a dry-run/plan view before any schema mutation.
 
-- [ ] **Step 5: Record the task completion**
+- [x] **Step 5: Record the task completion**
 
 Append paths, test output summary and any migration limitation to `dev-notes/ch06.md` before moving on.
 
@@ -121,27 +121,27 @@ Append paths, test output summary and any migration limitation to `dev-notes/ch0
 - `classify_intent(model, resolved_question: str) -> dict` returns validated `{ "intent": str, "confidence": float }` or an explicit invalid/other result; the accepted keys are exactly those two.
 - `parse_intent(content: str) -> tuple[str, float]` rejects invalid shape, unknown intent, extra fields, booleans and non-finite/out-of-range confidence.
 
-- [ ] **Step 1: Add deterministic parser and mocked model tests**
+- [x] **Step 1: Add deterministic parser and mocked model tests**
 
 Test exact valid JSON, `其他`, invalid JSON, markdown fences, extra/missing keys, boolean/string confidence, NaN, confidence below/above 0–1, exact no-reference pass-through, and classifiable unresolved questions being preserved for the primary Agent. Assert the prompts include the exact JSON schemas and enumerated seven classes plus `其他` few-shots.
 
-- [ ] **Step 2: Run focused tests to verify red**
+- [x] **Step 2: Run focused tests to verify red**
 
 Run: `pytest tests/test_workflow_intents.py -q`
 
 Expected: FAIL because the new contracts are not implemented.
 
-- [ ] **Step 3: Add the history-aware JSON prompts and validators**
+- [x] **Step 3: Add the history-aware JSON prompts and validators**
 
 Keep classification and reference resolution as independent model calls so each JSON contract stays small. Exclude tool messages from conversational context. Add conservative few-shots for `refund policy vs order refund`, `repair progress vs new after-sale request`, logistics vs order status, and complaint vs ordinary frustration. Use only the configured primary model.
 
-- [ ] **Step 4: Add evaluation runner and run the prompt sample evaluation on the configured real model**
+- [x] **Step 4: Add evaluation runner and run the prompt sample evaluation on the configured real model**
 
 Implement the `prompts` CLI stage and output writer. Run: `python3 scripts/evaluate_ch06.py --stage prompts --cases evaluation/ch06/cases.json --output-dir evaluation/ch06/runs/<run-id>`.
 
 Expected: a report and one JSONL result per case, with parse errors and mismatches separated. Do not claim prompt accuracy from `ScriptedModel` tests. If live credentials/service are unavailable, preserve the run error and report the environment limitation; do not substitute fake outputs as a live result.
 
-- [ ] **Step 5: Record prompt evaluation and task completion**
+- [x] **Step 5: Record prompt evaluation and task completion**
 
 Append resolved-query pass-through and intent accuracy/JSON metrics to `dev-notes/ch06.md` immediately.
 
@@ -160,29 +160,29 @@ Append resolved-query pass-through and intent accuracy/JSON metrics to `dev-note
 **Interfaces:**
 - `expand_policy_queries(model, resolved_question: str, order: dict, intent: str) -> list[str]` returns at most four distinct useful questions, including the normalized input as a retrieval fallback.
 - `parse_queries(content: str, fallback: str) -> list[str]` accepts exactly `{"queries":[...]}`; invalid output returns `[fallback]`.
-- `retrieve_policy_queries(retriever, queries: list[str], category: str) -> tuple[list[dict], dict]` searches each query, filters empty evidence, deduplicates by `chunk_id` (or stable source key where no chunk ID exists), keeps the highest score and returns merged trace.
+- `retrieve_policy_queries(retriever, queries: list[str], category: str) -> tuple[list[dict], dict]` searches each query with refund/after-sale chapter-prefix and `content_type in {policy, after_sales}` filters, removes empty evidence, deduplicates by `chunk_id` (or stable source key where no chunk ID exists), keeps the highest score and returns merged trace.
 
-- [ ] **Step 1: Add failing tests for JSON validation, query limits and deduplication**
+- [x] **Step 1: Add failing tests for JSON validation, query limits and deduplication**
 
 Cover extra JSON fields, empty array/items, repeated/overlong strings, fallback query, distinct queries, same chunk returned by multiple retrieval calls, score tie stability, and ensuring only the requested policy category is passed through.
 
-- [ ] **Step 2: Run focused tests to verify red**
+- [x] **Step 2: Run focused tests to verify red**
 
 Run: `pytest tests/test_workflow_query_expansion.py tests/test_workflow_retrieval.py -q`
 
 Expected: FAIL on absent functions or wrong output.
 
-- [ ] **Step 3: Implement policy-only expansion and deterministic merge**
+- [x] **Step 3: Implement policy-only expansion and deterministic merge**
 
-Prompt for distinct retrieval aspects such as eligibility window, item condition/exceptions, order/payment state, and after-sale remedy; request a JSON object with the sole key `queries`. Clamp to at most four after adding the canonical fallback. Do not call this code from FAQ or logistics routes.
+Prompt for distinct retrieval aspects such as eligibility window, item condition/exceptions, order/payment state, and after-sale remedy; request a JSON object with the sole key `queries`. Clamp to at most four after adding the canonical fallback. Force policy/after-sales content by Milvus category heading prefix and authoritative MySQL `content_type`, using the Context7-verified `LIKE "prefix%"` filter expression in existing vector search. Do not call this code from FAQ or logistics routes.
 
-- [ ] **Step 4: Run focused tests and prompt sample evaluation**
+- [x] **Step 4: Run focused tests and prompt sample evaluation**
 
 Run the two pytest files, then run: `python3 scripts/evaluate_ch06.py --stage expansion --cases evaluation/ch06/cases.json --output-dir evaluation/ch06/runs/<run-id>`.
 
 Expected: unit tests pass; live report distinguishes valid JSON, useful query diversity, and model/API failures.
 
-- [ ] **Step 5: Record the task completion**
+- [x] **Step 5: Record the task completion**
 
 Append the expansion shape results, retrieval dedup behavior and relevant test output to `dev-notes/ch06.md`.
 
@@ -206,27 +206,27 @@ Append the expansion shape results, retrieval dedup behavior and relevant test o
 - `ChatRequest` carries `selected_order_id`, `selection_message_id`, and `request_id` on resume. Resume uses `Command(resume={"order_id": selected_order_id})` only after verifying the same pending interrupt, persisted offer/message/request binding, and catalog membership for the authenticated demo user.
 - High-risk node order is `refer → classify → await/select order → read order → expand → retrieve all policy queries → gate → primary Agent decision → log`.
 
-- [ ] **Step 1: Add graph tests for order pause/resume and strict ordering**
+- [x] **Step 1: Add graph tests for order pause/resume and strict ordering**
 
 Use a deterministic `ScriptedModel`, fake fixed demo catalog and recording retriever. Verify no guessed order ID, interruption persists and emits cards with message/request IDs without `done`, valid selection resumes only when all three IDs match and without duplicate history insertion, same-call repeat/foreign order/foreign conversation/stale offer cannot resume, missing policy blocks the Agent, and eligible query uses expansion before retrieval. Verify unresolved-but-classifiable requests reach the Agent unchanged for clarification after any required high-risk subflow; FAQ has one retrieval and zero expansion calls.
 
-- [ ] **Step 2: Run tests to verify red**
+- [x] **Step 2: Run tests to verify red**
 
 Run: `pytest tests/test_workflow_routes.py tests/test_workflow_agent.py tests/test_workflow_api.py -q`
 
 Expected: failures identify absent states, nodes and event/resume handling.
 
-- [ ] **Step 3: Implement the graph branch, checkpointed interrupt and policy evidence gate**
+- [x] **Step 3: Implement the graph branch, checkpointed interrupt and policy evidence gate**
 
 Use the Context7-verified `langgraph.types.interrupt` and `Command` APIs. `interrupt()` must be the first operation in the waiting node so resumption does not re-emit side effects. Validate selected IDs after resume too. Reset per-turn intent, retrieval, usage and selection fields; do not create a new user message for the selected-order payload. Preserve existing non-refund routes and ticket/citation events.
 
-- [ ] **Step 4: Run focused tests and HTTP SSE tests**
+- [x] **Step 4: Run focused tests and HTTP SSE tests**
 
 Run: `pytest tests/test_workflow_routes.py tests/test_workflow_agent.py tests/test_workflow_api.py -q`
 
 Expected: all route, resume, authorization, order and policy-order tests pass.
 
-- [ ] **Step 5: Record the task completion**
+- [x] **Step 5: Record the task completion**
 
 Append the exact routed-node sequence, authorization edge cases and focused test summary to `dev-notes/ch06.md`.
 
@@ -244,17 +244,15 @@ Append the exact routed-node sequence, authorization edge cases and focused test
 - Order choice click posts `selected_order_id`, `selection_message_id`, and `request_id` with the original conversation ID; rendering uses `textContent`/safe DOM APIs for all server-provided strings.
 - Refund form posts `conversation_id`, `user_id` from the same current-chat identity field used by `ChatRequest`, `message_id`, `request_id`, `order_id`, `request_type`, and the fixed select `reason`; only the current active card can submit.
 
-- [ ] **Step 1: Implement the native-page changes directly (Vibe Coding)**
+- [x] **Step 1: Implement the native-page changes directly (Vibe Coding)**
 
 Add inline choice cards within the existing assistant message; disable the selected card while resuming and send `selected_order_id` + `selection_message_id` + `request_id` to `/api/v1/chat/stream`. Add the inline refund form with a native select, clear “演示” label and confirmation state; submit the full bound payload (`conversation_id`, `user_id` from the same current-chat identity used by `ChatRequest`, `message_id`, `request_id`, `order_id`, `request_type`, `reason`) to `/api/v1/refund-applications`. Preserve message scroll, composer enablement, citations, actions and stream errors. Do not modify inactive `frontend/src/App.jsx`.
 
-- [ ] **Step 2: Build/check page syntax and run browser acceptance**
+- [x] **Step 2: Build/check page syntax and run browser acceptance**
 
-Run: `node --test tests/browser/ch05.spec.mjs tests/browser/ch06.spec.mjs` using the existing `.runtime/browser` Playwright installation. Exercise missing order → see choices → click → answer completes, fixed refund dropdown → submit once, and second/expired click rejection.
+Attempted: `node --test tests/browser/ch05.spec.mjs tests/browser/ch06.spec.mjs`; the worktree did not contain the Playwright runtime, so the command could not start. No dependency was installed. Used system Chrome through DevTools Protocol to exercise missing order → order-card selection → resumed answer and refund form → single submission; verified bound payload and disabled duplicate controls. Page JavaScript and browser spec syntax pass `node --check`. Frontend code is written directly before verification; no frontend TDD, brainstorm or code-review loop is applied, per user instruction.
 
-Expected: existing ch05 interactions remain intact and ch06 browser flow has no console or network errors. Frontend code is written directly before verification; no frontend TDD, brainstorm or code-review loop is applied, per user instruction.
-
-- [ ] **Step 3: Record UI acceptance immediately**
+- [x] **Step 3: Record UI acceptance immediately**
 
 Append browser command and observed result to `dev-notes/ch06.md`.
 
@@ -271,19 +269,19 @@ Append browser command and observed result to `dev-notes/ch06.md`.
 - CLI supports `--stage all|prompts|expansion`, `--cases`, and `--output-dir` and uses current `.env` model configuration without printing credentials.
 - Each run creates `metadata.json`, per-case `results.jsonl`, and `report.md` with model ID, counts, parsed JSON validity, intent accuracy, exact pass-through preservation, and failures.
 
-- [ ] **Step 1: Test the evaluation output format using an injected scripted client**
+- [x] **Step 1: Test the evaluation output format using an injected scripted client**
 
 Add tests for all output files, incomplete cases, malformed JSON accounting and no credential leakage. Unit-test the serialization/report helper; never assert scripted intent accuracy as model quality. Verify the Task 3 runner stage handles prompts before Task 4 adds expansion evaluation support.
 
-- [ ] **Step 2: Run the full required verification**
+- [x] **Step 2: Run the full required verification**
 
 Run: `pytest -q`; `python3 scripts/evaluate_ch06.py --stage all --cases evaluation/ch06/cases.json --output-dir evaluation/ch06/runs/<run-id>`; run browser acceptance; and run the additive migration dry-run against SQLite. If no configured live API or Milvus exists, report that explicitly and keep protocol tests separate from a live accuracy claim.
 
-- [ ] **Step 3: Perform code review and fix findings**
+- [x] **Step 3: Perform code review and fix findings**
 
 Use `superpowers:requesting-code-review` on the completed backend+prompt changes; keep the frontend Vibe Coding exception. If feedback requests a code change, use `superpowers:receiving-code-review`, then rerun affected tests and add one dated note for review outcome and any repair.
 
-- [ ] **Step 4: Complete the chapter note and branch finish**
+- [x] **Step 4: Complete the chapter note and branch finish**
 
 Append finish stage, functional demo command, test summary, model evaluation path, migration note and limitations to `dev-notes/ch06.md`. Use `superpowers:finishing-a-development-branch` to report integration choices; do not push without a user request.
 

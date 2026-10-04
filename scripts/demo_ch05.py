@@ -8,7 +8,7 @@ from pathlib import Path
 from uuid import uuid4
 
 DEMO_CASES = [
-    ("policy", "退货政策是什么"),
+    ("policy", "订单 DEMO-1001 退货政策是什么"),
     ("logistics", "订单 1001 的物流到哪了"),
     ("complaint", "我要投诉"),
     ("chitchat", "你好"),
@@ -32,7 +32,16 @@ class FixtureModel:
         from langchain_core.messages import AIMessage
 
         usage = {"input_tokens": 120, "output_tokens": 40, "total_tokens": 160}
-        if "七类" in messages[0].content:
+        if "本轮问题独立化节点" in messages[0].content:
+            question = messages[-1].content.split("本轮原问题：\n", 1)[-1]
+            return AIMessage(
+                content=json.dumps(
+                    {"question": question, "reference_resolved": True},
+                    ensure_ascii=False,
+                ),
+                usage_metadata=usage,
+            )
+        if "本轮意图选择节点" in messages[0].content:
             return AIMessage(
                 content=json.dumps(
                     {
@@ -42,10 +51,16 @@ class FixtureModel:
                             "complaint": "投诉",
                             "chitchat": "闲聊",
                             "complex": "订单",
-                        }[self.case]
+                        }[self.case],
+                        "confidence": 0.92,
                     },
                     ensure_ascii=False,
                 ),
+                usage_metadata=usage,
+            )
+        if "检索查询扩写节点" in messages[0].content:
+            return AIMessage(
+                content='{"queries":["退货条件和申请期限"]}',
                 usage_metadata=usage,
             )
         tool = None
@@ -80,7 +95,7 @@ class FixtureModel:
 
 
 class FixtureRetriever:
-    def retrieve(self, question, category=None):
+    def retrieve(self, question, category=None, **filters):
         return [
             {
                 "n": 1,
@@ -89,6 +104,8 @@ class FixtureRetriever:
                 "answer": "七天内可申请退货，以订单和实际政策为准。",
                 "source_key": "fixture",
                 "section_path": ["演示政策"],
+                "category": "退换货与退款 / 退货条件",
+                "content_type": "policy",
             }
         ], {"strategy": "hybrid_rerank", "synthetic": True}
 
@@ -213,14 +230,18 @@ def acceptance_checks(rows):
             if r["route"] == "business" or r["gate_passed"]
         ),
         "all_completed": all(r["completed"] for r in rows),
-        "policy_forced_retrieval": "retrieve" in (rows[0]["path"] or []),
+        "policy_forced_retrieval": any(
+            node in {"retrieve", "retrieve_policy"}
+            for node in (rows[0]["path"] or [])
+        ),
         "logistics_agent_tool": rows[1]["tool_calls"] == 1
         and "retrieve" not in (rows[1]["path"] or []),
         "complaint_two_suggestions": rows[2]["decisions"] == 0
         and bool(rows[2]["actions"])
         and [a["type"] for a in rows[2]["actions"][0]["items"]]
         == ["handoff", "create_ticket"],
-        "chitchat_zero_model": rows[3]["tokens"] == 0,
+        "chitchat_prompt_classified": rows[3]["tokens"] > 0
+        and rows[3]["intent"] == "闲聊",
         "complex_multiple_tools": (rows[4]["tool_calls"] or 0) > 1,
     }
 

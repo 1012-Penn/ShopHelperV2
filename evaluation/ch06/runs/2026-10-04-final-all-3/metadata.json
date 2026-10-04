@@ -1,0 +1,6 @@
+{
+  "stage": "all",
+  "started_at": "2026-10-03T17:45:41.383109+00:00",
+  "case_file": "evaluation/ch06/cases.json",
+  "model": "deepseek-chat"
+}

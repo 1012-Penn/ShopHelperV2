@@ -2,21 +2,32 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ChatRequest(BaseModel):
     category: str | None = Field(default=None, min_length=1, max_length=100)
     conversation_id: str = Field(min_length=1, max_length=128)
-    message: str = Field(min_length=1)
+    message: str = Field(default="")
     user_id: str = Field(default="demo-user", min_length=1, max_length=128)
+    selected_order_id: str | None = Field(default=None, min_length=1, max_length=128)
+    selection_message_id: int | None = Field(default=None, gt=0)
+    request_id: str | None = Field(default=None, min_length=1, max_length=128)
 
-    @field_validator("message")
-    @classmethod
-    def nonblank_message(cls, value):
-        if not value.strip():
+    @model_validator(mode="after")
+    def validate_chat_or_order_selection(self):
+        resume_fields = (
+            self.selected_order_id,
+            self.selection_message_id,
+            self.request_id,
+        )
+        if any(value is not None for value in resume_fields) and not all(
+            value is not None for value in resume_fields
+        ):
+            raise ValueError("order selection fields must be provided together")
+        if not all(value is not None for value in resume_fields) and not self.message.strip():
             raise ValueError("message must not be blank")
-        return value
+        return self
 
 
 class TicketRequest(BaseModel):

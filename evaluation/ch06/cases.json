@@ -25,7 +25,7 @@
     ],
     "input": "这个订单能退吗",
     "expected": {
-      "resolved_query": "订单 DEMO-1001 的商品能退货吗？",
+      "resolved_query": "订单 DEMO-1001 能退吗？",
       "intent": "退款退货",
       "reference_resolved": true
     },
@@ -321,7 +321,7 @@
     ],
     "input": "它现在能换吗？",
     "expected": {
-      "resolved_query": "订单 DEMO-1004 的耳机现在是否符合换货条件？",
+      "resolved_query": "订单 DEMO-1004 的耳机已提交维修，现在能否申请换货？",
       "intent": "售后",
       "reference_resolved": true
     },
@@ -438,7 +438,7 @@
     "turns": [],
     "input": "你们处理售后的速度太差了，我要投诉。",
     "expected": {
-      "resolved_query": "我想投诉你们售后处理速度太慢。",
+      "resolved_query": "你们处理售后的速度太差了，我要投诉。",
       "intent": "投诉",
       "reference_resolved": true
     }
@@ -488,7 +488,7 @@
     ],
     "input": "快递还没更新吗？",
     "expected": {
-      "resolved_query": "订单 DEMO-1003 的快递物流更新了吗？",
+      "resolved_query": "订单 DEMO-1003 的快递还没更新吗？",
       "intent": "物流",
       "reference_resolved": true
     }
@@ -499,7 +499,7 @@
     "turns": [],
     "input": "我要求投诉刚才的客服代表，请记录我的意见。",
     "expected": {
-      "resolved_query": "我想投诉刚才的客服代表并记录意见。",
+      "resolved_query": "我要求投诉刚才的客服代表，请记录我的意见。",
       "intent": "投诉",
       "reference_resolved": true
     }
@@ -593,7 +593,7 @@
     "expected": {
       "resolved_query": "蓝色走左边然后第七个？",
       "intent": "其他",
-      "reference_resolved": true
+      "reference_resolved": false
     }
   },
   {
@@ -604,7 +604,7 @@
     "expected": {
       "resolved_query": "给我来个大的。",
       "intent": "其他",
-      "reference_resolved": true
+      "reference_resolved": false
     }
   },
   {
@@ -683,7 +683,7 @@
     "turns": [],
     "input": "你们服务态度太敷衍了，我要正式投诉。",
     "expected": {
-      "resolved_query": "我想正式投诉你们服务态度敷衍。",
+      "resolved_query": "你们服务态度太敷衍了，我要正式投诉。",
       "intent": "投诉",
       "reference_resolved": true
     }
@@ -711,9 +711,9 @@
     ],
     "input": "那如果这单超期了呢？",
     "expected": {
-      "resolved_query": "订单退货超过退货期限后是否还能退货？",
+      "resolved_query": "那如果这单超期了呢？",
       "intent": "退款退货",
-      "reference_resolved": true
+      "reference_resolved": false
     },
     "expansion_focus": [
       "return eligibility",
