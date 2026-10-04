@@ -1,0 +1,751 @@
+[
+  {
+    "id": "CYCLE-01-L1",
+    "conversation_id": "CYCLE-01",
+    "turns": [],
+    "input": "订单 DEMO-1001 的物流到哪里了？",
+    "expected": {
+      "resolved_query": "订单 DEMO-1001 的物流到哪里了？",
+      "intent": "物流",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-01-R2",
+    "conversation_id": "CYCLE-01",
+    "turns": [
+      {
+        "role": "user",
+        "content": "订单 DEMO-1001 的物流到哪里了？"
+      },
+      {
+        "role": "assistant",
+        "content": "这是订单 DEMO-1001 的演示物流。"
+      }
+    ],
+    "input": "这个订单能退吗",
+    "expected": {
+      "resolved_query": "订单 DEMO-1001 能退吗？",
+      "intent": "退款退货",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "return eligibility",
+      "order status",
+      "item exceptions"
+    ]
+  },
+  {
+    "id": "CYCLE-01-L5",
+    "conversation_id": "CYCLE-01",
+    "turns": [
+      {
+        "role": "user",
+        "content": "订单 DEMO-1001 的物流到哪里了？"
+      },
+      {
+        "role": "assistant",
+        "content": "订单号 DEMO-1001 的物流仍在运输中。"
+      },
+      {
+        "role": "user",
+        "content": "这个订单能退吗"
+      },
+      {
+        "role": "assistant",
+        "content": "已为你查询演示订单和退货政策。"
+      }
+    ],
+    "input": "那物流到哪了",
+    "expected": {
+      "resolved_query": "订单 DEMO-1001 的物流到哪了？",
+      "intent": "物流",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "O1",
+    "conversation_id": "ORDER-01",
+    "turns": [],
+    "input": "帮我查订单 DEMO-1002 的订单状态。",
+    "expected": {
+      "resolved_query": "帮我查订单 DEMO-1002 的订单状态。",
+      "intent": "订单",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-02-O2",
+    "conversation_id": "CYCLE-02",
+    "turns": [
+      {
+        "role": "user",
+        "content": "订单 DEMO-1002 的支付记录有吗？"
+      },
+      {
+        "role": "assistant",
+        "content": "已找到对应演示订单。"
+      }
+    ],
+    "input": "那一单一共多少钱？",
+    "expected": {
+      "resolved_query": "订单 DEMO-1002 的订单金额是多少？",
+      "intent": "订单",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "O3",
+    "conversation_id": "ORDER-03",
+    "turns": [],
+    "input": "付款显示成功但订单还没确认，怎么回事？",
+    "expected": {
+      "resolved_query": "付款显示成功但订单还没确认，怎么回事？",
+      "intent": "订单",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "O4",
+    "conversation_id": "ORDER-04",
+    "turns": [],
+    "input": "请查一下订单 DEMO-1001 的物流状态和下单时间。",
+    "expected": {
+      "resolved_query": "请查一下订单 DEMO-1001 的物流状态和下单时间。",
+      "intent": "订单",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-02-O5",
+    "conversation_id": "CYCLE-02",
+    "turns": [
+      {
+        "role": "user",
+        "content": "订单 DEMO-1002 的支付记录有吗？"
+      },
+      {
+        "role": "assistant",
+        "content": "这是一笔演示订单。"
+      },
+      {
+        "role": "user",
+        "content": "那一单一共多少钱？"
+      },
+      {
+        "role": "assistant",
+        "content": "金额信息已提供。"
+      }
+    ],
+    "input": "支付是什么时候完成的？",
+    "expected": {
+      "resolved_query": "订单 DEMO-1002 的支付完成时间是什么时候？",
+      "intent": "订单",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "P1",
+    "conversation_id": "PRODUCT-01",
+    "turns": [],
+    "input": "这款耳机支持蓝牙多点连接吗？",
+    "expected": {
+      "resolved_query": "这款耳机支持蓝牙多点连接吗？",
+      "intent": "商品咨询",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-03-P2",
+    "conversation_id": "CYCLE-03",
+    "turns": [
+      {
+        "role": "user",
+        "content": "我在看云朵降噪耳机。"
+      },
+      {
+        "role": "assistant",
+        "content": "可以继续问这款商品的参数。"
+      }
+    ],
+    "input": "它有多重？",
+    "expected": {
+      "resolved_query": "云朵降噪耳机有多重？",
+      "intent": "商品咨询",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "P3",
+    "conversation_id": "PRODUCT-03",
+    "turns": [],
+    "input": "请比较 A100 和 B200 两款的续航。",
+    "expected": {
+      "resolved_query": "请比较 A100 和 B200 两款的续航。",
+      "intent": "商品咨询",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-03-P4",
+    "conversation_id": "CYCLE-03",
+    "turns": [
+      {
+        "role": "user",
+        "content": "我在看云朵降噪耳机。"
+      },
+      {
+        "role": "assistant",
+        "content": "可以继续问这款商品的参数。"
+      },
+      {
+        "role": "user",
+        "content": "它有多重？"
+      },
+      {
+        "role": "assistant",
+        "content": "我来查看商品资料。"
+      }
+    ],
+    "input": "轻一点的吗？",
+    "expected": {
+      "resolved_query": "云朵降噪耳机是否有更轻的款式？",
+      "intent": "商品咨询",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "P5",
+    "conversation_id": "PRODUCT-05",
+    "turns": [],
+    "input": "厨房秤的最大称重范围和价格是多少？",
+    "expected": {
+      "resolved_query": "厨房秤的最大称重范围和价格是多少？",
+      "intent": "商品咨询",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "R1",
+    "conversation_id": "CYCLE-08",
+    "turns": [],
+    "input": "退货政策是什么？",
+    "expected": {
+      "resolved_query": "退货政策是什么？",
+      "intent": "退款退货",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "eligibility window",
+      "item condition",
+      "exceptions"
+    ]
+  },
+  {
+    "id": "R3",
+    "conversation_id": "REFUND-03",
+    "turns": [],
+    "input": "我想给订单 DEMO-1003 申请退款。",
+    "expected": {
+      "resolved_query": "我想给订单 DEMO-1003 申请退款。",
+      "intent": "退款退货",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "refund eligibility",
+      "payment state",
+      "application process"
+    ]
+  },
+  {
+    "id": "R4",
+    "conversation_id": "REFUND-04",
+    "turns": [],
+    "input": "拆封试用过的商品还能退吗？",
+    "expected": {
+      "resolved_query": "拆封试用过的商品还能退吗？",
+      "intent": "退款退货",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "opened item",
+      "quality issue",
+      "exceptions"
+    ]
+  },
+  {
+    "id": "CYCLE-08-R5",
+    "conversation_id": "CYCLE-08",
+    "turns": [
+      {
+        "role": "user",
+        "content": "退货政策是什么？"
+      },
+      {
+        "role": "assistant",
+        "content": "退货条件需要结合订单和商品情况核实。"
+      },
+      {
+        "role": "user",
+        "content": "运费谁承担？"
+      },
+      {
+        "role": "assistant",
+        "content": "我可以结合退货规则核实运费承担方式。"
+      }
+    ],
+    "input": "运费谁承担？",
+    "expected": {
+      "resolved_query": "退货时运费由谁承担？",
+      "intent": "退款退货",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "return freight",
+      "customer fault",
+      "quality issue"
+    ]
+  },
+  {
+    "id": "CYCLE-04-A1",
+    "conversation_id": "CYCLE-04",
+    "turns": [
+      {
+        "role": "user",
+        "content": "订单 DEMO-1004 的耳机已经提交维修。"
+      },
+      {
+        "role": "assistant",
+        "content": "我可以帮你核对售后政策。"
+      }
+    ],
+    "input": "它现在能换吗？",
+    "expected": {
+      "resolved_query": "订单 DEMO-1004 的耳机已提交维修，现在能否申请换货？",
+      "intent": "售后",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "exchange eligibility",
+      "repair state",
+      "policy exceptions"
+    ]
+  },
+  {
+    "id": "A2",
+    "conversation_id": "AFTERSALE-02",
+    "turns": [],
+    "input": "订单 DEMO-1002 收到的杯子有裂纹，我想换一个。",
+    "expected": {
+      "resolved_query": "订单 DEMO-1002 收到的杯子有裂纹，我想换一个。",
+      "intent": "售后",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "defective item",
+      "exchange eligibility",
+      "proof needed"
+    ]
+  },
+  {
+    "id": "A3",
+    "conversation_id": "AFTERSALE-03",
+    "turns": [],
+    "input": "维修申请已提交三天，售后进度怎么查？",
+    "expected": {
+      "resolved_query": "维修申请已提交三天，售后进度怎么查？",
+      "intent": "售后",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "after-sale progress",
+      "repair process",
+      "policy"
+    ]
+  },
+  {
+    "id": "CYCLE-04-A4",
+    "conversation_id": "CYCLE-04",
+    "turns": [
+      {
+        "role": "user",
+        "content": "订单 DEMO-1004 的耳机已经提交维修。"
+      },
+      {
+        "role": "assistant",
+        "content": "我可以帮你核对售后政策。"
+      },
+      {
+        "role": "user",
+        "content": "它现在能换吗？"
+      },
+      {
+        "role": "assistant",
+        "content": "换货资格需结合订单和政策核对。"
+      }
+    ],
+    "input": "如果不能换，可以修吗？",
+    "expected": {
+      "resolved_query": "订单 DEMO-1004 的耳机若不能换，是否符合维修条件？",
+      "intent": "售后",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "repair eligibility",
+      "exchange alternative",
+      "policy"
+    ]
+  },
+  {
+    "id": "A5",
+    "conversation_id": "AFTERSALE-05",
+    "turns": [],
+    "input": "错发的商品应该走什么售后流程？",
+    "expected": {
+      "resolved_query": "错发的商品应该走什么售后流程？",
+      "intent": "售后",
+      "reference_resolved": true
+    },
+    "expansion_focus": [
+      "wrong item",
+      "replacement",
+      "return policy"
+    ]
+  },
+  {
+    "id": "CYCLE-05-C1",
+    "conversation_id": "CYCLE-05",
+    "turns": [
+      {
+        "role": "user",
+        "content": "订单 DEMO-1003 的快递一直没有更新。"
+      },
+      {
+        "role": "assistant",
+        "content": "我可以查询演示物流状态。"
+      }
+    ],
+    "input": "我要投诉这次物流服务。",
+    "expected": {
+      "resolved_query": "我想投诉订单 DEMO-1003 的物流服务。",
+      "intent": "投诉",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "C2",
+    "conversation_id": "COMPLAINT-02",
+    "turns": [],
+    "input": "你们处理售后的速度太差了，我要投诉。",
+    "expected": {
+      "resolved_query": "你们处理售后的速度太差了，我要投诉。",
+      "intent": "投诉",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "C3",
+    "conversation_id": "COMPLAINT-03",
+    "turns": [],
+    "input": "真的服了。",
+    "expected": {
+      "resolved_query": "真的服了。",
+      "intent": "其他",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "C4",
+    "conversation_id": "COMPLAINT-04",
+    "turns": [],
+    "input": "我要找主管投诉店员态度。",
+    "expected": {
+      "resolved_query": "我要找主管投诉店员态度。",
+      "intent": "投诉",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-05-C5",
+    "conversation_id": "CYCLE-05",
+    "turns": [
+      {
+        "role": "user",
+        "content": "订单 DEMO-1003 的快递一直没有更新。"
+      },
+      {
+        "role": "assistant",
+        "content": "我可以查询演示物流状态。"
+      },
+      {
+        "role": "user",
+        "content": "我要投诉这次物流服务。"
+      },
+      {
+        "role": "assistant",
+        "content": "很抱歉给你带来不好的体验。"
+      }
+    ],
+    "input": "快递还没更新吗？",
+    "expected": {
+      "resolved_query": "订单 DEMO-1003 的快递还没更新吗？",
+      "intent": "物流",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "C6",
+    "conversation_id": "COMPLAINT-06",
+    "turns": [],
+    "input": "我要求投诉刚才的客服代表，请记录我的意见。",
+    "expected": {
+      "resolved_query": "我要求投诉刚才的客服代表，请记录我的意见。",
+      "intent": "投诉",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "H1",
+    "conversation_id": "CYCLE-06",
+    "turns": [],
+    "input": "你好呀。",
+    "expected": {
+      "resolved_query": "你好呀。",
+      "intent": "闲聊",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "H2",
+    "conversation_id": "CHITCHAT-02",
+    "turns": [],
+    "input": "谢谢你帮忙。",
+    "expected": {
+      "resolved_query": "谢谢你帮忙。",
+      "intent": "闲聊",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "H3",
+    "conversation_id": "CHITCHAT-03",
+    "turns": [],
+    "input": "今天天气真好。",
+    "expected": {
+      "resolved_query": "今天天气真好。",
+      "intent": "闲聊",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-06-H4",
+    "conversation_id": "CYCLE-06",
+    "turns": [
+      {
+        "role": "user",
+        "content": "你好呀。"
+      },
+      {
+        "role": "assistant",
+        "content": "你好，我可以帮你处理购物问题。"
+      }
+    ],
+    "input": "你喜欢猫吗？",
+    "expected": {
+      "resolved_query": "你喜欢猫吗？",
+      "intent": "闲聊",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-06-H5",
+    "conversation_id": "CYCLE-06",
+    "turns": [
+      {
+        "role": "user",
+        "content": "你好呀。"
+      },
+      {
+        "role": "assistant",
+        "content": "你好，我可以帮你处理购物问题。"
+      },
+      {
+        "role": "user",
+        "content": "你喜欢猫吗？"
+      },
+      {
+        "role": "assistant",
+        "content": "我没有个人喜好，不过可以聊聊猫。"
+      }
+    ],
+    "input": "好，先这样，再见。",
+    "expected": {
+      "resolved_query": "好，先这样，再见。",
+      "intent": "闲聊",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "X1",
+    "conversation_id": "CYCLE-07",
+    "turns": [],
+    "input": "蓝色走左边然后第七个？",
+    "expected": {
+      "resolved_query": "蓝色走左边然后第七个？",
+      "intent": "其他",
+      "reference_resolved": false
+    }
+  },
+  {
+    "id": "X2",
+    "conversation_id": "OTHER-02",
+    "turns": [],
+    "input": "给我来个大的。",
+    "expected": {
+      "resolved_query": "给我来个大的。",
+      "intent": "其他",
+      "reference_resolved": false
+    }
+  },
+  {
+    "id": "X3",
+    "conversation_id": "OTHER-03",
+    "turns": [],
+    "input": "我有个问题。",
+    "expected": {
+      "resolved_query": "我有个问题。",
+      "intent": "其他",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-07-X4",
+    "conversation_id": "CYCLE-07",
+    "turns": [
+      {
+        "role": "user",
+        "content": "蓝色走左边然后第七个？"
+      },
+      {
+        "role": "assistant",
+        "content": "我还没明白你想办理什么业务。"
+      }
+    ],
+    "input": "就是它。",
+    "expected": {
+      "resolved_query": "就是它。",
+      "intent": "其他",
+      "reference_resolved": false
+    }
+  },
+  {
+    "id": "CYCLE-07-X5",
+    "conversation_id": "CYCLE-07",
+    "turns": [
+      {
+        "role": "user",
+        "content": "蓝色走左边然后第七个？"
+      },
+      {
+        "role": "assistant",
+        "content": "我还没明白你想办理什么业务。"
+      },
+      {
+        "role": "user",
+        "content": "就是它。"
+      },
+      {
+        "role": "assistant",
+        "content": "我仍无法确定你指的是什么或想做什么。"
+      }
+    ],
+    "input": "🙂🙂🙂",
+    "expected": {
+      "resolved_query": "🙂🙂🙂",
+      "intent": "其他",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "L6",
+    "conversation_id": "LOGISTICS-06",
+    "turns": [],
+    "input": "包裹单号 SF123456 的最后一条物流记录是什么？",
+    "expected": {
+      "resolved_query": "包裹单号 SF123456 的最后一条物流记录是什么？",
+      "intent": "物流",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "C7",
+    "conversation_id": "COMPLAINT-07",
+    "turns": [],
+    "input": "你们服务态度太敷衍了，我要正式投诉。",
+    "expected": {
+      "resolved_query": "你们服务态度太敷衍了，我要正式投诉。",
+      "intent": "投诉",
+      "reference_resolved": true
+    }
+  },
+  {
+    "id": "CYCLE-08-R6",
+    "conversation_id": "CYCLE-08",
+    "turns": [
+      {
+        "role": "user",
+        "content": "退货政策是什么？"
+      },
+      {
+        "role": "assistant",
+        "content": "退货条件需要结合订单和商品情况核实。"
+      },
+      {
+        "role": "user",
+        "content": "运费谁承担？"
+      },
+      {
+        "role": "assistant",
+        "content": "我可以结合退货规则核实运费承担方式。"
+      }
+    ],
+    "input": "那如果这单超期了呢？",
+    "expected": {
+      "resolved_query": "那如果这单超期了呢？",
+      "intent": "退款退货",
+      "reference_resolved": false
+    },
+    "expansion_focus": [
+      "return eligibility",
+      "return window",
+      "exceptions"
+    ]
+  },
+  {
+    "id": "P6",
+    "conversation_id": "P6",
+    "turns": [],
+    "input": "它多少钱？",
+    "expected": {
+      "resolved_query": "它多少钱？",
+      "intent": "商品咨询",
+      "reference_resolved": false
+    }
+  },
+  {
+    "id": "R7",
+    "conversation_id": "R7",
+    "turns": [],
+    "input": "它能退吗？",
+    "expected": {
+      "resolved_query": "它能退吗？",
+      "intent": "退款退货",
+      "reference_resolved": false
+    },
+    "expansion_focus": [
+      "return eligibility",
+      "product identity",
+      "order state"
+    ]
+  }
+]

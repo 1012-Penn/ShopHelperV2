@@ -19,11 +19,18 @@ from app.schemas import (
     AfterSaleExtraction,
     AfterSaleRequest,
     ChatRequest,
+    RefundApplicationRequest,
     TicketRequest,
 )
 from app.services.after_sale import AfterSaleService
 from app.services.chat import ChatService
 from app.services.workflow.runtime import build_workflow_service
+from app.services.workflow.refunds import (
+    DemoOrderError,
+    DemoRefundApplications,
+    RefundConflict,
+    RefundOfferError,
+)
 
 ERROR_EVENT = {"event": "error", "data": {"message": "暂时无法处理，请稍后再试。"}}
 
@@ -83,6 +90,27 @@ def create_app(chat_service: ChatService | None = None) -> FastAPI:
                 status_code=503,
                 detail="工单结果暂未确认，请勿重复提交；请联系人工客服核查。",
             ) from error
+
+    @application.post("/api/v1/refund-applications")
+    def create_demo_refund_application(request: RefundApplicationRequest):
+        try:
+            chat = get_chat_service()
+            if not hasattr(chat, "session_factory"):
+                raise HTTPException(status_code=503, detail="演示退款服务暂不可用")
+            return DemoRefundApplications(chat.session_factory).submit(request)
+        except RefundConflict as error:
+            raise HTTPException(status_code=409, detail="请求标识已用于其他申请内容") from error
+        except RefundOfferError as error:
+            raise HTTPException(status_code=403, detail="会话或退款表单无效") from error
+        except DemoOrderError as error:
+            raise HTTPException(status_code=422, detail="演示订单无效") from error
+        except HTTPException:
+            raise
+        except Exception as error:
+            logging.getLogger(__name__).error(
+                "Demo refund submission failed (%s)", type(error).__name__
+            )
+            raise HTTPException(status_code=503, detail="演示申请暂未确认，请勿重复提交") from error
 
     @application.get("/api/v1/knowledge/source", response_class=HTMLResponse)
     def knowledge_source(source: str):

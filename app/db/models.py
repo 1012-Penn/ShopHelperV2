@@ -81,6 +81,28 @@ class Ticket(Base):
     conversation: Mapped[Conversation] = relationship(back_populates="tickets")
 
 
+class RefundApplication(Base):
+    """Local-only demo refund/return request; this never triggers a payment."""
+
+    __tablename__ = "refund_applications"
+
+    request_id: Mapped[str] = mapped_column(String(128), primary_key=True)
+    conversation_id: Mapped[str] = mapped_column(
+        ForeignKey("conversations.conversation_id"), nullable=False, index=True
+    )
+    message_id: Mapped[int] = mapped_column(
+        ForeignKey("messages.id"), nullable=False, index=True
+    )
+    user_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    order_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    request_type: Mapped[str] = mapped_column(String(16), nullable=False)
+    reason: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="recorded")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+
 class KnowledgeChunk(Base):
     __tablename__ = "knowledge_chunks"
     __table_args__ = (

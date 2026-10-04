@@ -1,5 +1,6 @@
 import json
 
+from langchain_core.messages import AIMessage
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 from workflow_helpers import ScriptedModel, make_workflow
@@ -51,19 +52,17 @@ def test_lifespan_closes_checkpoint_after_last_request(tmp_path):
     assert False, "checkpoint connection must be closed"
 
 
-def test_default_factory_greeting_does_not_initialize_knowledge_or_model(
+def test_default_factory_classifies_greeting_with_the_intent_model(
     tmp_path, monkeypatch
 ):
     from app.services.workflow import runtime
+    from workflow_helpers import ScriptedModel
 
     settings = Settings(
         "test", "unused", "https://provider.invalid", f"sqlite:///{tmp_path}/runtime.db"
     )
-    monkeypatch.setattr(
-        runtime,
-        "ChatOpenAI",
-        lambda **kwargs: (_ for _ in ()).throw(AssertionError("no model")),
-    )
+    model = ScriptedModel("闲聊")
+    monkeypatch.setattr(runtime, "ChatOpenAI", lambda **kwargs: model)
     workflow = runtime.build_workflow_service(
         settings,
         {
@@ -78,6 +77,7 @@ def test_default_factory_greeting_does_not_initialize_knowledge_or_model(
         )
         assert "event: done" in response.text
         assert "event: error" not in response.text
+        assert len(model.calls) == 2
 
 
 def test_blank_message_and_invalid_ticket_id_rejected(tmp_path):
@@ -95,3 +95,66 @@ def test_blank_message_and_invalid_ticket_id_rejected(tmp_path):
             ).status_code
             == 422
         )
+
+
+def test_order_resume_payload_requires_all_bound_selection_ids():
+    import pytest
+    from pydantic import ValidationError
+
+    from app.schemas import ChatRequest
+
+    with pytest.raises(ValidationError):
+        ChatRequest(
+            conversation_id="c",
+            selected_order_id="DEMO-1001",
+            selection_message_id=17,
+        )
+    resumed = ChatRequest(
+        conversation_id="c",
+        selected_order_id="DEMO-1001",
+        selection_message_id=17,
+        request_id="order-choice-1",
+    )
+    assert resumed.message == ""
+
+
+def test_primary_agent_refund_form_event_submits_local_demo_application(tmp_path):
+    from workflow_helpers import EvidenceRetriever
+
+    policy = [{
+        "chunk_id": 17, "source_key": "policy:return", "score": 0.95,
+        "answer": "订单需符合演示政策。", "category": "退换货与退款 / 退货条件",
+        "content_type": "policy",
+    }]
+    model = ScriptedModel(
+        "退款退货",
+        [AIMessage(content='{"next":"answer","actions":["refund_form"]}')],
+    )
+    workflow = make_workflow(tmp_path, model, EvidenceRetriever(policy))
+    with TestClient(create_app(chat_service=workflow)) as client:
+        streamed = client.post(
+            "/api/v1/chat/stream",
+            json={"conversation_id": "refund-api", "message": "订单 DEMO-1001 能退吗？"},
+        )
+        assert streamed.status_code == 200
+        event_data = {
+            block.splitlines()[0].removeprefix("event: "): json.loads(
+                block.split("data: ", 1)[1]
+            )
+            for block in streamed.text.split("\n\n")
+            if block.startswith("event: ") and "data: " in block
+        }
+        form = event_data["refund_form"]
+        payload = {
+            "conversation_id": "refund-api",
+            "user_id": "demo-user",
+            "message_id": form["message_id"],
+            "request_id": form["request_id"],
+            "order_id": form["order_id"],
+            "request_type": form["request_type"],
+            "reason": "不想要/不合适",
+        }
+        response = client.post("/api/v1/refund-applications", json=payload)
+        assert response.status_code == 200
+        assert response.json()["status"] == "recorded"
+        assert "未执行真实退款" in response.json()["message"]

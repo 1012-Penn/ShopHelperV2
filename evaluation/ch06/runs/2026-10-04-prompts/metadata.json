@@ -1,0 +1,6 @@
+{
+  "stage": "prompts",
+  "started_at": "2026-10-03T16:44:44.940705+00:00",
+  "case_file": "evaluation/ch06/cases.json",
+  "model": "deepseek-chat"
+}

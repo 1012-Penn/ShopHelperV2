@@ -46,7 +46,8 @@ def test_fixture_demo_exercises_five_acceptance_paths(tmp_path):
     assert report["accepted"] is True
     assert len(report["cases"]) == 5
     assert report["cases"][4]["tool_calls"] == 2
-    assert report["cases"][3]["tokens"] == 0
+    assert report["cases"][3]["tokens"] > 0
+    assert report["cases"][3]["intent"] == "闲聊"
 
 
 def test_demo_stopped_agent_is_not_accepted(tmp_path):

@@ -21,6 +21,8 @@ from .policy import (
 from .prompts import ANSWER_PROMPT, DECISION_PROMPT
 
 READ_ONLY = frozenset({"query_order", "query_product", "query_logistics"})
+HIGH_RISK_PROMPT = """本次是高风险退款/售后判断：订单已校验且已有强制政策证据。不得查询其他订单、商品或物流，只判断本轮诉求与这笔订单是否符合所给政策；不确定时澄清。
+仅当 intent 为退款退货、你判断该订单符合申请条件且用户需要继续办理时，在最终 JSON actions 中加入 refund_form；系统会显示固定原因的演示表单。证据不足、不符合或需要澄清时不加；售后意图不提供 refund_form。"""
 
 
 class AgentNodes:
@@ -28,6 +30,8 @@ class AgentNodes:
         self.service = service
 
     def tools(self, state):
+        if state.get("route") == "high_risk":
+            return []
         return [
             t
             for t in build_tools(self.service.session_factory, state["conversation_id"])
@@ -37,17 +41,23 @@ class AgentNodes:
     def messages(self, state, prompt):
         context = {
             "original_question": state["question"],
+            "resolved_question": state.get("resolved_question", state["question"]),
+            "intent": state.get("intent"),
+            "route": state.get("route"),
+            "validated_order": state.get("order"),
             "evidence": state["evidence"],
             "mode": state.get("agent_next"),
             "missing": state.get("missing", ""),
         }
+        if state.get("route") == "high_risk":
+            prompt += "\n" + HIGH_RISK_PROMPT
         return [
             SystemMessage(
                 content=prompt
                 + "\n本轮数据："
                 + json.dumps(context, ensure_ascii=False)
             ),
-            *state["messages"],
+            *state.get("agent_messages", state["messages"]),
         ]
 
     def decide(self, state):
@@ -62,12 +72,10 @@ class AgentNodes:
             )
         except BudgetExceeded:
             return {"agent_next": "stop", "stop_reason": "token_budget"}
-        response = (
-            self.service.model_factory()
-            .bind_tools(tools)
-            .bind(max_tokens=allowance)
-            .invoke(messages)
-        )
+        model = self.service.model_factory()
+        if tools:
+            model = model.bind_tools(tools)
+        response = model.bind(max_tokens=allowance).invoke(messages)
         count, approximate = measured_usage(
             response,
             input_estimate,
@@ -99,10 +107,18 @@ class AgentNodes:
             }:
                 raise ValueError("invalid completion signal")
             actions = signal.get("actions", [])
-            if not isinstance(actions, list) or any(
-                a not in {"handoff", "create_ticket"} for a in actions
+            allowed_actions = {"handoff", "create_ticket"}
+            if (
+                state.get("route") == "high_risk"
+                and state.get("intent") == "退款退货"
+                and state.get("order")
+                and state.get("gate_passed")
             ):
+                allowed_actions.add("refund_form")
+            if not isinstance(actions, list) or any(a not in allowed_actions for a in actions):
                 raise ValueError("invalid actions")
+            if "refund_form" in actions and signal["next"] != "answer":
+                raise ValueError("refund form requires a final answer")
             missing = signal.get("missing", "")
             if not isinstance(missing, str):
                 raise TypeError("invalid missing information")
@@ -133,7 +149,7 @@ class AgentNodes:
                 started = time.monotonic()
                 if reason:
                     pass
-                elif call["name"] not in READ_ONLY:
+                elif state.get("route") == "high_risk" or call["name"] not in READ_ONLY:
                     reason = "forbidden_tool"
                     content = "该工具不能由自主Agent执行，只能建议用户通过按钮选择。"
                     if call["name"] == "create_ticket":
@@ -202,8 +218,10 @@ class AgentNodes:
             AIMessage(content="", tool_calls=pending),
             observations,
         )
+        turn_messages = [AIMessage(content="", tool_calls=pending), *observations]
         return {
-            "messages": [AIMessage(content="", tool_calls=pending), *observations],
+            "messages": turn_messages,
+            "agent_messages": [*state.get("agent_messages", []), *turn_messages],
             "tool_calls": count,
             "seen_calls": seen,
             "pending": None,

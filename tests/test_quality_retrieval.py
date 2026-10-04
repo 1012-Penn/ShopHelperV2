@@ -189,6 +189,51 @@ def test_retriever_uses_hybrid_candidate_limit_and_traces_actual_limit(db_sessio
     assert ranker.top_ns==[10]
 
 
+def test_policy_retrieval_filters_category_prefix_and_authoritative_content_type(db_session_factory):
+    with db_session_factory.begin() as session:
+        session.add_all([
+            KnowledgeChunk(id=711,source_key='doc:return:policy',category='退换货与退款 / 退货条件',
+                questions=['如何申请退货'],answer='按订单核对。',embedding_text='退货条件',
+                chapter_path=['退换货与退款','退货条件'],content_type='policy',content_hash='return-policy'),
+            KnowledgeChunk(id=712,source_key='faq:return',category='退换货与退款 / 常见问题',
+                questions=['退货 FAQ'],answer='FAQ answer',embedding_text='退货 FAQ',
+                chapter_path=['退换货与退款','常见问题'],content_type='product_faq',content_hash='return-faq'),
+        ])
+        session.flush()
+        session.add_all([
+            HybridSync(collection='hybrid-policy',chunk_id=711,content_hash='return-policy'),
+            HybridSync(collection='hybrid-policy',chunk_id=712,content_hash='return-faq'),
+        ])
+
+    class Embeddings:
+        def embed_query(self, query):
+            return [0.0] * 1024
+
+    class Store:
+        collection_name='hybrid-policy'
+        def __init__(self):
+            self.category_prefixes=None
+            self.chunk_ids=None
+        def search(self, vector, lexical, strategy, category=None, limit=50,
+                   category_prefixes=None, chunk_ids=None):
+            self.category_prefixes=category_prefixes
+            self.chunk_ids=chunk_ids
+            return [HybridHit(711,.8,'return-policy'),HybridHit(712,.9,'return-faq')]
+
+    store=Store()
+    retriever=QualityRetriever(db_session_factory,Embeddings(),store,None,
+                               normalizer=QueryNormalizer())
+    evidence,candidates,trace=retriever.retrieve_with_trace(
+        '退货资格', 'dense', category_prefixes=('退换货与退款',),
+        content_types=('policy','after_sales'),
+    )
+    assert store.category_prefixes == ('退换货与退款',)
+    assert store.chunk_ids == (711,)
+    assert [item.chunk_id for item in evidence] == [711]
+    assert [item.chunk_id for item in candidates] == [711]
+    assert candidates[0].content_type == 'policy'
+
+
 @pytest.mark.parametrize('limit',[49,101])
 def test_retriever_rejects_hybrid_candidate_limits_outside_50_to_100(db_session_factory,limit):
     class Store:

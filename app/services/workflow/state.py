@@ -8,6 +8,7 @@ from langgraph.graph.message import add_messages
 
 class WorkflowState(TypedDict, total=False):
     messages: Annotated[list[BaseMessage], add_messages]
+    agent_messages: list[BaseMessage]
     conversation_id: str
     user_id: str
     run_id: str
@@ -15,6 +16,8 @@ class WorkflowState(TypedDict, total=False):
     resolved_question: str
     category: str | None
     intent: str | None
+    intent_confidence: float | None
+    reference_resolved: bool
     route: str | None
     path: list[str]
     evidence: list[dict]
@@ -34,3 +37,9 @@ class WorkflowState(TypedDict, total=False):
     answer: str
     stop_reason: str
     message_id: int | None
+    order: dict | None
+    previous_order: dict | None
+    order_choices: list[dict]
+    selection_request_id: str | None
+    selection_message_id: int | None
+    policy_queries: list[str]

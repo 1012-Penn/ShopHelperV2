@@ -9,9 +9,9 @@ from pathlib import Path
 from uuid import uuid4
 
 from app.services.workflow.intents import (
+    INTENT_CONFIDENCE_THRESHOLD,
     INTENT_PROMPT,
     ROUTES,
-    is_greeting,
     parse_intent,
 )
 
@@ -56,9 +56,7 @@ def evaluate(live=False, output_dir=None):
             "model_calls": 0,
             "usage": None,
         }
-        if is_greeting(case["query"]):
-            row.update(actual="闲聊", raw="code fast path")
-        elif not live:
+        if not live:
             row.update(actual=case["expected"], raw="synthetic fixture label")
         else:
             row["model_calls"] = 1
@@ -71,7 +69,12 @@ def evaluate(live=False, output_dir=None):
                 )
                 row.update(raw=response.content, usage=response.usage_metadata)
                 try:
-                    row["actual"] = parse_intent(response.content)
+                    intent, confidence = parse_intent(response.content)
+                    row["actual"] = (
+                        intent
+                        if confidence >= INTENT_CONFIDENCE_THRESHOLD
+                        else "其他"
+                    )
                 except (ValueError, TypeError):
                     row["error"] = "invalid_json_or_intent"
             except Exception as error:  # noqa: BLE001 - isolate external provider/tool failures

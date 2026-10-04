@@ -11,8 +11,9 @@ from app.tools.registry import ToolRegistry, ToolRunner
 
 
 class ScriptedModel:
-    def __init__(self, intent="物流", decisions=None, chunks=None):
+    def __init__(self, intent="物流", decisions=None, chunks=None, confidence=0.92):
         self.intent = intent
+        self.confidence = confidence
         self.decisions = list(decisions or [])
         self.chunks = chunks or ["模拟物流", "运输中"]
         self.calls = []
@@ -28,10 +29,23 @@ class ScriptedModel:
 
     def invoke(self, messages):
         self.calls.append(messages)
-        if "七类" in messages[0].content:
+        if "本轮问题独立化节点" in messages[0].content:
+            question = messages[-1].content.split("本轮原问题：\n", 1)[-1]
             return AIMessage(
-                content=json.dumps({"intent": self.intent}, ensure_ascii=False)
+                content=json.dumps(
+                    {"question": question, "reference_resolved": True},
+                    ensure_ascii=False,
+                )
             )
+        if "本轮意图选择节点" in messages[0].content:
+            return AIMessage(
+                content=json.dumps(
+                    {"intent": self.intent, "confidence": self.confidence},
+                    ensure_ascii=False,
+                )
+            )
+        if "检索查询扩写节点" in messages[0].content:
+            return AIMessage(content=json.dumps({"queries": [messages[-1].content]}))
         if self.decisions:
             return self.decisions.pop(0)
         return AIMessage(content='{"next":"answer","actions":[]}')
@@ -48,8 +62,8 @@ class EvidenceRetriever:
         self.error = error
         self.queries = []
 
-    def retrieve(self, question, category=None):
-        self.queries.append((question, category))
+    def retrieve(self, question, category=None, **kwargs):
+        self.queries.append((question, category) if not kwargs else (question, category, kwargs))
         if self.error:
             raise self.error
         return self.evidence, {"strategy": "hybrid_rerank"}

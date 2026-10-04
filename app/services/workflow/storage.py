@@ -79,12 +79,14 @@ class ConversationStore:
             return ToolMessage(**values, tool_call_id=row.tool_call_id or "missing-id")
         return AIMessage(**values, tool_calls=row.tool_calls or [])
 
-    def save_answer(self, conversation_id, answer, citations, actions, question):
+    def save_answer(self, conversation_id, answer, citations, actions, question, offer=None):
         metadata = (
             {"items": actions, "question": question, "ticket": {"status": "offered"}}
             if actions
             else None
         )
+        if offer:
+            metadata = {**(metadata or {"items": []}), **offer}
         with self.session_factory.begin() as s:
             row = Message(
                 conversation_id=conversation_id,
